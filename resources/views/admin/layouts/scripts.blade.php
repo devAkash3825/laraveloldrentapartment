@@ -19,3 +19,5 @@
 <!-- datatables js -->
 <script src="{{ asset('ajax/admin/adminAjax.js') }}"></script>
 <script src="{{ asset('admin_asset/js/slim.js') }}"></script>
+<!-- Common Admin JS -->
+<script src="{{ asset('common/js/admin-common.js') }}"></script>

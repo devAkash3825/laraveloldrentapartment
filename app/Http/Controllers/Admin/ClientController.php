@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\DataTableService;
 
 class ClientController extends Controller
 {
@@ -148,260 +149,188 @@ class ClientController extends Controller
     public function activeRenter(Request $request)
     {
         try {
-            $data = Login::where('user_type', 'C')
-                ->where('Status', '1')
-                ->orderBy('Id', 'desc')
-                ->with('renterinfo')
-                ->get();
-
             if ($request->ajax()) {
-                return DataTables::of($data)->addIndexColumn()
-                    ->addColumn('firstname', function ($row) {
-                        return optional($row->renterinfo)->Firstname ?? '-';
-                    })
-                    ->addColumn('lastname', function ($row) {
-                        return optional($row->renterinfo)->Lastname ?? '-';
-                    })
+                $query = Login::where('user_type', 'C')
+                    ->where('Status', '1')
+                    ->with('renterinfo');
+
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('firstname', DataTableService::safeColumn('renterinfo.Firstname'))
+                    ->addColumn('lastname', DataTableService::safeColumn('renterinfo.Lastname'))
                     ->addColumn('probability', function ($row) {
-                        return ! empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
+                        return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
                     })
-                    ->addColumn('status', function ($row) {
-                        $status = '';
-                        switch ($row->Status) {
-                            case "1":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--success">Active</a>';
-                                break;
-                            case "0":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--warning">Inactive</a>';
-                                break;
-                            case "2":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--danger">Leased</a>';
-                                break;
-                            default:
-                                $status = 'Unknown';
-                        }
-                        $statusText = $row->Status == 2 ? "Leased" : "Unknown";
-                        return $status;
-                    })
+                    ->addColumn('status', DataTableService::statusColumn())
                     ->addColumn('adminname', function ($row) {
                         $adminId = optional($row->renterinfo)->added_by;
                         return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
                     })
-                    ->addColumn('actions', function ($row) {
-                        $user          = Auth::guard('admin')->user();
-                        $editUrl       = route('admin-edit-renter', ['id' => $row->Id]);
-                        $viewUrl       = route('admin-view-profile', ['id' => $row->Id]);
-                        $deleteUrl     = route('admin-deleteRenter', ['id' => $row->Id]);
-                        $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-
-                        if ($user && $user->hasPermission('user_addedit')) {
-                            $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn">
-                                                <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                            </a>';
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'user_addedit'
+                        ],
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-deleteRenter', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true,
+                            'permission' => 'user_delete'
+                        ]
+                    ], function($action, $row) {
+                        $user = Auth::guard('admin')->user();
+                        if (isset($action['permission'])) {
+                            return $user && $user->hasPermission($action['permission']);
                         }
-                        $actionButtons .= '<a href="' . $viewUrl . '" class=""><i class="fa-regular fa-eye border px-2 py-2 view-icon"></i></a> ';
-                        if ($user && $user->hasPermission('user_delete')) {
-                            $actionButtons .= '<a href="javascript:void(0)" class="deleteRenter" data-id="' . $row->Id . '" data-url="' . $deleteUrl . '">
-                                                <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                            </a>';
-                        }
-                        $actionButtons .= '</div>';
-                        return $actionButtons;
-                    })
-                    ->rawColumns(['firstname', 'lastname', 'probability', 'status', 'adminname', 'actions'])
+                        return true;
+                    }))
+                    ->rawColumns(['status', 'actions'])
                     ->make(true);
-            } else {
-                return view('admin.activeRenter');
             }
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Database error in activeRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Database error. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Database error. Please try again later.');
+            return view('admin.activeRenter');
         } catch (\Exception $e) {
-            \Log::error('General error in activeRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Something went wrong. Please try again later.');
+            \Log::error('Error in activeRenter: ' . $e->getMessage());
+            return $request->ajax() 
+                ? response()->json(['error' => 'Something went wrong.'], 500)
+                : redirect()->back()->withErrors('Something went wrong.');
         }
     }
     
     public function inactiveRenter(Request $request)
     {
         try {
-            $data = Login::where('user_type', 'C')
-                ->where('Status', '0')
-                ->orderBy('Id', 'ASC')
-                ->with('renterinfo')
-                ->take(2000)
-                ->get();
-
             if ($request->ajax()) {
-                return DataTables::of($data)
+                $query = Login::where('user_type', 'C')
+                    ->where('Status', '0')
+                    ->with('renterinfo');
+
+                return DataTableService::of($query)
                     ->addIndexColumn()
-                    ->addColumn('firstname', function ($row) {
-                        return optional($row->renterinfo)->Firstname ?? '-';
-                    })
-                    ->addColumn('lastname', function ($row) {
-                        return optional($row->renterinfo)->Lastname ?? '-';
-                    })
+                    ->addColumn('firstname', DataTableService::safeColumn('renterinfo.Firstname'))
+                    ->addColumn('lastname', DataTableService::safeColumn('renterinfo.Lastname'))
                     ->addColumn('probability', function ($row) {
-                        return ! empty(optional($row->renterinfo)->probability)
-                            ? optional($row->renterinfo)->probability . "%"
-                            : '-';
+                        return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
                     })
-                    ->addColumn('status', function ($row) {
-                        $status = match ($row->Status) {
-                            "1" => '<a href="javascript:void(0)" class="c-pill c-pill--success">Active</a>',
-                            "0"     => '<a href="javascript:void(0)" class="c-pill c-pill--warning">Inactive</a>',
-                            "2"     => '<a href="javascript:void(0)" class="c-pill c-pill--danger">Leased</a>',
-                            default => 'Unknown',
-                        };
-                        return $status;
-                    })
+                    ->addColumn('status', DataTableService::statusColumn())
                     ->addColumn('adminname', function ($row) {
                         $adminId = optional($row->renterinfo)->added_by;
                         return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
                     })
-                    ->addColumn('actions', function ($row) {
-                        $user          = Auth::guard('admin')->user();
-                        $editUrl       = route('admin-edit-renter', ['id' => $row->Id]);
-                        $viewUrl       = route('admin-view-profile', ['id' => $row->Id]);
-                        $deleteUrl     = route('admin-deleteRenter', ['id' => $row->Id]);
-                        $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-
-                        if ($user && $user->hasPermission('user_addedit')) {
-                            $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn">
-                                                <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                            </a>';
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'user_addedit'
+                        ],
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-deleteRenter', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true,
+                            'permission' => 'user_delete'
+                        ]
+                    ], function($action, $row) {
+                        $user = Auth::guard('admin')->user();
+                        if (isset($action['permission'])) {
+                            return $user && $user->hasPermission($action['permission']);
                         }
-                        $actionButtons .= '<a href="' . $viewUrl . '" class=""><i class="fa-regular fa-eye border px-2 py-2 view-icon"></i></a> ';
-                        if ($user && $user->hasPermission('user_delete')) {
-                            $actionButtons .= '<a href="javascript:void(0)" class="deleteRenter" data-id="' . $row->Id . '" data-url="' . $deleteUrl . '">
-                                                <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                            </a>';
-                        }
-                        $actionButtons .= '</div>';
-                        return $actionButtons;
-                    })
-                    ->rawColumns(['firstname', 'lastname', 'probability', 'status', 'adminname', 'actions'])
+                        return true;
+                    }))
+                    ->rawColumns(['status', 'actions'])
                     ->make(true);
-            } else {
-                return view('admin.inactiveRenter');
             }
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Database error in inactiveRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Database error. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Database error. Please try again later.');
+            return view('admin.inactiveRenter');
         } catch (\Exception $e) {
-            \Log::error('General error in inactiveRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Something went wrong. Please try again later.');
+            \Log::error('Error in inactiveRenter: ' . $e->getMessage());
+            return $request->ajax() 
+                ? response()->json(['error' => 'Something went wrong.'], 500)
+                : redirect()->back()->withErrors('Something went wrong.');
         }
     }
     
     public function leasedRenter(Request $request)
     {
         try {
-            $data = Login::where('user_type', 'C')
-                ->where('Status', '2')
-                ->orderBy('Id', 'desc')
-                ->with('renterinfo')
-                ->get();
-
             if ($request->ajax()) {
-                return DataTables::of($data)->addIndexColumn()
-                    ->addColumn('firstname', function ($row) {
-                        return optional($row->renterinfo)->Firstname ?? '-';
-                    })
-                    ->addColumn('lastname', function ($row) {
-                        return optional($row->renterinfo)->Lastname ?? '-';
-                    })
+                $query = Login::where('user_type', 'C')
+                    ->where('Status', '2')
+                    ->with('renterinfo');
+
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('firstname', DataTableService::safeColumn('renterinfo.Firstname'))
+                    ->addColumn('lastname', DataTableService::safeColumn('renterinfo.Lastname'))
                     ->addColumn('probability', function ($row) {
-                        return ! empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
+                        return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
                     })
-                    ->addColumn('status', function ($row) {
-                        $status = '';
-                        switch ($row->Status) {
-                            case "1":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--success">Active</a>';
-                                break;
-                            case "0":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--warning">Inactive</a>';
-                                break;
-                            case "2":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--danger">Leased</a>';
-                                break;
-                            default:
-                                $status = 'Unknown';
-                        }
-                        $statusText = $row->Status == 2 ? "Leased" : "Unknown";
-                        return $status;
-                    })
+                    ->addColumn('status', DataTableService::statusColumn())
                     ->addColumn('adminname', function ($row) {
                         $adminId = optional($row->renterinfo)->added_by;
                         return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
                     })
-                    ->addColumn('actions', function ($row) {
-                        $user          = Auth::guard('admin')->user();
-                        $editUrl       = route('admin-edit-renter', ['id' => $row->Id]);
-                        $viewUrl       = route('admin-view-profile', ['id' => $row->Id]);
-                        $deleteUrl     = route('admin-deleteRenter', ['id' => $row->Id]);
-                        $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-
-                        if ($user && $user->hasPermission('user_addedit')) {
-                            $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn">
-                                                <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                            </a>';
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'user_addedit'
+                        ],
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-deleteRenter', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true,
+                            'permission' => 'user_delete'
+                        ]
+                    ], function($action, $row) {
+                        $user = Auth::guard('admin')->user();
+                        if (isset($action['permission'])) {
+                            return $user && $user->hasPermission($action['permission']);
                         }
-                        $actionButtons .= '<a href="' . $viewUrl . '" class=""><i class="fa-regular fa-eye border px-2 py-2 view-icon"></i></a> ';
-                        if ($user && $user->hasPermission('user_delete')) {
-                            $actionButtons .= '<a href="javascript:void(0)" class="deleteRenter" data-id="' . $row->Id . '" data-url="' . $deleteUrl . '">
-                                                <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                            </a>';
-                        }
-                        $actionButtons .= '</div>';
-                        return $actionButtons;
-                    })
-                    ->rawColumns(['firstname', 'lastname', 'probability', 'status', 'adminname', 'actions'])
+                        return true;
+                    }))
+                    ->rawColumns(['status', 'actions'])
                     ->make(true);
-            } else {
-                return view('admin.leasedRenter');
             }
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Database error in leasedRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Database error. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Database error. Please try again later.');
+            return view('admin.leasedRenter');
         } catch (\Exception $e) {
-            \Log::error('General error in leasedRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Something went wrong. Please try again later.');
+            \Log::error('Error in leasedRenter: ' . $e->getMessage());
+            return $request->ajax() 
+                ? response()->json(['error' => 'Something went wrong.'], 500)
+                : redirect()->back()->withErrors('Something went wrong.');
         }
     }
     
     public function unassignedRenters(Request $request)
     {
         try {
-            $listunassignedRenter = Login::where('user_type', 'C')
-                ->whereHas('renterinfo', function ($query) {
-                    $query->whereNull('added_by');
-                })
-                ->with('renterinfo')
-                ->orderBy('Id', 'desc')
-                ->get();
-
             if ($request->ajax()) {
-                return DataTables::of($listunassignedRenter)
+                $query = Login::where('user_type', 'C')
+                    ->whereHas('renterinfo', function ($query) {
+                        $query->whereNull('added_by');
+                    })
+                    ->with('renterinfo');
+
+                return DataTableService::of($query)
                     ->addIndexColumn()
                     ->addColumn('fullname', function ($row) {
                         $firstname = optional($row->renterinfo)->Firstname;
@@ -412,38 +341,25 @@ class ClientController extends Controller
                         $probability = optional($row->renterinfo)->probability;
                         return $probability ? $probability . '%' : '-';
                     })
-                    ->addColumn('area', function ($row) {
-                        return optional($row->renterinfo)->Area_move ?? '-';
-                    })
+                    ->addColumn('area', DataTableService::safeColumn('renterinfo.Area_move'))
                     ->addColumn('actions', function ($row) {
                         $user = Auth::guard('admin')->user();
                         if ($user && $user->hasPermission('renter_claim')) {
-                            $claimAction = "<a href='javascript:void(0)' class='btn btn-primary btn-sm' onclick='claimrenter({$row->Id})'>Claim</a>";
-                            return "<div class='table-actions-icons'>{$claimAction}</div>";
-                        } else {
+                            return "<div class='table-actions-icons'>
+                                <a href='javascript:void(0)' class='btn btn-primary btn-sm' onclick='claimrenter({$row->Id})'>Claim</a>
+                            </div>";
                         }
+                        return '';
                     })
-                    ->rawColumns(['fullname', 'probability', 'actions'])
+                    ->rawColumns(['fullname', 'actions'])
                     ->make(true);
-            } else {
-                return view('admin.unassignedRenters');
             }
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Database error in Unassigned Renter method: ' . $e->getMessage());
-
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Database error. Please try again later.'], 500);
-            }
-
-            return redirect()->back()->withErrors('Database error. Please try again later.');
+            return view('admin.unassignedRenters');
         } catch (\Exception $e) {
-            \Log::error('General error in Unassigned Renter: ' . $e->getMessage());
-
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
-            }
-
-            return redirect()->back()->withErrors('Something went wrong. Please try again later.');
+            \Log::error('Error in unassignedRenters: ' . $e->getMessage());
+            return $request->ajax() 
+                ? response()->json(['error' => 'Something went wrong.'], 500)
+                : redirect()->back()->withErrors('Something went wrong.');
         }
     }
     

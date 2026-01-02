@@ -15,3 +15,5 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('admin_asset/css/bootstrap-iconpicker.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin_asset/css/adminpanel.css') }}">
+    <!-- Common Admin CSS -->
+    <link rel="stylesheet" href="{{ asset('common/css/admin-common.css') }}">

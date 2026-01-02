@@ -1,0 +1,326 @@
+/**
+ * Admin Common CSS - Rent Apartments
+ * This file contains common styles used across all admin pages
+ * DO NOT add page-specific styles here
+ */
+
+/* ============================================
+   FONTS
+   ============================================ */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+/* ============================================
+   GLOBAL VARIABLES
+   ============================================ */
+:root {
+    --primary-color: #4285f4;
+    --success-color: #6BC167;
+    --warning-color: #ffc400;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    
+    --bg-success: #b4eda0;
+    --bg-warning: #ffebb6;
+    --bg-danger: #f8d7da;
+    
+    --text-primary: #333;
+    --text-secondary: #595959;
+    --text-muted: #868e96;
+    
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-pill: 100px;
+    
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+/* ============================================
+   PILL BADGES
+   ============================================ */
+.c-pill {
+    align-items: center;
+    font-family: "Open Sans", Arial, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+    display: inline-block;
+    height: 100%;
+    white-space: nowrap;
+    width: auto;
+    position: relative;
+    border-radius: var(--border-radius-pill);
+    line-height: 1.25rem;
+    overflow: hidden;
+    padding: 0px 12px 0px 20px;
+    text-overflow: ellipsis;
+    color: var(--text-secondary);
+    word-break: break-word;
+    transition: all 0.3s ease;
+}
+
+.c-pill:before {
+    border-radius: 50%;
+    content: '';
+    height: 10px;
+    left: 6px;
+    margin-top: -5px;
+    position: absolute;
+    top: 50%;
+    width: 10px;
+}
+
+.c-pill--success {
+    background: var(--bg-success);
+}
+
+.c-pill--success:before {
+    background: var(--success-color);
+}
+
+.c-pill--warning {
+    background: var(--bg-warning);
+}
+
+.c-pill--warning:before {
+    background: var(--warning-color);
+}
+
+.c-pill--danger {
+    background: var(--bg-danger);
+}
+
+.c-pill--danger:before {
+    background: var(--danger-color);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-spinner {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.btn-loading {
+    position: relative;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   TABLE ACTIONS
+   ============================================ */
+.table-actionss-icon,
+.table-actions-icons {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.table-actionss-icon a,
+.table-actions-icons a {
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.table-actionss-icon a:hover,
+.table-actions-icons a:hover {
+    transform: scale(1.1);
+}
+
+.edit-icon {
+    color: #4285f4;
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+}
+
+.view-icon {
+    color: #28a745;
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+}
+
+.delete-icon {
+    color: #dc3545;
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+}
+
+.edit-icon:hover,
+.view-icon:hover,
+.delete-icon:hover {
+    opacity: 0.8;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-total {
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.card-total h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.card-total p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: var(--border-radius-sm);
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+    height: 16px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.skeleton-title {
+    height: 24px;
+    width: 60%;
+    margin-bottom: var(--spacing-md);
+}
+
+.skeleton-card {
+    height: 120px;
+    margin-bottom: var(--spacing-md);
+}
+
+/* ============================================
+   DATATABLES CUSTOM STYLES
+   ============================================ */
+.dataTables_wrapper {
+    padding: var(--spacing-md);
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: var(--border-radius-sm);
+}
+
+.dataTables_wrapper .dataTables_length select {
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: var(--border-radius-sm);
+}
+
+table.dataTable thead th {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+@media (max-width: 768px) {
+    .card-total h1 {
+        font-size: 1.8rem;
+    }
+    
+    .table-actionss-icon,
+    .table-actions-icons {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+
+.fullname-tag {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   TOASTR OVERRIDES
+   ============================================ */
+#toast-container > div {
+    opacity: 1;
+}
+
+.toast-success {
+    background-color: var(--success-color);
+}
+
+.toast-error {
+    background-color: var(--danger-color);
+}
+
+.toast-warning {
+    background-color: var(--warning-color);
+}
+
+.toast-info {
+    background-color: var(--info-color);
+}

@@ -1,41 +1,25 @@
 <?php
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NotificationEvent implements ShouldBroadcast
+class NotificationEvent
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, SerializesModels;
 
     public $notification;
     public $receiverId;
 
-
+    /**
+     * Create a new event instance.
+     *
+     * @param array $notification
+     * @param int $receiverId
+     */
     public function __construct($notification, $receiverId)
     {
         $this->notification = $notification;
         $this->receiverId = $receiverId;
     }
-
-    public function broadcastAs()
-    {
-        return 'NotificationEvent';
-    }
-    
-
-    public function broadcastOn()
-    {
-        return new PrivateChannel('adminNotification.' . $this->receiverId);
-    }
-
-
 }
-
-
-?>

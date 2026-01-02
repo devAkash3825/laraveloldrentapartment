@@ -1,11 +1,6 @@
 @extends('admin.layouts.app')
 @section('content')
-@section('title', 'RentApartments Admin | Leased Renters')
-<style>
-    td {
-        text-align: center;
-    }
-</style>
+@section('title', 'RentApartments Admin | Unassigned Renters')
 <div class="slim-mainpanel">
     <div class="container">
         <div class="slim-pageheader">
@@ -28,72 +23,37 @@
                         </tr>
                     </thead>
                     <tbody>
-
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
+
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $(function() {
-            try {
-                $("#unassigned-renter").DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ route('admin-unassigned-renters') }}",
-                    columns: [{
-                            data: "DT_RowIndex",
-                            name: "DT_RowIndex",
-                        },
-                        {
-                            data: "fullname",
-                            name: "fullname",
-                        },
-                        {
-                            data: "probability",
-                            name: "probability",
-                        },
-                        {
-                            data: "area",
-                            name: "area",
-                        },
-                        {
-                            data: "actions",
-                            name: "actions",
-                        },
-                    ],
-                });
-            } catch (err) {
-                console.log("Err in datatables", err);
-            }
-        });
+        $('#unassigned-renter').DataTable(DataTableHelpers.getConfig("{{ route('admin-unassigned-renters') }}", [
+            { data: "DT_RowIndex", orderable: false, searchable: false },
+            { data: "fullname", name: "fullname" },
+            { data: "probability", name: "probability" },
+            { data: "area", name: "area" },
+            { data: "actions", name: "actions", orderable: false, searchable: false }
+        ]));
     });
 
     function claimrenter(renterId) {
-        $.ajax({
-            url: "{{ route('admin-claim-renter') }}",
-            method: "POST",
-            data: {
-                renterId: renterId
-            },
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function(response) {
-                if (response.message) {
-                    $('#renter-row-' + renterId).remove();
-                    toastr.success("Status Changes Successfully!");
-                } else {
-                    toastr.danger("Failed to change status. Please try again.");
-                }
-            },
-            error: function() {
-                toastr.danger("An error occurred. Please try again.");
+        ConfirmDialog.show({
+            title: 'Claim Renter',
+            text: 'Are you sure you want to claim this renter?',
+            onConfirm: function() {
+                AdminAjax.request("{{ route('admin-claim-renter') }}", 'POST', { renterId: renterId }, {
+                    success: function(response) {
+                        toastr.success(response.message || "Renter claimed successfully!");
+                        $('#unassigned-renter').DataTable().ajax.reload();
+                    }
+                });
             }
         });
     }

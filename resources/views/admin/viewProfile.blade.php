@@ -245,8 +245,8 @@
                 <div id="favoritetab" class="tab-content" data-id="{{ $data->Id }}">
                     <div class="card card-latest-activity mg-t-20 active" role="tabpanel">
                         <div class="card-body">
-                            <div class="table-responsive mt-4 ">
-                                <table class="table table-hover mg-b-0" id="">
+                            <div class="table-wrapper mt-4 ">
+                                <table class="table display responsive nowrap" id="favorite-listing" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>S.No</th>
@@ -259,61 +259,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($favoritePropertieslist as $property)
-                                        <tr>
-                                            <td class="p-3">{{ $loop->iteration }}</td>
-                                            <td class="align-content-center py-1">
-                                                <a href="{{ route('admin-property-display', ['id' => $property['id']]) }}" class="font-weight-bold"> {{ $property['propertyname'] }} </a>
-                                            </td>
-                                            <td class="align-content-center">{{ $property['city'] }}</td>
-                                            <td class="align-content-center">{{ $property['state'] }}</td>
-                                            <td class="align-content-center">
-                                                <div class="table-actionss-icon table-actions-icons float-left">
-                                                    <a href="{{ route('admin-edit-property', ['id' => $property['id']]) }}" class="edit-btn">
-                                                        <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                                    </a>
-                                                    <a href="javascript:void(0)" class="">
-                                                        <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            <td class="align-content-center">
-                                                <div class="form-group col-md-12 d-flex mb-0">
-                                                    <a type="javascript:void(0)"
-                                                        href="{{ route('admin-get-messages', ['rid' => $data['Id'], 'pid' => $property['id']]) }}"
-                                                        class="btn btn-primary float-right btn-sm text-white "
-                                                        data-id="{{ $property['id'] }}"
-                                                        data-renterid="{{ $data->Id }}"> Notes </a>
-                                                </div>
-                                            </td>
-                                            <td class="align-content-center">
-                                                <div class="form-group col-md-12 d-flex mb-0">
-                                                    @php
-                                                    $authId = Auth::guard('admin')->user()->id ?? null;
-                                                    $notified = App\Models\Message::where(
-                                                    'propertyId',
-                                                    $property['id'] ?? null,
-                                                    )
-                                                    ->where('renterId', $data->Id ?? null)
-                                                    ->where('adminId', $authId)
-                                                    ->first();
-                                                    @endphp
-                                                    @if (isset($notified) && $notified->notify_manager)
-                                                    <button class="btn btn-secondary disabled btn-sm"> Notified
-                                                    </button>
-                                                    @else
-                                                    <button
-                                                        class="btn btn-primary float-right btn-sm text-white"
-                                                        data-id="{{ $property['id'] }}"
-                                                        data-renterid="{{ $data->Id }}"
-                                                        id="notify-manager" onclick="notifyManager(this)">
-                                                        Notify
-                                                    </button>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -325,8 +270,8 @@
                     <div class="card card-latest-activity mg-t-20 active" role="tabpanel">
                         <div class="card-body">
                             <div class="slim-card-title">Property Inquiry History</div>
-                            <div class="table-responsive mt-4">
-                                <table class="table table-hover mg-b-0">
+                            <div class="table-wrapper mt-4">
+                                <table class="table display responsive nowrap" id="inquiry-history" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>S.No</th>
@@ -336,32 +281,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if (count($propertyInquiry) > 0)
-                                        @foreach ($propertyInquiry as $inquiry)
-                                        <tr>
-                                            <td class="p-3">{{ $loop->iteration }}</td>
-                                            <td class="align-content-center py-1">
-                                                <a href="#" class="font-weight-bold">
-                                                    {{ $inquiry->propertyinfo->PropertyName ?? 'N/A' }}
-                                                </a>
-                                            </td>
-                                            <td class="align-content-center py-1">
-                                                <a href="#" class="font-weight-bold">
-                                                    {{ $inquiry->CreatedOn ? $inquiry->CreatedOn->format('Y-m-d') : 'Not Available' }}
-                                                </a>
-                                            </td>
-                                            <td class="align-content-center py-1">
-                                                <a href="#" class="font-weight-bold">
-                                                    {{ $inquiry->respond_time ?? 'No Response Yet' }}
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                        @else
-                                        <tr>
-                                            <td colspan="4" class="text-center">No Records Found</td>
-                                        </tr>
-                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -377,6 +296,28 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
+        // Initialize Favorite Listing DataTable
+        $('#favorite-listing').DataTable(DataTableHelpers.getConfig({
+            url: "{{ route('admin-fav-listing', ['id' => $data->Id]) }}",
+            type: 'GET'
+        }, [
+            { data: "DT_RowIndex", orderable: false, searchable: false },
+            { data: "propertyName", name: "propertyName" },
+            { data: "city", name: "city" },
+            { data: "state", name: "state" },
+            { data: "actions", name: "actions", orderable: false, searchable: false },
+            { data: "note", name: "note", orderable: false, searchable: false, className: "text-center" },
+            { data: "notify", name: "notify", orderable: false, searchable: false, className: "text-center" }
+        ]));
+
+        // Initialize Inquiry History DataTable
+        $('#inquiry-history').DataTable(DataTableHelpers.getConfig("{{ route('admin-inquiry-history', ['id' => $data->Id]) }}", [
+            { data: "DT_RowIndex", orderable: false, searchable: false },
+            { data: "propertyName", name: "propertyName" },
+            { data: "inquiryDate", name: "inquiryDate" },
+            { data: "response", name: "response" }
+        ]));
+
         $(document).on('click', '.set-remainder', function() {
             var id = $(this).data('id');
             $('#remainder-box-' + id).toggle();
@@ -440,6 +381,11 @@
             });
             document.getElementById(tabName).classList.add('active');
             document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
+
+            // Adjust DataTables columns when tab becomes visible
+            setTimeout(function() {
+                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+            }, 100);
         }
 
         tabButtons.forEach(button => {

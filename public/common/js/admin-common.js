@@ -4,7 +4,7 @@
  * DO NOT add page-specific logic here
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
     /**
@@ -31,31 +31,31 @@
          * @param {object} data - Data to send with the request
          * @param {object} options - Additional options (beforeSend, success, error)
          */
-        request: function(url, method, data, options) {
+        request: function (url, method, data, options) {
             options = options || {};
-            
+
             $.ajax({
                 url: url,
                 method: method || 'POST',
                 data: data || {},
-                beforeSend: function() {
+                beforeSend: function () {
                     if (typeof options.beforeSend === 'function') {
                         options.beforeSend();
                     }
                 },
-                success: function(response) {
+                success: function (response) {
                     if (typeof options.success === 'function') {
                         options.success(response);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     if (typeof options.error === 'function') {
                         options.error(xhr, status, error);
                     } else {
                         AdminAjax.handleError(xhr, status, error);
                     }
                 },
-                complete: function() {
+                complete: function () {
                     if (typeof options.complete === 'function') {
                         options.complete();
                     }
@@ -66,9 +66,9 @@
         /**
          * Default error handler
          */
-        handleError: function(xhr, status, error) {
+        handleError: function (xhr, status, error) {
             let errorMessage = 'An error occurred. Please try again.';
-            
+
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMessage = xhr.responseJSON.message;
             } else if (xhr.status === 404) {
@@ -79,11 +79,11 @@
                 errorMessage = 'You do not have permission to perform this action.';
             } else if (xhr.status === 401) {
                 errorMessage = 'Your session has expired. Please login again.';
-                setTimeout(function() {
+                setTimeout(function () {
                     window.location.href = '/admin/login';
                 }, 2000);
             }
-            
+
             toastr.error(errorMessage);
             console.error('AJAX Error:', error);
         }
@@ -100,7 +100,7 @@
          * @param {jQuery} $button - The button element
          * @param {string} text - Loading text (default: 'Loading...')
          */
-        showButton: function($button, text) {
+        showButton: function ($button, text) {
             text = text || 'Processing...';
             $button.data('original-text', $button.html());
             $button.prop('disabled', true);
@@ -112,7 +112,7 @@
          * Hide loading state on button
          * @param {jQuery} $button - The button element
          */
-        hideButton: function($button) {
+        hideButton: function ($button) {
             $button.prop('disabled', false);
             $button.removeClass('btn-loading');
             $button.html($button.data('original-text'));
@@ -122,7 +122,7 @@
          * Show loading overlay
          * @param {jQuery} $element - The element to show loading on
          */
-        show: function($element) {
+        show: function ($element) {
             if (!$element.find('.loading-overlay').length) {
                 $element.css('position', 'relative');
                 $element.append(
@@ -139,7 +139,7 @@
          * Hide loading overlay
          * @param {jQuery} $element - The element to hide loading from
          */
-        hide: function($element) {
+        hide: function ($element) {
             $element.find('.loading-overlay').remove();
         }
     };
@@ -154,7 +154,7 @@
          * Show confirmation dialog
          * @param {object} options - Dialog options
          */
-        show: function(options) {
+        show: function (options) {
             options = $.extend({
                 title: 'Are you sure?',
                 text: 'This action cannot be undone.',
@@ -185,7 +185,7 @@
          * Show delete confirmation
          * @param {function} callback - Function to call on confirm
          */
-        delete: function(callback) {
+        delete: function (callback) {
             this.show({
                 title: 'Delete Confirmation',
                 text: 'Are you sure you want to delete this item? This cannot be undone.',
@@ -213,7 +213,6 @@
             pageLength: 25,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             language: {
-                processing: '<i class="fa fa-spinner fa-spin fa-3x"></i>',
                 search: "_INPUT_",
                 searchPlaceholder: "Search...",
                 lengthMenu: "Show _MENU_ entries",
@@ -221,7 +220,8 @@
                 zeroRecords: "No matching records found"
             },
             dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
-            drawCallback: function() {
+            order: [],
+            drawCallback: function () {
                 // Re-initialize tooltips after table redraw
                 $('[data-toggle="tooltip"]').tooltip();
             }
@@ -233,7 +233,7 @@
          * @param {array} columns - Column definitions
          * @param {object} additionalConfig - Additional configuration
          */
-        getConfig: function(ajaxUrl, columns, additionalConfig) {
+        getConfig: function (ajaxUrl, columns, additionalConfig) {
             return $.extend({}, this.defaultConfig, {
                 ajax: ajaxUrl,
                 columns: columns
@@ -246,32 +246,32 @@
      * COMMON EVENT HANDLERS
      * ============================================
      */
-    
+
     // Delete handler with confirmation
-    $(document).on('click', '.deleteRenter, .delete-btn', function(e) {
+    $(document).on('click', '.deleteRenter, .delete-btn', function (e) {
         e.preventDefault();
         const $this = $(this);
         const url = $this.data('url');
         const id = $this.data('id');
-        
-        ConfirmDialog.delete(function() {
+
+        ConfirmDialog.delete(function () {
             AdminAjax.request(url, 'POST', { id: id }, {
-                beforeSend: function() {
+                beforeSend: function () {
                     LoadingState.showButton($this, 'Deleting...');
                 },
-                success: function(response) {
+                success: function (response) {
                     toastr.success(response.message || 'Deleted successfully!');
                     // Reload DataTable if exists
                     if ($.fn.DataTable && $('.dataTable').length) {
                         $('.dataTable').DataTable().ajax.reload();
                     } else {
                         // Remove row
-                        $this.closest('tr').fadeOut(300, function() {
+                        $this.closest('tr').fadeOut(300, function () {
                             $(this).remove();
                         });
                     }
                 },
-                complete: function() {
+                complete: function () {
                     LoadingState.hideButton($this);
                 }
             });
@@ -288,7 +288,7 @@
          * Reset form
          * @param {jQuery} $form - The form element
          */
-        reset: function($form) {
+        reset: function ($form) {
             $form[0].reset();
             $form.find('.is-invalid').removeClass('is-invalid');
             $form.find('.invalid-feedback').remove();
@@ -299,10 +299,10 @@
          * @param {jQuery} $form - The form element
          * @param {object} errors - Laravel validation errors object
          */
-        showErrors: function($form, errors) {
+        showErrors: function ($form, errors) {
             this.clearErrors($form);
-            
-            $.each(errors, function(field, messages) {
+
+            $.each(errors, function (field, messages) {
                 const $field = $form.find('[name="' + field + '"]');
                 $field.addClass('is-invalid');
                 $field.after('<div class="invalid-feedback d-block">' + messages[0] + '</div>');
@@ -313,7 +313,7 @@
          * Clear validation errors
          * @param {jQuery} $form - The form element
          */
-        clearErrors: function($form) {
+        clearErrors: function ($form) {
             $form.find('.is-invalid').removeClass('is-invalid');
             $form.find('.invalid-feedback').remove();
         }
@@ -329,7 +329,7 @@
          * Format number with commas
          * @param {number} num - Number to format
          */
-        formatNumber: function(num) {
+        formatNumber: function (num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
 
@@ -338,7 +338,7 @@
          * @param {number} amount - Amount to format
          * @param {string} currency - Currency symbol (default: $)
          */
-        formatCurrency: function(amount, currency) {
+        formatCurrency: function (amount, currency) {
             currency = currency || '$';
             return currency + this.formatNumber(parseFloat(amount).toFixed(2));
         },
@@ -348,7 +348,7 @@
          * @param {function} func - Function to debounce
          * @param {number} wait - Wait time in milliseconds
          */
-        debounce: function(func, wait) {
+        debounce: function (func, wait) {
             let timeout;
             return function executedFunction(...args) {
                 const later = () => {
@@ -366,7 +366,7 @@
      * INITIALIZATION
      * ============================================
      */
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
 
@@ -374,7 +374,7 @@
         $('[data-toggle="popover"]').popover();
 
         // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
+        setTimeout(function () {
             $('.alert:not(.alert-permanent)').fadeOut(300);
         }, 5000);
 

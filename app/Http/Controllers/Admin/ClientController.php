@@ -11,7 +11,9 @@ use App\Models\Favorite;
 
 // Collections
 use App\Models\Login;
+use App\Models\Message;
 use App\Models\NotifyDetail;
+use App\Models\PropertyInquiry;
 
 // Repositories
 use App\Models\PropertyInfo;
@@ -162,10 +164,7 @@ class ClientController extends Controller
                         return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
                     })
                     ->addColumn('status', DataTableService::statusColumn())
-                    ->addColumn('adminname', function ($row) {
-                        $adminId = optional($row->renterinfo)->added_by;
-                        return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
-                    })
+                    ->addColumn('adminname', DataTableService::adminColumn())
                     ->addColumn('actions', DataTableService::actionColumn([
                         'edit' => [
                             'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
@@ -185,13 +184,7 @@ class ClientController extends Controller
                             'delete' => true,
                             'permission' => 'user_delete'
                         ]
-                    ], function($action, $row) {
-                        $user = Auth::guard('admin')->user();
-                        if (isset($action['permission'])) {
-                            return $user && $user->hasPermission($action['permission']);
-                        }
-                        return true;
-                    }))
+                    ]))
                     ->rawColumns(['status', 'actions'])
                     ->make(true);
             }
@@ -220,10 +213,7 @@ class ClientController extends Controller
                         return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
                     })
                     ->addColumn('status', DataTableService::statusColumn())
-                    ->addColumn('adminname', function ($row) {
-                        $adminId = optional($row->renterinfo)->added_by;
-                        return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
-                    })
+                    ->addColumn('adminname', DataTableService::adminColumn())
                     ->addColumn('actions', DataTableService::actionColumn([
                         'edit' => [
                             'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
@@ -243,13 +233,7 @@ class ClientController extends Controller
                             'delete' => true,
                             'permission' => 'user_delete'
                         ]
-                    ], function($action, $row) {
-                        $user = Auth::guard('admin')->user();
-                        if (isset($action['permission'])) {
-                            return $user && $user->hasPermission($action['permission']);
-                        }
-                        return true;
-                    }))
+                    ]))
                     ->rawColumns(['status', 'actions'])
                     ->make(true);
             }
@@ -278,10 +262,7 @@ class ClientController extends Controller
                         return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
                     })
                     ->addColumn('status', DataTableService::statusColumn())
-                    ->addColumn('adminname', function ($row) {
-                        $adminId = optional($row->renterinfo)->added_by;
-                        return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
-                    })
+                    ->addColumn('adminname', DataTableService::adminColumn())
                     ->addColumn('actions', DataTableService::actionColumn([
                         'edit' => [
                             'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
@@ -301,13 +282,7 @@ class ClientController extends Controller
                             'delete' => true,
                             'permission' => 'user_delete'
                         ]
-                    ], function($action, $row) {
-                        $user = Auth::guard('admin')->user();
-                        if (isset($action['permission'])) {
-                            return $user && $user->hasPermission($action['permission']);
-                        }
-                        return true;
-                    }))
+                    ]))
                     ->rawColumns(['status', 'actions'])
                     ->make(true);
             }
@@ -342,15 +317,14 @@ class ClientController extends Controller
                         return $probability ? $probability . '%' : '-';
                     })
                     ->addColumn('area', DataTableService::safeColumn('renterinfo.Area_move'))
-                    ->addColumn('actions', function ($row) {
-                        $user = Auth::guard('admin')->user();
-                        if ($user && $user->hasPermission('renter_claim')) {
-                            return "<div class='table-actions-icons'>
-                                <a href='javascript:void(0)' class='btn btn-primary btn-sm' onclick='claimrenter({$row->Id})'>Claim</a>
-                            </div>";
-                        }
-                        return '';
-                    })
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'claim' => [
+                            'label' => 'Claim',
+                            'class' => 'btn btn-primary btn-sm',
+                            'onclick' => fn($row) => "claimrenter({$row->Id})",
+                            'permission' => 'renter_claim'
+                        ]
+                    ]))
                     ->rawColumns(['fullname', 'actions'])
                     ->make(true);
             }
@@ -526,71 +500,11 @@ class ClientController extends Controller
 
     public function searchClient(Request $request)
     {
-        $query = Login::where('user_type', 'C');
-        if ($request->searchtype == 1) {
-            if ($request->filled('status')) {
-                $query->where('Status', $request->status);
-            }
+        try {
+            $query = Login::where('user_type', 'C')->with('renterinfo');
 
-            if ($request->filled('PR_from') && $request->filled('PR_to')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->whereBetween('probability', [$request->PR_from, $request->PR_to]);
-                });
-            }
-
-            if ($request->filled('firstname')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->where('Firstname', 'LIKE', '%' . $request->firstname . '%');
-                });
-            }
-
-            if ($request->filled('lastname')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->where('Lastname', 'LIKE', '%' . $request->lastname . '%');
-                });
-            }
-
-            if ($request->filled('phone')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->where('phone', 'LIKE', '%' . $request->phone . '%');
-                });
-            }
-
-            if ($request->filled('CD_from') && $request->filled('CD_to')) {
-                $query->whereBetween('CreatedOn', [$request->CD_from, $request->CD_to]);
-            }
-
-            if ($request->filled('Emove_date') && $request->filled('Lmove_date')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->whereBetween('move_date', [$request->Emove_date, $request->Lmove_date]);
-                });
-            }
-
-            if ($request->filled('srch_bedroom')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->where('bedroom', $request->srch_bedroom);
-                });
-            }
-
-            if ($request->filled('desiredrent_from') && $request->filled('desiredrent_to')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->whereBetween('desired_rent', [$request->desiredrent_from, $request->desiredrent_to]);
-                });
-            }
-
-            if ($request->filled('email')) {
-                $query->where('Email', 'LIKE', '%' . $request->email . '%');
-            }
-
-            if ($request->filled('admin')) {
-                $query->whereHas('renterinfo', function ($q) use ($request) {
-                    $q->where('added_by', $request->admin);
-                });
-            }
-        } else {
             if ($request->filled('search')) {
                 $txtsearch = $request->search;
-
                 $query->where(function ($q) use ($txtsearch) {
                     $q->where('UserName', 'LIKE', "%$txtsearch%")
                         ->orWhere('Email', 'LIKE', "%$txtsearch%")
@@ -601,14 +515,38 @@ class ClientController extends Controller
                                 ->orWhere('phone', 'LIKE', "%$txtsearch%");
                         });
                 });
-            } else {
-                $query->whereRaw('1 = 0');
             }
+
+            if ($request->ajax()) {
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('firstname', DataTableService::safeColumn('renterinfo.Firstname'))
+                    ->addColumn('lastname', DataTableService::safeColumn('renterinfo.Lastname'))
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('adminname', DataTableService::adminColumn())
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn'
+                        ]
+                    ]))
+                    ->rawColumns(['status', 'actions'])
+                    ->make(true);
+            }
+
+            return view('admin.clientSearch');
+        } catch (\Exception $e) {
+            \Log::error('Error in searchClient: ' . $e->getMessage());
+            return $request->ajax() 
+                ? response()->json(['error' => 'An error occurred.'], 500)
+                : redirect()->back()->withErrors('An error occurred.');
         }
-
-        $rentersdata = $query->with('renterinfo')->paginate(10);
-
-        return view('admin.clientSearch', compact('rentersdata'));
     }
 
     public function searchRenter(Request $request)
@@ -641,8 +579,7 @@ class ClientController extends Controller
         try {
             $query = Login::query()
                 ->where('user_type', 'C')
-                ->with(['renterInfo.admindetails'])
-                ->select('Id', 'UserName', 'Email', 'CreatedOn', 'ModifiedOn', 'Status');
+                ->with(['renterInfo.admindetails']);
 
             if ($request->filled('email')) {
                 $query->where('Email', 'like', '%' . $request->email . '%');
@@ -680,35 +617,9 @@ class ClientController extends Controller
                 });
             }
 
-            if ($request->filled('Emove_date')) {
-                $query->whereHas('renterInfo', function ($q) use ($request) {
-                    $q->where('Emove_date', '>=', $request->Emove_date);
-                });
-            }
-
-            if ($request->filled('Lmove_date')) {
-                $query->whereHas('renterInfo', function ($q) use ($request) {
-                    $q->where('Lmove_date', '<=', $request->Lmove_date);
-                });
-            }
-
             if ($request->filled('srch_bedroom')) {
                 $query->whereHas('renterInfo', function ($q) use ($request) {
                     $q->where('bedrooms', $request->srch_bedroom);
-                });
-            }
-
-            if ($request->filled('desiredrent_from') && $request->filled('desiredrent_to')) {
-                $query->whereHas('renterInfo', function ($q) use ($request) {
-                    $q->whereBetween('Rent_start_range', [$request->desiredrent_from, $request->desiredrent_to]);
-                });
-            } elseif ($request->filled('desiredrent_from')) {
-                $query->whereHas('renterInfo', function ($q) use ($request) {
-                    $q->where('Rent_start_range', '>=', $request->desiredrent_from);
-                });
-            } elseif ($request->filled('desiredrent_to')) {
-                $query->whereHas('renterInfo', function ($q) use ($request) {
-                    $q->where('Rent_end_range', '<=', $request->desiredrent_to);
                 });
             }
 
@@ -718,13 +629,38 @@ class ClientController extends Controller
                 });
             }
 
-            if ($request->filled('keywords_srch')) {
-                $query->whereHas('renterInfo', function ($q) use ($request) {
-                    $q->where('keywords', 'like', '%' . $request->keywords_srch . '%');
-                });
+            if ($request->ajax()) {
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('firstname', DataTableService::safeColumn('renterinfo.Firstname'))
+                    ->addColumn('lastname', DataTableService::safeColumn('renterinfo.Lastname'))
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('adminname', DataTableService::adminColumn())
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'user_addedit'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-deleteRenter', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true,
+                            'permission' => 'user_delete'
+                        ]
+                    ]))
+                    ->rawColumns(['status', 'actions'])
+                    ->make(true);
             }
-            $renters = $query->paginate(20);
-            return response()->json($renters);
+
+            return view('admin.client.searchRenter');
         } catch (\Exception $e) {
             \Log::error('Error searching renters: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while processing your request.'], 500);
@@ -743,37 +679,61 @@ class ClientController extends Controller
 
     public function getFavoriteListing(Request $request, $id)
     {
-        $favoriteslist   = $this->favoriteRepository->getFavoriteProperties($id);
-        $collectedData   = new FavoriteCollection($favoriteslist);
-        $transformeddata = $collectedData->toArray(request());
-        if ($request->ajax()) {
-            return DataTables::of($transformeddata)->addIndexColumn()
-                ->addColumn('propertyName', function ($row) {
-                    return $row['propertyname'] ?? 'N/A';
-                })
-                ->addColumn('city', function ($row) {
-                    return $row['city'] ?? 'N/A';
-                })
-                ->addColumn('state', function ($row) {
-                    return $row['state'] ?? 'N/A';
-                })
-                ->addColumn('action', function ($row) {
-                    $editurl   = route('admin-edit-property', [$row['id']]);
-                    $actionbtn = '<div class="table-actions-icon">
-                                    <a href="' . $editurl . '" class=""><i class="fa-solid fa-pen px-2 py-2 edit-icon border"></i></a>
-                                    <a href="javascript:void(0)" class=""> <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i></a>
-                                    <button id="openChatBtn"><i class="fa-solid fa-message  px-2 py-2 delete-icon border"></i></button>
-                                </div>';
-                    return $actionbtn;
-                })
-                ->addColumn('notify', function ($row) {
-                    $notifybtn = '<div class="form-group col-md-12 d-flex">
-                                    <a type="button" class="btn btn-primary float-right btn-sm text-white"> Notify </a>
-                                </div>';
-                    return $notifybtn;
-                })
-                ->rawColumns(['propertyName', 'city', 'state', 'action', 'notify'])
-                ->make(true);
+        try {
+            if ($request->ajax()) {
+                $favoriteslist = $this->favoriteRepository->getFavoriteProperties($id);
+                $collectedData = new FavoriteCollection($favoriteslist);
+                $transformeddata = $collectedData->toArray($request);
+
+                return DataTableService::of($transformeddata)
+                    ->addIndexColumn()
+                    ->addColumn('propertyName', function ($row) {
+                        $url = route('admin-property-display', ['id' => $row['id']]);
+                        return "<a href='{$url}' class='font-weight-bold'>" . e($row['propertyname'] ?? 'N/A') . "</a>";
+                    })
+                    ->addColumn('city', fn($row) => $row['city'] ?? 'N/A')
+                    ->addColumn('state', fn($row) => $row['state'] ?? 'N/A')
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-property', ['id' => $row['id']]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn'
+                        ],
+                        'delete' => [
+                            'route' => '#',
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true
+                        ]
+                    ]))
+                    ->addColumn('note', function ($row) use ($id) {
+                        $url = route('admin-get-messages', ['rid' => $id, 'pid' => $row['id']]);
+                        return "<div class='text-center'>
+                                    <a href='{$url}' class='btn btn-primary btn-sm text-white'>Notes</a>
+                                </div>";
+                    })
+                    ->addColumn('notify', function ($row) use ($id) {
+                        $authId = Auth::guard('admin')->user()->id ?? null;
+                        $notified = Message::where('propertyId', $row['id'])
+                            ->where('renterId', $id)
+                            ->where('adminId', $authId)
+                            ->first();
+
+                        if ($notified && $notified->notify_manager) {
+                            return "<button class='btn btn-secondary disabled btn-sm'>Notified</button>";
+                        }
+
+                        return "<button class='btn btn-primary btn-sm text-white' 
+                                onclick='notifyManager(this)' 
+                                data-id='{$row['id']}' 
+                                data-renterid='{$id}'>Notify</button>";
+                    })
+                    ->rawColumns(['propertyName', 'actions', 'note', 'notify'])
+                    ->make(true);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in getFavoriteListing: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong.'], 500);
         }
     }
 
@@ -1032,4 +992,30 @@ class ClientController extends Controller
     {
         return view('admin.client.viewNotifyHistory');
     }
+
+    public function getPropertyInquiry(Request $request, $id)
+    {
+        try {
+            if ($request->ajax()) {
+                $query = PropertyInquiry::where('userId', $id)->with('propertyinfo');
+
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('propertyName', function ($row) {
+                        return e($row->propertyinfo->PropertyName ?? 'N/A');
+                    })
+                    ->addColumn('inquiryDate', function ($row) {
+                        return $row->CreatedOn ? $row->CreatedOn->format('Y-m-d') : 'N/A';
+                    })
+                    ->addColumn('response', function ($row) {
+                        return e($row->respond_time ?? 'No Response Yet');
+                    })
+                    ->make(true);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in getPropertyInquiry: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong.'], 500);
+        }
+    }
+
 }

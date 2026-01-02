@@ -56,7 +56,7 @@ class AdminDetail extends Authenticatable
 
     public function hasPermission($permissionField)
     {
-        return $this->$permissionField === '1';
+        return isset($this->attributes[$permissionField]) && $this->$permissionField == 1;
     }
     // public function hasPermission($permission)
     // {

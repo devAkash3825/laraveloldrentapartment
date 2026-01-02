@@ -24,6 +24,7 @@ $(document).ready(function () {
         });
     });
 
+    /*
     $(function () {
         try {
             $("#listofmanagers").DataTable({
@@ -47,6 +48,7 @@ $(document).ready(function () {
             console.log("err", err);
         }
     });
+    */
 
     $(function () {
         try {
@@ -242,6 +244,7 @@ $(document).ready(function () {
         }
     });
 
+    /*
     $(function () {
         try {
             $("#UnassignedrentersTable").DataTable({
@@ -265,6 +268,7 @@ $(document).ready(function () {
             console.log("Err in datatables", err);
         }
     });
+    */
 
     $(function () {
         try {
@@ -347,6 +351,7 @@ $(document).ready(function () {
         });
     });
 
+    /*
     $(function () {
         const id = $("#favoritetab").data("id");
         try {
@@ -379,6 +384,7 @@ $(document).ready(function () {
             console.log("Err in datatables", err);
         }
     });
+    */
 
     $(".add-fav").click(function () {
         var id = $(this);
@@ -446,10 +452,10 @@ $(document).ready(function () {
                     $.each(data, function (key, value) {
                         $("#select-city").append(
                             '<option value="' +
-                                value.Id +
-                                '">' +
-                                value.CityName +
-                                "</option>"
+                            value.Id +
+                            '">' +
+                            value.CityName +
+                            "</option>"
                         );
                     });
                 },
@@ -563,15 +569,15 @@ $(document).ready(function () {
                 $.each(response.cities, function (index, city) {
                     $("#city-section").append(
                         '<div class="col-md-2">' +
-                            '<label class="ckbox">' +
-                            '<input type="checkbox" value="' +
-                            city.Id +
-                            '" name="admincity[]">' +
-                            '<span class="font-weight-bold">' +
-                            city.CityName +
-                            "</span>" +
-                            "</label>" +
-                            "</div>"
+                        '<label class="ckbox">' +
+                        '<input type="checkbox" value="' +
+                        city.Id +
+                        '" name="admincity[]">' +
+                        '<span class="font-weight-bold">' +
+                        city.CityName +
+                        "</span>" +
+                        "</label>" +
+                        "</div>"
                     );
                 });
             },
@@ -606,15 +612,15 @@ $(document).ready(function () {
                 $.each(response.cities, function (index, city) {
                     $("#city-section").append(
                         '<div class="col-md-2">' +
-                            '<label class="ckbox">' +
-                            '<input type="checkbox" value="' +
-                            city.id +
-                            '">' +
-                            '<span class="font-weight-bold">' +
-                            city.CityName +
-                            "</span>" +
-                            "</label>" +
-                            "</div>"
+                        '<label class="ckbox">' +
+                        '<input type="checkbox" value="' +
+                        city.id +
+                        '">' +
+                        '<span class="font-weight-bold">' +
+                        city.CityName +
+                        "</span>" +
+                        "</label>" +
+                        "</div>"
                     );
                 });
             },

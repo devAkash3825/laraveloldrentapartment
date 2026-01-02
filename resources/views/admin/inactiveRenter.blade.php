@@ -1,11 +1,6 @@
 @extends('admin.layouts.app')
 @section('content')
 @section('title', 'RentApartments Admin | Inactive Renters')
-<style>
-    td{
-        text-align: center;
-    }
-</style>
 <div class="slim-mainpanel">
     <div class="container">
         <div class="slim-pageheader">
@@ -42,46 +37,15 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $(function() {
-            try {
-                $("#inactive-renter").DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ route('admin-inactiveRenter') }}",
-                    columns: [{
-                            data: "DT_RowIndex",
-                            name: "DT_RowIndex",
-                        },
-                        {
-                            data: "firstname",
-                            name: "firstname",
-                        },
-                        {
-                            data: "lastname",
-                            name: "lastname",
-                        },
-                        {
-                            data: "probability",
-                            name: "probability",
-                        },
-                        {
-                            data: "status",
-                            name: "status",
-                        },
-                        {
-                            data: "adminname",
-                            name: "adminname",
-                        },
-                        {
-                            data: "actions",
-                            name: "actions",
-                        },
-                    ],
-                });
-            } catch (err) {
-                console.log("Err in datatables", err);
-            }
-        });
+        $('#inactive-renter').DataTable(DataTableHelpers.getConfig("{{ route('admin-inactiveRenter') }}", [
+            { data: "DT_RowIndex", orderable: false, searchable: false },
+            { data: "firstname", name: "firstname" },
+            { data: "lastname", name: "lastname" },
+            { data: "probability", name: "probability" },
+            { data: "status", name: "status", orderable: false, searchable: false },
+            { data: "adminname", name: "adminname" },
+            { data: "actions", name: "actions", orderable: false, searchable: false }
+        ]));
     });
 </script>
 @endpush

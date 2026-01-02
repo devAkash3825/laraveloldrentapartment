@@ -1,49 +1,25 @@
 import axios from 'axios';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
+window.axios = axios;
 
-window.Pusher = Pusher;
-const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const broadcastAuthInstance = axios.create({
-    baseURL: `http://127.0.0.1:8000/broadcasting/`,
-    headers: {  
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        "X-CSRF-TOKEN": csrfToken,
-    },
-    withCredentials: true,
-})
+/**
+ * Echo exposes an expressive API for subscribing to channels and listening
+ * for events that are broadcast by Laravel. Echo and event broadcasting
+ * allows your team to easily build robust real-time web applications.
+ */
 
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: "demo_pusher_key",
-    cluster: 'mt1',
-    forceTLS: false,
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    wssPort: 6001,
-    disableStats: true,
-    enabledTransports: ['ws', 'wss'],
-    authorizer: (channel, option) => {
-        return {
-          authorize: (socketId, callback) => {
-            broadcastAuthInstance
-              .post("auth", {
-                socket_id: socketId,
-                channel_name: channel.name,
-              })
-              .then((response) => {
-                // console.log("ressss", response);
-                callback(false, response.data);
-              })
-              .catch((error) => {
-                console.log("error", error);
-                callback(true, error);
-              });
-          },
-        };
-      },
-});
+// import Echo from 'laravel-echo';
+// import Pusher from 'pusher-js';
+// window.Pusher = Pusher;
 
-
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: import.meta.env.VITE_PUSHER_APP_KEY,
+//     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
+//     wsHost: import.meta.env.VITE_PUSHER_HOST ? import.meta.env.VITE_PUSHER_HOST : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+//     wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+//     wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+//     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+//     enabledTransports: ['ws', 'wss'],
+// });

@@ -252,17 +252,9 @@ class AdminDashboardController extends Controller
             ->with('propertyinfo.gallerytype.gallerydetail')
             ->get();
 
-        $favoriteslist   = $this->favoriteRepository->getFavoriteProperties($id);
-        $collectedData   = new FavoriteCollection($favoriteslist);
-        $transformeddata = $collectedData->toArray(request());
-
-        $propertyInquiry = PropertyInquiry::where('userId', $id)->with('propertyinfo')->get();
-
         return view('admin.viewProfile', [
-            'data'                   => $renterInfo,
-            'recentviewed'           => $recentproperties,
-            'favoritePropertieslist' => $transformeddata,
-            'propertyInquiry'        => $propertyInquiry,
+            'data'         => $renterInfo,
+            'recentviewed' => $recentproperties,
         ]);
     }
 

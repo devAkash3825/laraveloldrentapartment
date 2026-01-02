@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
-class propertyAdditionalInfo extends Model
+class PropertyAdditionalInfo extends Model
 {
     use HasFactory;
     protected $table = 'propertyadditionalinfo';

@@ -17,51 +17,44 @@ class ResourceSectionController extends Controller
     public function listManager(Request $request)
     {
         try {
-            $listmanagers = Login::where('user_type', 'M')->where('Status', 1)->with('propertyinfo')->orderBy('Id', 'desc')->get();
-
             if ($request->ajax()) {
+                $query = Login::where('user_type', 'M')
+                    ->where('Status', 1)
+                    ->with('propertyinfo');
 
-                return DataTables::of($listmanagers)->addIndexColumn()
+                return DataTableService::of($query)
+                    ->addIndexColumn()
                     ->addColumn('managername', function ($row) {
-                        $viewprofileURL = route('admin-view-profile', ['id' => $row->Id]);
-                        $managername = "<a href=" . $viewprofileURL . " class='font-weight-bold'>$row->UserName</a>";
-                        return $managername;
+                        return '<a href="' . route('admin-view-profile', ['id' => $row->Id]) . '" class="font-weight-bold text-primary">' . e($row->UserName) . '</a>';
                     })
-                    ->addColumn('status', function ($row) {
-                        if ($row->Status == 1) {
-                            return "<a href='javascript:void(0)' class='c-pill c-pill--success'> Active </a>";
-                        } elseif ($row->Status == 2) {
-                            return "<a href='javascript:void(0)' class='c-pill c-pill--danger'> Leased </a>";
-                        } else {
-                            return "<a href='javascript:void(0)' class='c-pill c-pill--warning'> InActive </a>";
-                        }
-                    })
-                    ->addColumn('action', function ($row) {
-                        $viewprofileURL = route('admin-view-profile', ['id' => $row->Id]);
-                        $editmanager = route('admin-edit-manager', ['id' => $row->Id]);
-                        $actionbtn = '<div class="table-actions-icons float-left">
-                                        <a href="' . $viewprofileURL . '" class="view-icon" data-id="">
-                                            <i class="fa-solid fa-eye border px-2 py-2 view-icon"></i>
-                                        </a>
-                                        <a href="' . $editmanager . '" class="edit-btn" data-id="">
-                                            <i class="fa-regular fa-pen-to-square border px-2 py-2 edit-icon"></i>
-                                        </a>
-                                        <a href="javascript:void(0)" class="delete-btn delete-icon property-delete-btn"><i class="fa-solid fa-trash border px-2 py-2 delete-icon"></i></a>
-                                </div>';
-                        return $actionbtn;
-                    })
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('action', DataTableService::actionColumn([
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-manager', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn'
+                        ],
+                        'delete' => [
+                            'route' => '#', // Define delete route if available
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true
+                        ]
+                    ]))
                     ->rawColumns(['managername', 'status', 'action'])
                     ->make(true);
-            } else {
-                return view('admin.resources.listManager');
             }
+            return view('admin.resources.listManager');
         } catch (\Exception $e) {
-
             \Log::error('Error in listManager: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'There was an error processing your request. Please try again later.'
-            ], 500);
+            return $request->ajax() 
+                ? response()->json(['error' => 'An error occurred.'], 500)
+                : redirect()->back()->withErrors('An error occurred.');
         }
     }
     public function editManager($id)
@@ -120,52 +113,62 @@ class ResourceSectionController extends Controller
 
     public function searchManagers(Request $request)
     {
+        try {
+            $query = Login::with(['propertyinfo'])->where('user_type', 'M');
 
-        $query = Login::with(['propertyinfo'])->where('user_type', 'M');
+            if ($request->filled('status')) {
+                $query->where('Status', $request->status);
+            }
+            if ($request->filled('username')) {
+                $query->where('UserName', 'LIKE', '%' . $request->username . '%');
+            }
+            if ($request->filled('email')) {
+                $query->where('Email', 'LIKE', '%' . $request->email . '%');
+            }
+            if ($request->filled('company')) {
+                $query->whereHas('propertyinfo', function ($q) use ($request) {
+                    $q->where('Company', 'LIKE', '%' . $request->company . '%');
+                });
+            }
+            if ($request->filled('propertyname')) {
+                $query->whereHas('propertyinfo', function ($q) use ($request) {
+                    $q->where('PropertyName', 'LIKE', '%' . $request->propertyname . '%');
+                });
+            }
 
-        if ($request->filled('status')) {
+            if ($request->ajax()) {
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('username', function($row) {
+                        return '<a href="' . route('admin-view-profile', ['id' => $row->Id]) . '">' . e($row->UserName) . '</a>';
+                    })
+                    ->addColumn('property_names', function($row) {
+                        return $row->propertyinfo->map(function($p) {
+                            return '<span class="badge badge-primary m-1"><a href="#" class="text-white">' . e($p->PropertyName) . '</a></span>';
+                        })->join(' ');
+                    })
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-manager', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn'
+                        ]
+                    ]))
+                    ->rawColumns(['status', 'username', 'property_names', 'actions'])
+                    ->make(true);
+            }
 
-            $query->where('Status', $request->status);
+            return response()->json(['error' => 'Invalid request'], 400);
+        } catch (\Exception $e) {
+            \Log::error('Error searching managers: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong.'], 500);
         }
-        if ($request->filled('username')) {
-            $query->where('UserName', 'LIKE', '%' . $request->username . '%');
-        }
-        if ($request->filled('email')) {
-            $query->where('Email', 'LIKE', '%' . $request->email . '%');
-        }
-
-        if ($request->filled('company')) {
-            $query->whereHas('propertyinfo', function ($q) use ($request) {
-                $q->where('Company', 'LIKE', '%' . $request->company . '%');
-            });
-        }
-        if ($request->filled('propertyname')) {
-            $query->whereHas('propertyinfo', function ($q) use ($request) {
-                $q->where('PropertyName', 'LIKE', '%' . $request->propertyname . '%');
-            });
-        }
-
-        $recordsFiltered = $query->count();
-
-        $managers = $query->skip($request->start ?? 0)->take($request->length ?? 10)->get();
-
-        $data = $managers->map(function ($manager) {
-            return [
-                'status' => $manager->Status,
-                'username' => '<a href="' . route('admin-view-profile', ['id' => $manager->Id]) . '">' . $manager->UserName . '</a>',
-                'email' => $manager->Email,
-                'property_names' => $manager->propertyinfo->pluck('PropertyName', 'Id')->map(function ($name) {
-                    return '<ul><li style="color: white; background-color: #007bff; padding: 5px; margin: 5px 0; border-radius: 5px;"><a href="#" style="color: white; text-decoration: none;">' . $name . '</a></li></ul>';
-                })->join(''),
-                'managed_by' => $manager->Company,
-            ];
-        });
-
-        return response()->json([
-            'data' => $data,
-            'recordsTotal' => Login::where('user_type', 'M')->count(),
-            'recordsFiltered' => $recordsFiltered,
-        ]);
     }
 
 

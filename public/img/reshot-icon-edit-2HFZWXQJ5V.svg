@@ -1,0 +1,16 @@
+
+<svg version="1.1" id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<g>
+	<g>
+		<polygon fill="#6E83B7" points="464,502 10,502 10,48 256,48 256,96 58,96 58,454 416,454 416,256 464,256 		"/>
+	</g>
+	<g>
+		<polygon fill="#6E83B7" points="502,90 422,10 182,250 182,315.857 161.929,335.929 176.071,350.071 196.143,330 262,330 		"/>
+		<g>
+			
+				<rect x="385.908" y="50.431" transform="matrix(0.7071 -0.7071 0.7071 0.7071 42.9613 317.7178)" fill="#FFE352" width="38.184" height="113.137"/>
+		</g>
+	</g>
+</g>
+</svg>

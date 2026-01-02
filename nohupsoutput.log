@@ -1,0 +1,395 @@
+nohup: ignoring input
+
+> dev
+> vite
+
+Port 6005 is in use, trying another one...
+
+  VITE v4.5.3  ready in 302 ms
+
+  ➜  Local:   http://localhost:6006/
+  ➜  Network: use --host to expose
+
+  LARAVEL v10.48.24  plugin v0.7.8
+
+  ➜  APP_URL: https://mycrm.rent
+2:03:01 PM [vite] .env.example changed, restarting server...
+Port 6005 is in use, trying another one...
+2:03:04 PM [vite] server restarted.
+
+  ➜  Local:   http://localhost:6006/
+  ➜  Network: use --host to expose
+
+  LARAVEL v10.48.24  plugin v0.7.8
+
+  ➜  APP_URL: https://mycrm.rent
+2:03:09 PM [vite] full reload resources/views/welcome.blade.php
+2:03:09 PM [vite] full reload resources/views/partials/redirect_pagination.blade.php
+2:03:09 PM [vite] full reload resources/views/partials/searchedProperties.blade.php
+2:03:09 PM [vite] full reload resources/views/partials/search_pagination.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/semantic-ui.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/simple-bootstrap-5.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/bootstrap-4.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/tailwind.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/simple-bootstrap-4.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/default.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/simple-default.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/simple-tailwind.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/pagination/bootstrap-5.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/menu-builder/menu-html.blade.php
+2:03:09 PM [vite] full reload resources/views/vendor/menu-builder/scripts.blade.php
+2:03:09 PM [vite] full reload resources/views/components/dashboard-sidebar.blade.php
+2:03:09 PM [vite] full reload resources/views/components/edit-property-topbar.blade.php
+2:03:09 PM [vite] full reload resources/views/components/favorite-sidebar.blade.php
+2:03:09 PM [vite] full reload resources/views/components/property-sidebar.blade.php
+2:03:09 PM [vite] full reload resources/views/test/app.blade.php
+2:03:09 PM [vite] full reload resources/views/user/managerMessages.blade.php
+2:03:09 PM [vite] full reload resources/views/user/managerProfile.blade.php
+2:03:09 PM [vite] full reload resources/views/user/dashboard.blade.php
+2:03:09 PM [vite] full reload resources/views/user/changePassword.blade.php
+2:03:09 PM [vite] full reload resources/views/user/messages.blade.php
+2:03:09 PM [vite] full reload resources/views/user/referredRenter.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/createFloorPlan.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/searchProperty.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/addProperty.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/editProperty.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/myProperties.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/compare.blade.php
+2:03:09 PM [vite] full reload resources/views/user/property/streetView.blade.php
+2:03:09 PM [vite] full reload resources/views/user/layout/oldnavbar.blade.php
+2:03:09 PM [vite] full reload resources/views/user/favorites/myFavorites.blade.php
+2:03:09 PM [vite] full reload resources/views/user/favorites/mapView.blade.php
+2:03:09 PM [vite] full reload resources/views/user/favorites/thumbnailView.blade.php
+2:03:09 PM [vite] full reload resources/views/user/favorites/listView.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/equalOpportunity.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/privacyPromise.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/reportLease.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/about.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/contactUs.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/managerTerms.blade.php
+2:03:09 PM [vite] full reload resources/views/user/pages/recentlyVisited.blade.php
+2:03:09 PM [vite] full reload resources/views/user/auth/register1.blade.php
+2:03:09 PM [vite] full reload resources/views/user/auth/forgotPassword.blade.php
+2:03:09 PM [vite] full reload resources/views/user/auth/loginnew.blade.php
+2:03:09 PM [vite] full reload resources/views/user/auth/newlogin.blade.php
+2:03:09 PM [vite] full reload resources/views/user/auth/layout/head.blade.php
+2:03:09 PM [vite] full reload resources/views/user/auth/layout/scripts.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/leasedRenter.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/showDead.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/viewProfile.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/addLease.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/clientSearch.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/agentRemainder.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/activeRenter.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/showAll.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/mapView.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/specials.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/unassignedRenters.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/message1.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/adminMessages.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/inactiveRenter.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/dashboard.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/contactUsRevert.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/changePassword.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/messages.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/invoice.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/manageProfile.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/administration/addAdminUsers.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/administration/manageSource.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/administration/myOfficeReport.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/administration/addSource.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/administration/manageMyAgents.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/administration/editAdminUsers.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/manageCities.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/addStates.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/searchProperty.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/addProperty.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/schoolManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/editProperty.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/manageStates.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/feesManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/propertySearch.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/editStates.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/listProperties.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/petsManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/property/propertyDisplay.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/sliderManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/editOurFeaturesPage.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/pagesManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/footerManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/sectionManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/addSliderImage.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/menuManagement.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/settings/generalSettings.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/addCompany.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/searchManager.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/managerLoginLog.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/editManager.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/manageCompany.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/listManager.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/resources/addManager.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/infoUpdateHistory.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/listingFavoriteReport.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/mapView.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/editUser.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/searchRenter.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/searchedRenters.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/renterReport.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/notifyHistory.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/mapSearch.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/listingFavorite.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/viewNotifyHistory.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/addUser.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/callHistory.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/client/editNotifyHistory.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/layouts/footer.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/layouts/navbar.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/layouts/head.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/layouts/scripts.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/layouts/app.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/auth/footer.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/auth/forgotPassword.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/auth/head.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/auth/app.blade.php
+2:03:09 PM [vite] full reload resources/views/admin/auth/login.blade.php
+2:03:11 PM [vite] full reload lang/vendor/menu-builder/en/messages.php
+10:42:57 AM [vite] .env.example changed, restarting server...
+10:42:57 AM [vite] full reload app/View/Components/PropertySidebar.php
+10:42:57 AM [vite] full reload app/View/Components/dashboardSidebar.php
+10:42:57 AM [vite] full reload app/View/Components/editPropertyTopbar.php
+10:42:57 AM [vite] full reload app/View/Components/favSidebar.php
+10:42:57 AM [vite] full reload app/View/Components/favoriteSidebar.php
+10:42:57 AM [vite] full reload app/View/Components/managerlogin.php
+10:42:57 AM [vite] full reload app/View/Components/managerregister.php
+10:42:57 AM [vite] full reload app/View/Components/renterregister.php
+10:42:57 AM [vite] full reload lang/vendor/menu-builder/en/messages.php
+10:42:58 AM [vite] full reload resources/views/admin/activeRenter.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/addLease.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/adminMessages.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/administration/addAdminUsers.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/administration/addSource.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/administration/editAdminUsers.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/administration/manageMyAgents.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/administration/manageSource.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/administration/myOfficeReport.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/agentRemainder.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/auth/app.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/auth/footer.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/auth/forgotPassword.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/auth/head.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/auth/login.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/changePassword.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/addUser.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/callHistory.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/editNotifyHistory.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/editUser.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/infoUpdateHistory.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/listingFavorite.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/listingFavoriteReport.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/mapSearch.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/mapView.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/notifyHistory.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/renterReport.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/searchRenter.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/searchedRenters.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/client/viewNotifyHistory.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/clientSearch.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/contactUsRevert.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/dashboard.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/inactiveRenter.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/invoice.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/layouts/app.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/layouts/footer.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/layouts/head.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/layouts/navbar.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/layouts/scripts.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/leasedRenter.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/manageProfile.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/mapView.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/message1.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/messages.blade.php
+10:42:58 AM [vite] full reload resources/views/admin/property/addProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/addStates.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/editProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/editStates.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/feesManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/listProperties.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/manageCities.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/manageStates.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/petsManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/propertyDisplay.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/propertySearch.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/schoolManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/property/searchProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/addCompany.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/addManager.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/editManager.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/listManager.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/manageCompany.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/managerLoginLog.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/resources/searchManager.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/addSliderImage.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/editOurFeaturesPage.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/footerManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/generalSettings.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/menuManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/pagesManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/sectionManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/settings/sliderManagement.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/showAll.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/showDead.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/specials.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/unassignedRenters.blade.php
+10:42:59 AM [vite] full reload resources/views/admin/viewProfile.blade.php
+10:42:59 AM [vite] full reload resources/views/components/dashboard-sidebar.blade.php
+10:42:59 AM [vite] full reload resources/views/components/edit-property-topbar.blade.php
+10:42:59 AM [vite] full reload resources/views/components/favorite-sidebar.blade.php
+10:42:59 AM [vite] full reload resources/views/components/managerlogin.blade.php
+10:42:59 AM [vite] full reload resources/views/components/managerregister.blade.php
+10:42:59 AM [vite] full reload resources/views/components/property-sidebar.blade.php
+10:42:59 AM [vite] full reload resources/views/components/renterregister.blade.php
+10:42:59 AM [vite] full reload resources/views/partials/pagination_links.blade.php
+10:42:59 AM [vite] full reload resources/views/partials/property_list.blade.php
+10:42:59 AM [vite] full reload resources/views/partials/redirect_pagination.blade.php
+10:42:59 AM [vite] full reload resources/views/partials/search_pagination.blade.php
+10:42:59 AM [vite] full reload resources/views/partials/searchedProperties.blade.php
+10:42:59 AM [vite] full reload resources/views/test/app.blade.php
+10:42:59 AM [vite] full reload resources/views/user/advanceSearch.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/forgotPassword.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/layout/app.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/layout/authhead.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/layout/authscripts.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/layout/head.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/layout/scripts.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/login.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/loginnew.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/newlogin.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/newregiste.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/register.blade.php
+10:42:59 AM [vite] full reload resources/views/user/auth/register1.blade.php
+10:42:59 AM [vite] full reload resources/views/user/changePassword.blade.php
+10:42:59 AM [vite] full reload resources/views/user/dashboard.blade.php
+10:42:59 AM [vite] full reload resources/views/user/favorites/listView.blade.php
+10:42:59 AM [vite] full reload resources/views/user/favorites/mapView.blade.php
+10:42:59 AM [vite] full reload resources/views/user/favorites/myFavorites.blade.php
+10:42:59 AM [vite] full reload resources/views/user/favorites/thumbnailView.blade.php
+10:42:59 AM [vite] full reload resources/views/user/layout/app.blade.php
+10:42:59 AM [vite] full reload resources/views/user/layout/footer.blade.php
+10:42:59 AM [vite] full reload resources/views/user/layout/head.blade.php
+10:42:59 AM [vite] full reload resources/views/user/layout/navbar.blade.php
+10:42:59 AM [vite] full reload resources/views/user/layout/oldnavbar.blade.php
+10:42:59 AM [vite] full reload resources/views/user/layout/scripts.blade.php
+10:42:59 AM [vite] full reload resources/views/user/managerMessages.blade.php
+10:42:59 AM [vite] full reload resources/views/user/managerProfile.blade.php
+10:42:59 AM [vite] full reload resources/views/user/messages.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/about.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/contactUs.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/customerFeedback.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/equalOpportunity.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/home.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/managerTerms.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/privacyPromise.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/recentlyVisited.blade.php
+10:42:59 AM [vite] full reload resources/views/user/pages/reportLease.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/addProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/compare.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/createFloorPlan.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/editProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/listProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/myProperties.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/propertyDisplay.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/searchProperty.blade.php
+10:42:59 AM [vite] full reload resources/views/user/property/streetView.blade.php
+10:42:59 AM [vite] full reload resources/views/user/referredRenter.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/menu-builder/menu-html.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/menu-builder/scripts.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/bootstrap-4.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/bootstrap-5.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/default.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/semantic-ui.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/simple-bootstrap-4.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/simple-bootstrap-5.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/simple-default.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/simple-tailwind.blade.php
+10:42:59 AM [vite] full reload resources/views/vendor/pagination/tailwind.blade.php
+10:42:59 AM [vite] full reload resources/views/welcome.blade.php
+10:42:59 AM [vite] full reload routes/api.php
+10:42:59 AM [vite] full reload routes/channels.php
+10:42:59 AM [vite] full reload routes/console.php
+10:42:59 AM [vite] full reload routes/web.php
+10:42:59 AM [vite] vite.config.js changed, restarting server...
+Port 6005 is in use, trying another one...
+10:43:01 AM [vite] server restarted.
+
+  ➜  Local:   http://localhost:6006/
+  ➜  Network: use --host to expose
+
+  LARAVEL v10.48.24  plugin v0.7.8
+
+  ➜  APP_URL: https://mycrm.rent
+10:43:09 AM [vite] full reload resources/views/admin/auth/footer.blade.php
+10:43:09 AM [vite] full reload resources/views/admin/auth/forgotPassword.blade.php
+10:43:09 AM [vite] full reload resources/views/admin/dashboard.blade.php
+10:43:09 AM [vite] full reload resources/views/admin/property/searchProperty.blade.php
+10:43:09 AM [vite] full reload resources/views/user/auth/forgotPassword.blade.php
+10:43:09 AM [vite] full reload resources/views/user/layout/head.blade.php
+10:43:09 AM [vite] full reload resources/views/user/layout/navbar.blade.php
+10:43:09 AM [vite] full reload resources/views/user/pages/contactUs.blade.php
+10:43:09 AM [vite] full reload resources/views/user/pages/home.blade.php
+10:43:09 AM [vite] full reload resources/views/user/property/propertyDisplay.blade.php
+10:43:09 AM [vite] full reload routes/web.php
+10:43:09 AM [vite] full reload resources/views/user/pages/loginUser.blade.php
+10:43:09 AM [vite] full reload resources/views/emails/resetPasswordLink.blade.php
+11:38:01 AM [vite] .env.example changed, restarting server...
+Port 6005 is in use, trying another one...
+11:38:04 AM [vite] server restarted.
+
+  ➜  Local:   http://localhost:6006/
+  ➜  Network: use --host to expose
+
+  LARAVEL v10.48.24  plugin v0.7.8
+
+  ➜  APP_URL: https://mycrm.rent
+11:38:04 AM [vite] full reload app/View/Components/editPropertyTopbar.php
+11:38:04 AM [vite] full reload app/View/Components/managerlogin.php
+11:38:04 AM [vite] full reload app/View/Components/dashboardSidebar.php
+11:38:04 AM [vite] full reload app/View/Components/PropertySidebar.php
+11:38:04 AM [vite] full reload app/View/Components/favoriteSidebar.php
+11:38:04 AM [vite] full reload app/View/Components/managerregister.php
+11:38:04 AM [vite] full reload app/View/Components/favSidebar.php
+11:38:04 AM [vite] full reload app/View/Components/renterregister.php
+1:30:59 PM [vite] full reload resources/views/admin/activeRenter.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/administration/addAdminUsers.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/client/addUser.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/client/editUser.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/contactUsRevert.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/dashboard.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/inactiveRenter.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/layouts/app.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/layouts/head.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/layouts/navbar.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/leasedRenter.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/resources/editManager.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/settings/pagesManagement.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/unassignedRenters.blade.php
+1:30:59 PM [vite] full reload resources/views/admin/viewProfile.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/leasedRenter.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/viewProfile.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/unassignedRenters.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/inactiveRenter.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/dashboard.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/contactUsRevert.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/administration/addAdminUsers.blade.php
+1:57:54 PM [vite] full reload resources/views/admin/resources/editManager.blade.php
+node:internal/errors:540
+      throw error;
+      ^
+
+TypeError [ERR_INVALID_ARG_TYPE]: The "code" argument must be of type number. Received type string ('SIGTERM')
+    at process.set [as exitCode] (node:internal/bootstrap/node:123:9)
+    at process.exit (node:internal/process/per_thread:177:24)
+    at process.emit (node:events:536:35) {
+  code: 'ERR_INVALID_ARG_TYPE'
+}
+
+Node.js v22.12.0

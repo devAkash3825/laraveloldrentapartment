@@ -1,0 +1,115 @@
+.page-content {
+    padding: 32px;
+    background: #fff;
+    min-height: 100vh;
+}
+
+/* Default tab content hidden */
+[data-tab-content] {
+    display: none;
+}
+
+/* Active tab content */
+.active[data-tab-content] {
+    display: block;
+}
+
+/* Tabs styling */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tab {
+    flex: 1;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #cdcdcd;
+}
+
+/* Active tab */
+.tab.active {
+    color: #1babf9;
+    border-bottom: 2px solid #1babf9;
+}
+
+/* Tab list item */
+.tab-li {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.tab-li a {
+    display: block;
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    align-content: center;
+}
+
+/* Active link */
+.tab-li a.active {
+    background-image: linear-gradient(to right, #1b84e7 0%, #1515af 100%);
+    color: #fff;
+}
+
+/* Link styling */
+.tab-li a {
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 10px;
+    user-select: none;
+    display: block;
+}
+
+/* Responsive Media Queries */
+
+/* For tablets and smaller devices */
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+    .tab {
+        font-size: 14px;
+        padding: 12px;
+    }
+    .tab-li a {
+        font-size: 12px;
+        height: 45px;
+        padding: 8px;
+    }
+}
+
+/* For mobile devices */
+@media (max-width: 480px) {
+    .page-content {
+        padding: 20px;
+    }
+    .tabs {
+        flex-direction: column;
+    }
+    .tab {
+        font-size: 12px;
+        padding: 10px;
+    }
+    .tab-li a {
+        font-size: 11px;
+        height: 40px;
+        padding: 6px;
+    }
+}

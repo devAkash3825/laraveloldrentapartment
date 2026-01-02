@@ -1,0 +1,79 @@
+
+:root {
+    --btn-color1: #4caa86;
+    --btn-color2: #398e91;
+    --secondary-color-2: #94c045;
+    --primary-color-2: #333333;
+    --btn-colors: #0b0e0c;
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --accent-color: #e74c3c;
+    --background-color: #ffffff;
+    --old-green-color: #2eca6a;
+    --btn-hover: #6e7872;
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --text-color: rgba(34, 42, 66, 0.7);
+    --success-text: #0d6832;
+    --primary-text: #273e63;
+    --warning-text: #73510d;
+    --danger-text: #a61001;
+    --success-bg: #d6f0e0;
+    --primary-bg: #dfe7f6;
+    --warning-bg: #fbf0da;
+    --danger-bg: #ffebe9;
+    --primary-btn-text: #3b71ca;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+}
+
+
+
+/*------/ Display Table & Table Cell /------*/
+/* .display-table {
+    width: 100%;
+    height: 100%;
+    display: table;
+}
+
+.table-cell {
+    display: table-cell;
+    vertical-align: middle;
+} */
+
+/*------/ Ul Resect /------*/
+/* .ul-resect ul,
+.box-comments ul,
+.list-a ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+} */

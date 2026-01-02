@@ -20,6 +20,34 @@
 
     /**
      * ============================================
+     * TOAST NOTIFICATIONS
+     * ============================================
+     */
+    window.AdminToast = {
+        success: function (msg) {
+            if (window.showToast) window.showToast(msg, 'success');
+            else if (window.toastr) toastr.success(msg);
+            else alert(msg);
+        },
+        error: function (msg) {
+            if (window.showToast) window.showToast(msg, 'error');
+            else if (window.toastr) toastr.error(msg);
+            else alert('Error: ' + msg);
+        },
+        info: function (msg) {
+            if (window.showToast) window.showToast(msg, 'info');
+            else if (window.toastr) toastr.info(msg);
+            else console.info(msg);
+        },
+        warning: function (msg) {
+            if (window.showToast) window.showToast(msg, 'warning');
+            else if (window.toastr) toastr.warning(msg);
+            else console.warn(msg);
+        }
+    };
+
+    /**
+     * ============================================
      * COMMON AJAX HANDLER
      * ============================================
      */
@@ -34,7 +62,7 @@
         request: function (url, method, data, options) {
             options = options || {};
 
-            $.ajax({
+            const ajaxConfig = $.extend({}, options, {
                 url: url,
                 method: method || 'POST',
                 data: data || {},
@@ -44,15 +72,25 @@
                     }
                 },
                 success: function (response) {
+                    if (response.success || response.message) {
+                        AdminToast.success(response.message || 'Action completed successfully');
+                    }
                     if (typeof options.success === 'function') {
                         options.success(response);
                     }
                 },
                 error: function (xhr, status, error) {
+                    // Only show error toast if it's not a validation error (handled by FormHelpers)
+                    if (xhr.status !== 422) {
+                        let errorMsg = 'An error occurred. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        AdminToast.error(errorMsg);
+                    }
+
                     if (typeof options.error === 'function') {
                         options.error(xhr, status, error);
-                    } else {
-                        AdminAjax.handleError(xhr, status, error);
                     }
                 },
                 complete: function () {
@@ -61,6 +99,8 @@
                     }
                 }
             });
+
+            $.ajax(ajaxConfig);
         },
 
         /**
@@ -248,24 +288,34 @@
      */
 
     // Delete handler with confirmation
-    $(document).on('click', '.deleteRenter, .delete-btn', function (e) {
+    $(document).on('click', '.deleteRenter, .delete-btn, .propertyDlt, .deleterecords', function (e) {
         e.preventDefault();
         const $this = $(this);
         const url = $this.data('url');
         const id = $this.data('id');
 
+        if (!url) {
+            console.error('Delete URL not found on element');
+            return;
+        }
+
         ConfirmDialog.delete(function () {
-            AdminAjax.request(url, 'POST', { id: id }, {
+            AdminAjax.request(url, 'POST', { id: id, _method: 'DELETE' }, {
                 beforeSend: function () {
-                    LoadingState.showButton($this, 'Deleting...');
+                    LoadingState.showButton($this, '...');
                 },
                 success: function (response) {
-                    toastr.success(response.message || 'Deleted successfully!');
-                    // Reload DataTable if exists
-                    if ($.fn.DataTable && $('.dataTable').length) {
-                        $('.dataTable').DataTable().ajax.reload();
+                    // Success toast is handled by AdminAjax.request
+
+                    // Reload any DataTable on the page
+                    if ($.fn.DataTable) {
+                        $('.dataTable, table.display').each(function () {
+                            if ($.fn.DataTable.isDataTable(this)) {
+                                $(this).DataTable().ajax.reload(null, false);
+                            }
+                        });
                     } else {
-                        // Remove row
+                        // Remove row from static table
                         $this.closest('tr').fadeOut(300, function () {
                             $(this).remove();
                         });
@@ -316,6 +366,47 @@
         clearErrors: function ($form) {
             $form.find('.is-invalid').removeClass('is-invalid');
             $form.find('.invalid-feedback').remove();
+        },
+
+        /**
+         * Generic AJAX form submit handler
+         * @param {jQuery} $form - The form element
+         * @param {object} options - Success and error callbacks
+         */
+        submit: function ($form, options) {
+            options = options || {};
+            const $submitBtn = $form.find('[type="submit"]');
+            const originalText = $submitBtn.text();
+            const url = $form.attr('action');
+            const method = $form.attr('method') || 'POST';
+            const formData = new FormData($form[0]);
+
+            AdminAjax.request(url, method, formData, {
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    FormHelpers.clearErrors($form);
+                    LoadingState.showButton($submitBtn, 'Saving...');
+                    if (typeof options.beforeSend === 'function') options.beforeSend();
+                },
+                success: function (response) {
+                    if (typeof options.success === 'function') {
+                        options.success(response);
+                    } else if (response.redirect) {
+                        window.location.href = response.redirect;
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 422 && xhr.responseJSON.errors) {
+                        FormHelpers.showErrors($form, xhr.responseJSON.errors);
+                    }
+                    if (typeof options.error === 'function') options.error(xhr);
+                },
+                complete: function () {
+                    LoadingState.hideButton($submitBtn, originalText);
+                    if (typeof options.complete === 'function') options.complete();
+                }
+            });
         }
     };
 

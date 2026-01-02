@@ -180,7 +180,23 @@
 
     // Trigger Laravel flash message automatically
     @if(session('toast'))
-    showToast("{{ session('toast.message') }}", "{{ session('toast.type') }}");
+        showToast("{{ session('toast.message') }}", "{{ session('toast.type') }}");
+    @endif
+    
+    @if(session('success'))
+        showToast("{{ session('success') }}", "success");
+    @endif
+    
+    @if(session('error'))
+        showToast("{{ session('error') }}", "error");
+    @endif
+    
+    @if(session('message'))
+        showToast("{{ session('message') }}", "info");
+    @endif
+    
+    @if(session('status'))
+        showToast("{{ session('status') }}", "info");
     @endif
 </script>
 @endpush

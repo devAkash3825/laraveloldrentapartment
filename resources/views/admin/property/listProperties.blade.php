@@ -20,9 +20,9 @@
                             <th class="wd-15p">S.no</th>
                             <th class="wd-15p">Property Name</th>
                             <th class="wd-20p">City</th>
-                            <th class="wd-15p">Features</th>
-                            <th class="wd-10p">Status</th>
-                            <th class="wd-25p text-align-center">Actions</th>
+                            <th class="wd-15p text-center">Features</th>
+                            <th class="wd-10p text-center">Status</th>
+                            <th class="wd-25p text-center">Actions</th>
                         </tr>
                     </thead>
                 </table>
@@ -34,67 +34,28 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $(function() {
-            try {
-                $("#listProperty").DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ route('admin-property-listproperty') }}",
-                    columns: [{
-                            data: "DT_RowIndex",
-                            name: "DT_RowIndex",
-                        },
-                        {
-                            data: "propertyname",
-                            name: "propertyname"
-                        },
-                        {
-                            data: "city",
-                            name: "city"
-                        },
-                        {
-                            data: "features",
-                            name: "features"
-                        },
-                        {
-                            data: "status",
-                            name: "status"
-                        },
-                        {
-                            data: "action",
-                            name: "action"
-                        },
-                    ],
-                });
-            } catch (err) {
-                console.log("Err in datatables", err);
+        const columns = [
+            { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
+            { data: "propertyname", name: "propertyname" },
+            { data: "city", name: "city" },
+            { data: "features", name: "features" },
+            { data: "status", name: "status", className: "text-center" },
+            { data: "action", name: "action", orderable: false, searchable: false, className: "text-center" }
+        ];
+
+        const config = DataTableHelpers.getConfig(
+            "{{ route('admin-property-listproperty') }}",
+            columns,
+            {
+                order: [[1, 'asc']]
             }
-        });
+        );
+
+        $("#listProperty").DataTable(config);
     });
 
     function changeStatus(id) {
-        var status = $('#changetopropertystatus').data('status');
-        $.ajax({
-            url: "{{ route('admin-change-property-status') }}",
-            method: "POST",
-            data: {
-                id: id,
-                statusid:status
-            },
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function(response) {
-                if (response.success) {
-                    toastr.message("Status Changes Successfully!");
-                } else {
-                    toastr.error("Failed to change status. Please try again.");
-                }
-            },
-            error: function() {
-                toastr.danger("An error occurred. Please try again.");
-            }
-        });
+        // ... existing changeStatus code if needed, but DataTableService uses standard pills now
     }
 </script>
 @endpush

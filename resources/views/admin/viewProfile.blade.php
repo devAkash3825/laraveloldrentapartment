@@ -97,14 +97,13 @@
                         </div>
                     </div>
 
-                    <div class="card-footer justify-content-start mx-auto">
-                        <div>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}">Add Lease</a>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}">Change Inactive</a>
-                            <a href="javascript:void(0)" class="set-remainder" data-id="{{ $data->Id }}">Set
-                                Reminder</a>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}">Edit Profile</a>
-                            <a href="{{ route('admin-map-view', ['id' => $data->Id]) }}">Switch To Map View</a>
+                    <div class="card-footer py-3">
+                        <div class="btn-group-wrapper">
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-outline-primary btn-sm btn-premium">Add Lease</a>
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-outline-secondary btn-sm btn-premium">Change Inactive</a>
+                            <a href="javascript:void(0)" class="btn btn-outline-info btn-sm btn-premium set-remainder" data-id="{{ $data->Id }}">Set Reminder</a>
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-primary btn-sm btn-premium">Edit Profile</a>
+                            <a href="{{ route('admin-map-view', ['id' => $data->Id]) }}" class="btn btn-outline-dark btn-sm btn-premium">Switch To Map View</a>
                         </div>
                     </div>
 

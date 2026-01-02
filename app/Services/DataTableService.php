@@ -74,10 +74,18 @@ class DataTableService
                 $onclick = isset($config['onclick']) ? (is_callable($config['onclick']) ? $config['onclick']($row) : $config['onclick']) : null;
                 $onclickHtml = $onclick ? "onclick=\"{$onclick}\"" : "";
                 
+                $premiumClass = match($type) {
+                    'edit' => 'edit-icon-premium',
+                    'view' => 'view-icon-premium',
+                    'delete' => 'delete-icon-premium',
+                    default => ''
+                };
+
                 if (isset($config['delete']) && $config['delete'] === true) {
                     $html .= sprintf(
-                        '<a href="javascript:void(0)" class="%s delete-btn" data-url="%s" data-id="%s" title="Delete" %s><i class="fa-solid %s px-2 py-2 border"></i></a>',
+                        '<a href="javascript:void(0)" class="%s action-icon delete-btn %s" data-url="%s" data-id="%s" title="Delete" %s><i class="fa-solid %s"></i></a>',
                         $class,
+                        $premiumClass,
                         $url,
                         data_get($row, 'Id') ?? data_get($row, 'id'),
                         $onclickHtml,
@@ -85,8 +93,9 @@ class DataTableService
                     );
                 } else if ($label) {
                     $html .= sprintf(
-                        '<a href="%s" class="%s" title="%s" %s>%s</a>',
+                        '<a href="%s" class="btn btn-sm btn-premium %s %s" title="%s" %s>%s</a>',
                         $url,
+                        strpos($class, 'btn-danger') !== false ? 'btn-premium-danger' : 'btn-premium-primary',
                         $class,
                         ucfirst($type),
                         $onclickHtml,
@@ -94,9 +103,10 @@ class DataTableService
                     );
                 } else {
                     $html .= sprintf(
-                        '<a href="%s" class="%s" title="%s" %s><i class="fa-solid %s px-2 py-2 border"></i></a>',
+                        '<a href="%s" class="%s action-icon %s" title="%s" %s><i class="fa-solid %s"></i></a>',
                         $url,
                         $class,
+                        $premiumClass,
                         ucfirst($type),
                         $onclickHtml,
                         $icon ?? 'fa-circle-question'

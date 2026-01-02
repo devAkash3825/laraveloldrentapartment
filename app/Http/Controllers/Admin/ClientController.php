@@ -135,9 +135,9 @@ class ClientController extends Controller
             DB::commit();
             session()->flash('toast', [
                 'type' => 'success',
-                'message' => 'Renter created successfully!ssss'
+                'message' => 'Renter created successfully!'
             ]);
-            return redirect()->route('admin-view-profile', ['id' => $login->Id])->with('success', 'Renter created successfully!qqqq');
+            return redirect()->route('admin-view-profile', ['id' => $login->Id])->with('success', 'Renter created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
 

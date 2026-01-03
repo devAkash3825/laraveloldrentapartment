@@ -1,205 +1,154 @@
-<!-- <div class="qbox-container">
-    <form id="manager-form" class="needs-validation" novalidate="">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="mt-1">
-                    <label class="form-label f-w700"><i class="fa-solid fa-user" style="color:var(--btn-color1);"></i>
-                        Username <small style="color:red;">*</small></label>
-                    <input class="form-control" name="username" type="text" required>
-                    <div class="invalid-feedback" id="error-username">
-                        Please Enter UserName.
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="mt-3">
-                    <label class="form-label f-w700"><i class="fa-solid fa-envelope"
-                            style="color:var(--btn-color1);"></i>
-                        Email <small style="color:red;">*</small></label>
-                    <input class="form-control" name="email" type="email" required>
-                    <div class="invalid-feedback" id="error-email">
-                        Please Enter a Valid Email Address.
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="mt-3">
-                    <label class="form-label f-w700"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i>
-                        Password <small style="color:red;">*</small></label>
-                    <input class="form-control" name="password" type="password" required>
-                    <div class="invalid-feedback" id="error-password">Please enter a password.</div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="mt-3">
-                    <label class="form-label f-w700"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i>
-                        Confirm Password <small style="color:red;">*</small>
-                    </label>
-                    <input class="form-control" name="password_confirmation" type="password" required>
-                    <div class="invalid-feedback" id="error-password_confirmation">Passwords do not match.</div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div id="q-box__buttons" style="display:flex;justify-content:space-between;">
-                    <p class="create_account">Already have an account? <a href="{{ route('show-login') }}"> Login
-                        </a>
-                    </p>
-                    <div class="d-flex gap-5">
-                        <button type="submit" class="btn btn-primary-sm1 send-btn main-btn">Register</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-        {{-- <div class="mt-4">
-            <label class="form-label"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i> Password</label>
-            <input class="form-control" name="password" type="password" required>
-            <div class="invalid-feedback" id="error-password">
-                Please Enter Password.
-            </div>
-        </div>
-        <div class="mt-4">
-            <label class="form-label"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i> Confirm Password</label>
-            <input class="form-control" name="password_confirmation" type="password" required>
-            <div class="invalid-feedback" id="error-password_confirmation">
-                Passwords do not match.
-            </div>
-        </div> --}}
-
-
-    </form>
-</div> -->
-
-<style>
-    /* Password toggle styles */
-    .password-input-group {
-        position: relative;
-    }
-
-    .password-toggle {
-        position: absolute;
-        right: 10px;
-        top: 70%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #6c757d;
-        background: none;
-        border: none;
-        padding: 0;
-    }
-
-    .password-input-group input {
-        padding-right: 40px;
-    }
-</style>
-
-<div class="qbox-container">
-    <form id="manager-form" class="needs-validation" novalidate="" action="{{ route('manager-register') }}" method="POST">
+    <div class="registration-form-header mb-4">
+        <h3 class="fw-bold text-slate">Register as Manager</h3>
+        <p class="text-muted small">Access professional tools to manage your properties efficiently.</p>
+    </div>
+    <form class="needs-validation" id="manager-registration-form" novalidate>
         @csrf
+        <h4 class="mb-4 d-flex align-items-center"><i class="bi bi-building me-2 text-primary"></i> Manager Account Details</h4>
+        
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+            <div class="input-group-custom">
+                <i class="bi bi-person"></i>
+                <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+            <div class="input-group-custom">
+                <i class="bi bi-envelope"></i>
+                <input type="email" class="form-control" name="email" placeholder="manager@example.com" required>
+            </div>
+        </div>
+
         <div class="row">
-            <div class="col-md-12">
-                <div class="mt-1">
-                    <label class="form-label f-w700"><i class="fa-solid fa-user" style="color:var(--btn-color1);"></i>
-                        Username <small style="color:red;">*</small></label>
-                    <input class="form-control" name="username" type="text" required>
-                    <div class="invalid-feedback" id="error-username">
-                        Please Enter UserName.
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="mt-3">
-                    <label class="form-label f-w700"><i class="fa-solid fa-envelope"
-                            style="color:var(--btn-color1);"></i>
-                        Email <small style="color:red;">*</small></label>
-                    <input class="form-control" name="email" type="email" required>
-                    <div class="invalid-feedback" id="error-email">
-                        Please Enter a Valid Email Address.
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="mt-3 password-input-group">
-                    <label class="form-label f-w700"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i>
-                        Password <small style="color:red;">*</small></label>
-                    <input class="form-control" id="manager-password" name="password" type="password" required>
-                    <span class="password-toggle mt-1" id="toggleManagerPassword">
+            <div class="col-md-12 mb-4">
+                <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-lock"></i>
+                    <input type="password" class="form-control" id="manager_password" name="password" placeholder="••••••••" required>
+                    <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('manager_password')">
                         <i class="bi bi-eye"></i>
-                    </span>
-                    <div class="invalid-feedback" id="error-password">Please enter a password.</div>
+                    </button>
                 </div>
             </div>
+            <div class="col-md-12 mb-4">
+                <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-shield-check"></i>
+                    <input type="password" class="form-control" id="manager_password_confirmation" name="password_confirmation" placeholder="••••••••" required>
+                </div>
+            </div>
+        </div>
 
-            <div class="col-md-12">
-                <div class="mt-3 password-input-group">
-                    <label class="form-label f-w700"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i>
-                        Confirm Password <small style="color:red;">*</small>
-                    </label>
-                    <input class="form-control" id="manager-password-confirmation" name="password_confirmation" type="password" required>
-                    <span class="password-toggle mt-1" id="toggleManagerPasswordConfirmation">
-                        <i class="bi bi-eye"></i>
-                    </span>
-                    <div class="invalid-feedback" id="error-password_confirmation">Passwords do not match.</div>
-                </div>
-            </div>
+        <div class="form-navigation mt-5">
+            <button type="submit" class="btn btn-primary-custom w-100 py-3 shadow-sm rounded-4 manager-submit-btn">
+                <i class="bi bi-building-check me-2"></i> Register as Property Manager
+            </button>
+        </div>
 
-            <div class="col-md-12">
-                <div id="q-box__buttons" style="display:flex;justify-content:space-between;">
-                    <p class="create_account">Already have an account? <a href="{{ route('show-login') }}"> Login
-                        </a>
-                    </p>
-                    <div class="d-flex gap-5">
-                        <button type="submit" class="btn btn-primary-sm1 send-btn main-btn">Register</button>
-                    </div>
-                </div>
-            </div>
+        <div class="text-center mt-5">
+            <p class="text-muted">Already have an account? <a href="{{ route('show-login') }}" class="text-primary fw-bold text-decoration-none underline-hover">Login</a></p>
         </div>
     </form>
 </div>
 
+<style>
+    .mb-4 {
+        margin-bottom: 1.25rem !important;
+    }
+
+    h4 {
+        color: #334155 !important;
+        font-weight: 700 !important;
+        font-size: 1.15rem;
+    }
+
+    .form-label {
+        color: #475569 !important;
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+
+
+    .btn-primary-custom {
+        background: var(--colorPrimary);
+        border: none;
+        color: white;
+        font-weight: 700;
+        transition: all 0.3s;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+        filter: brightness(1.1);
+    }
+
+    .underline-hover:hover {
+        text-decoration: underline !important;
+    }
+</style>
+
 <script>
-    // Password toggle functionality for manager form
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleManagerPassword = document.querySelector('#toggleManagerPassword');
-        const toggleManagerPasswordConfirmation = document.querySelector('#toggleManagerPasswordConfirmation');
-        const managerPassword = document.querySelector('#manager-password');
-        const managerPasswordConfirmation = document.querySelector('#manager-password-confirmation');
+    (function() {
+        const form = document.getElementById('manager-registration-form');
+        const submitBtn = form.querySelector('.manager-submit-btn');
 
-        // Toggle main password visibility
-        if (toggleManagerPassword && managerPassword) {
-            toggleManagerPassword.addEventListener('click', function() {
-                // Toggle the type attribute
-                const type = managerPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-                managerPassword.setAttribute('type', type);
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Basic matching validation
+            const password = document.getElementById('manager_password').value;
+            const confirm = document.getElementById('manager_password_confirmation').value;
+            if (password !== confirm) {
+                toastr.error("Passwords do not match");
+                return;
+            }
 
-                // Toggle the eye icon
-                const icon = this.querySelector('i');
-                icon.classList.toggle('bi-eye');
-                icon.classList.toggle('bi-eye-slash');
-            });
-        }
+            const formData = new FormData(this);
+            const submitBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Registering...';
 
-        // Toggle confirmation password visibility
-        if (toggleManagerPasswordConfirmation && managerPasswordConfirmation) {
-            toggleManagerPasswordConfirmation.addEventListener('click', function() {
-                // Toggle the type attribute
-                const type = managerPasswordConfirmation.getAttribute('type') === 'password' ? 'text' : 'password';
-                managerPasswordConfirmation.setAttribute('type', type);
+            try {
+                const response = await fetch("{{ route('manager-register') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
 
-                // Toggle the eye icon
-                const icon = this.querySelector('i');
-                icon.classList.toggle('bi-eye');
-                icon.classList.toggle('bi-eye-slash');
-            });
-        }
-    });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    toastr.success(data.success);
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
+                } else if (response.status === 422) {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(key => {
+                            toastr.error(data.errors[key][0]);
+                        });
+                    } else {
+                        toastr.error("Please check your inputs.");
+                    }
+                } else {
+                    toastr.error(data.message || "An error occurred during registration");
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+                toastr.error("An error occurred. Please try again later.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtnText;
+            }
+        });
+    })();
 </script>

@@ -7,8 +7,7 @@
                 class="imf-fluid w-100" style="height:200px !important;">
         @else
             <img src="{{ asset('img/avatar-of-aavtarimg.jpg') }}" alt="logo" class="img-fluid">
-    </a>
-    @endif
+        @endif
     </a>
     <ul class="dashboard_link">
         <li><a class="{{ isActiveRoute('user-profile') }}" href="{{ route('user-profile') }}"><i class="far fa-user"

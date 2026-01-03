@@ -135,9 +135,12 @@ class UserFavoriteController extends Controller
         // Check if the favorite already exists
         $favorite = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->first();
         if ($favorite) {
-            $favId = $favorite->Id;
-            $delete = Favorite::where('Id', $favId)->delete();
-            return response()->json(['error' => 'Favorite removed successfully'], 200);
+            $favorite->delete();
+            return response()->json([
+                'success' => true,
+                'action' => 'removed',
+                'message' => 'Property removed from your favorites.'
+            ]);
         } else {
             $favorite = new Favorite();
             $favorite->PropertyId = $propertyId;
@@ -146,7 +149,11 @@ class UserFavoriteController extends Controller
             $favorite->Status = true;
             $favorite->Notes = $request->input('notes', null);
             $favorite->save();
-            return response()->json(['success' => true], 201);
+            return response()->json([
+                'success' => true,
+                'action' => 'added',
+                'message' => 'Property added to your favorites!'
+            ]);
         }
     }
 

@@ -178,43 +178,6 @@ class UserPropertyController extends Controller
         return 'no records found111';
     }
 
-    public function managerRegister(Request $request)
-    {
-        $request->validate([
-            'username' => 'required',
-            'email' => 'required|email|unique:login',
-            'password' => 'required|confirmed',
-        ]);
-        $email = $request->email;
-        $password = $request->password;
-        $username = $request->username;
-        $ip_address = $request->ip();
-        $createdOn = Carbon::now();
-        $modifiedOn = Carbon::now();
-        $usertype = "M";
-        try {
-            $user = Login::create([
-                'UserName' => $username,
-                'Password' => $password,
-                'Email' => $email,
-                'user_type' => $usertype,
-                'UserIp' => $ip_address,
-                'CreatedOn' => $createdOn,
-                'ModifiedOn' => $modifiedOn,
-            ]);
-            $credentials = $request->only('username', 'password');
-            $manager = Login::where('UserName', $request->username)->first();
-            if (Hash::check($request->password, $manager->Password) || $manager->Password === $request->password) {
-                Auth::guard('renter')->login($manager);
-                return view->json(['success' => 'Registration successful, you are now logged in.', 'redirect' => '/']);
-            } else {
-                return response()->json(['error' => 'Invalid credentials.'], 401);
-            }
-        } catch (Exception $e) {
-            Log::error('Admin login error: ' . $e->getMessage());
-            return redirect()->route('admin-login')->with('error', 'An error occurred while trying to log in. Please try again later.');
-        }
-    }
 
     public function getStates()
     {
@@ -361,30 +324,36 @@ class UserPropertyController extends Controller
 
     public function requestQuote(Request $request)
     {
-        $validation = $request->validate([
+        $request->validate([
             'comments' => 'required',
             'propertyId' => 'required',
         ]);
+
         try {
             $userid = Auth::guard('renter')->user()->Id;
-            $data = PropertyInquiry::create([
+            PropertyInquiry::create([
                 'PropertyId' => $request->propertyId,
-                'UserId' => $userid,
-                'UserName' => $request->firstname,
-                'LastName' => $request->lastname,
-                'Email' => $request->email,
-                'Phone' => $request->phone,
-                'MoveDate' => $request->movedate,
-                'Message' => $request->comments,
-                'CreatedOn' => Carbon::now(),
+                'UserId'     => $userid,
+                'UserName'   => $request->firstname,
+                'LastName'   => $request->lastname,
+                'Email'      => $request->email,
+                'Phone'      => $request->phone,
+                'MoveDate'   => $request->movedate,
+                'Message'    => $request->comments,
+                'CreatedOn'  => now(),
             ]);
-            return response()->json(
-                ['success' => true]
-            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Your request has been sent successfully!'
+            ]);
+
         } catch (\Exception $e) {
-            return response()->json(
-                ['error' => false]
-            );
+            Log::error('Request Quote Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while sending your request.'
+            ], 500);
         }
     }
 

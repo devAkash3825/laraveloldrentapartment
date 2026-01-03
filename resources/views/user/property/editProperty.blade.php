@@ -40,20 +40,22 @@
         border-bottom: 2px solid #1babf9;
     }
 </style>
-<div id="breadcrumb_part"
-    style="background: url(../images/breadcroumb_bg.jpg);background-size: cover;background-repeat: no-repeat;background-position: center;">
-    <div class="bread_overlay">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center text-white">
-                    <h4>Edit Property </h4>
-                    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#"> Home </a></li>
-                            <li class="breadcrumb-item active" aria-current="page"> listing </li>
-                        </ol>
-                    </nav>
-                </div>
+<!-- Premium Header -->
+<div class="header-premium-gradient py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold display-5 mb-2">Edit Property</h1>
+                <p class="text-white opacity-75 lead mb-0">Update your listing details and media</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('my-properties') }}" class="text-white opacity-75 text-decoration-none small">My Properties</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">Edit Listing</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
@@ -357,7 +359,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="leasing_terms">:: Leasing Terms ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="leasing_terms" name="leasing_terms">{{ @$propertyinfo->newAdditionalInfo->LeasingTerms }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="leasing_terms" name="leasing_terms">{{ @$propertyinfo->propertyAdditionalInfo->LeasingTerms }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -365,7 +367,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="qualifying_criteria">:: Qualifying Criteria ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="qualifying_criteria" name="qualifying_criteria">{{ @$propertyinfo->newAdditionalInfo->QualifiyingCriteria }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="qualifying_criteria" name="qualifying_criteria">{{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -373,7 +375,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="parking">:: Parking ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="parking" name="parking">{{ @$propertyinfo->newAdditionalInfo->Parking }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="parking" name="parking">{{ @$propertyinfo->propertyAdditionalInfo->Parking }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -381,7 +383,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="pet_policy">:: Pet Policy ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="pet_policy" name="pet_policy">{{ @$propertyinfo->newAdditionalInfo->PetPolicy }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="pet_policy" name="pet_policy">{{ @$propertyinfo->propertyAdditionalInfo->PetPolicy }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -389,7 +391,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="neighborhood">:: Neighborhood ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="neighborhood" name="neighborhood">{{ @$propertyinfo->newAdditionalInfo->Neighborhood }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="neighborhood" name="neighborhood">{{ @$propertyinfo->propertyAdditionalInfo->Neighborhood }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -397,7 +399,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="schools">:: Schools ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="schools" name="schools">{{ @$propertyinfo->newAdditionalInfo->Schools }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="schools" name="schools">{{ @$propertyinfo->propertyAdditionalInfo->Schools }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -405,7 +407,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="driving_directions">:: Driving Directions ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="driving_directions" name="driving_directions">{{ @$propertyinfo->newAdditionalInfo->drivedirection }}</textarea>
+                                        <textarea class="form-control summer_note mt-1" id="driving_directions" name="driving_directions">{{ @$propertyinfo->propertyAdditionalInfo->drivedirection }}</textarea>
                                     </div>
                                 </div>
                             </div>

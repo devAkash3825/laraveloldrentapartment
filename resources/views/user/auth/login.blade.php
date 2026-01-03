@@ -54,7 +54,7 @@
                             <div class="input-group-custom">
                                 <i class="bi bi-lock"></i>
                                 <input type="password" class="form-control" name="password" id="login_password" placeholder="••••••••" required>
-                                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('login_password')">
+                                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('login_password', event)">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </div>
@@ -233,6 +233,33 @@
         text-decoration: underline !important;
     }
 
+    /* Toggle Password Button */
+    .toggle-password-btn {
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        z-index: 10;
+        padding: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+
+    .toggle-password-btn:hover {
+        color: var(--colorPrimary);
+    }
+
+    .toggle-password-btn i {
+        font-size: 1.25rem;
+    }
+
     @media (max-width: 991px) {
         .login-viewport {
             height: auto;
@@ -244,5 +271,26 @@
         }
     }
 </style>
+
+<script>
+    function togglePasswordVisibility(id, event) {
+        if (event) event.preventDefault();
+        const input = document.getElementById(id);
+        const btn = event ? event.currentTarget : window.event.srcElement;
+        const icon = btn.querySelector('i');
+        
+        if (input && icon) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    }
+</script>
 
 @endsection

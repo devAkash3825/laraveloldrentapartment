@@ -184,9 +184,9 @@
                             our
                             rental search techs.
                         </p>
-                        <input type="hidden" value="{{ $propertyDetails['propertyname'] }}" id="lon">
-                        <input type="hidden" value="{{ $propertyDetails['lat'] }}" id="lat">
-                        <input type="hidden" value="{{ $propertyDetails['propertyname'] }}" id="name">
+                        <input type="hidden" value="{{ $propertyDetails['lon'] }}" id="prop_lon">
+                        <input type="hidden" value="{{ $propertyDetails['lat'] }}" id="prop_lat">
+                        <input type="hidden" value="{{ $propertyDetails['propertyname'] }}" id="prop_name">
                     </div>
                     <div class="listing_det_Photo  gallary-desktop">
                         <div class="row">
@@ -300,7 +300,7 @@
                                 value="{{ $propertyDetails['propertyname'] }}">
                             <input type="hidden" name="" id="fieldaddress"
                                 value="{{ $propertyDetails['address'] }}">
-                            <span id="map" style="width:517px;height:400px;float:left;"></span>
+                            <span id="map" style="width:100%;height:400px;float:left;"></span>
                         </div>
                         <div class="col-md-6 property-display-street-view">
                             <span id="street_view1" style="width:100%;height:400px;float:left;"></span>
@@ -648,7 +648,7 @@
                 <section id="streetviewfull" data-tab-content class="">
                     <div class="row">
                         <div class="col-md-12">
-                            <span id="streetviewfull" style="width:517px;height:400px;float:left;"></span>
+                            <span id="streetview-pano" style="width:100%;height:400px;float:left;"></span>
                         </div>
                         <div>
                 </section>
@@ -678,7 +678,7 @@
 @push('scripts')
 <script src="{{ asset('user_asset/js/tabview.js') }}"></script>
 <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMap" async defer>
+    src="https://maps.googleapis.com/maps/api/js?key={{ config('settings.google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}&callback=initMap" async defer>
 </script>
 
 <script type="text/javascript">
@@ -737,13 +737,13 @@
                             "street_view1"), panoramaOptions);
                         map.setStreetView(panorama)
                         panorama = new google.maps.StreetViewPanorama(document.getElementById(
-                            "streetviewfull"), panoramaOptions);
+                            "streetview-pano"), panoramaOptions);
                         map.setStreetView(panorama)
                     } else {
                         google.maps.event.trigger(map, "resize");
                         document.getElementById("street_view1").innerHTML =
                             "<div class='google_map_back_street_view'><p>Street level photos are not available for this point.</p><p><b >Note:</b> Street views may be available in the area outside of the area shown on the map.</p></div>";
-                        document.getElementById("streetviewfull").innerHTML =
+                        document.getElementById("streetview-pano").innerHTML =
                             "<div class='google_map_back_street_view'><p>Street level photos are not available for this point.</p><p><b >Note:</b> Street views may be available in the area outside of the area shown on the map.</p></div>";
                     }
                 })
@@ -772,7 +772,7 @@
             success: function(response) {
                 if (response.message) {
                     toastr.success(response.message);
-                    $("#submitcontactus")[0].reset();
+                    $("#request-quote")[0].reset();
                     $('.read_btn').html(`Send`)
                     $('.read_btn').prop('disabled', false);
                 }

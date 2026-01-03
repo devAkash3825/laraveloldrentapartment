@@ -13,6 +13,8 @@
 ->count();
 $settings = DB::table('settings')->pluck('value', 'key');
 @endphp
+
+<!-- Topbar -->
 <section id="wsus__topbar">
     <div class="container-fluid px-5">
         <div class="row">
@@ -28,24 +30,26 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 <ul class="wsus__topbar_left float-right gap-2">
                     @guest('renter')
                     <li>
-                        <a href="{{ route('login') }}" class="btn topbar-btn btn-sm px-4"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                        <a href="{{ route('login') }}" class="btn topbar-btn btn-sm px-4"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
                     </li>
                     <li>
-                        <a href="{{ route('user-register') }}" class="btn topbar-btn btn-sm px-4"><i class="bi bi-person-add"></i> Register </a>
+                        <a href="{{ route('user-register') }}" class="btn topbar-btn btn-sm px-4"><i class="bi bi-person-add me-1"></i> Register </a>
                     </li>
                     @endguest
                     <li>
-                        <a href="{{ route('advance-search') }}" class="btn topbar-btn btn-sm px-4 ml-5"><i class="bi bi-search"></i> Advance Search</a>
+                        <a href="{{ route('advance-search') }}" class="btn topbar-btn btn-sm px-4 ml-5"><i class="bi bi-search me-1"></i> Advance Search</a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Main Navbar -->
 <nav class="navbar navbar-expand-lg main_menu">
     <div class="container-fluid px-5">
         <a class="navbar-brand" href="{{ route('home') }}">
-            <img src="{{ asset(config('settings.logo', 'images/default-logo.png')) }}" alt="DB.Card" class="logo-img">
+            <img src="{{ asset(config('settings.logo', 'images/default-logo.png')) }}" alt="Logo" class="logo-img">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,207 +67,558 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 @endforeach
             </ul>
 
+            @if (Auth::guard('renter')->check())
             <div class="navbar-right-section">
-                @if (Auth::guard('renter')->check())
-                <div class="notification-container">
-                    <div class="notifications dropdown" onclick="toggleNotifications()">
-                        <span class="count" id="notifications-count">{{ $notificationsnotseencount }}</span>
-                        <i class="bi bi-bell f-sz15"></i>
-                    </div>
-                    <div class="dropdown-menu" id="notification-dropdown">
-                        <div class="dropdown-body">
-                            <div class="dropdown-menu-header">
-                                <h6 class="dropdown-menu-title">Notifications</h6>
-                                <div>
-                                    <a href="javascript:void(0)" class="notification-anchor" id="markedAllAsRead"
-                                        data-user-id="{{ $userid->Id }}"
-                                        onclick="markAllNotificationsAsSeen(this)">Mark All as Read</a>
-                                </div>
-                            </div>
-                            <div class="dropdown-list" id="notification-list">
-                                @if (count($notifications) > 0)
+                <!-- Notification Dropdown -->
+                <div class="notification-wrapper">
+                    <button class="icon-button" id="notification-button" onclick="toggleNotifications()">
+                        <i class="bi bi-bell"></i>
+                        @if($notificationsnotseencount > 0)
+                        <span class="badge-count">{{ $notificationsnotseencount }}</span>
+                        @endif
+                    </button>
+                    <div class="dropdown-panel notification-dropdown" id="notification-dropdown">
+                        <div class="dropdown-header">
+                            <h6 class="dropdown-title">Notifications</h6>
+                            <a href="javascript:void(0)" class="mark-read-link" data-user-id="{{ $userid->Id }}"
+                                onclick="markAllNotificationsAsSeen(this)">Mark all read</a>
+                        </div>
+                        <div class="dropdown-body" id="notification-list">
+                            @if (count($notifications) > 0)
                                 @foreach ($notifications as $row)
-                                <a href="javascript:void(0)"
-                                    class="dropdown-link {{ $row->seen == 1 ? 'seen' : 'unread' }}">
-                                    <div class="media d-flex">
-                                        <img src="{{ asset('uploads/profile_pics/manager_29253_1729580644.png') }}"
-                                            alt="">
-                                        <div class="media-body">
-                                            <p>{!! $row->message !!} </p>
-                                            <span
-                                                class="d-flex justify-content-between notification-li-bottom">
-                                                <span>{{ $row->CreatedOn->format('h:i A') }}</span>
-                                                @if ($row->seen != '1')
-                                                <i class="bi bi-eye-fill eye-icon" id="eye-icon"
-                                                    data-user-id="{{ $row->Id }}"
-                                                    onclick="markVisibleNotificationsAsSeen(this)"></i>
-                                                @endif
-                                            </span>
+                                <a href="javascript:void(0)" class="notification-item {{ $row->seen == 1 ? 'read' : 'unread' }}">
+                                    <div class="notification-avatar">
+                                        <img src="{{ asset('uploads/profile_pics/manager_29253_1729580644.png') }}" alt="Avatar">
+                                    </div>
+                                    <div class="notification-content">
+                                        <p class="notification-text">{!! $row->message !!}</p>
+                                        <div class="notification-meta">
+                                            <span class="notification-time">{{ $row->CreatedOn->format('h:i A') }}</span>
+                                            @if ($row->seen != '1')
+                                            <button class="mark-read-btn" data-user-id="{{ $row->Id }}"
+                                                onclick="markVisibleNotificationsAsSeen(this)">
+                                                <i class="bi bi-check2"></i>
+                                            </button>
+                                            @endif
                                         </div>
                                     </div>
                                 </a>
                                 @endforeach
-                                @else
-                                <a href="" class="dropdown-link {{ @$row->seen == 1 ? read : '' }}"
-                                    style="width:100%;" id="notificationsyet">
-                                    <div class="media d-flex justify-content-center">
-                                        <div class="media-body">
-                                            <p class=""> No Notifications Yet</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                @endif
-                                @if (count($notifications) > 3)
-                                <div class="dropdown-list-footer">
-                                    <a href="page-notifications.html"><i class="fa fa-angle-down"></i> Show All
-                                        Notifications</a>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="profile">
-                        @if (Auth::guard('renter')->user()->profile_pic != '')
-                        <div class="user">
-                            <h6>{{Auth::guard('renter')->user()->UserName}}</h6>
-                            <p>@probablykat66</p>
-                        </div>
-                        @endif
-                        <div class="img-box">
-                            @if (Auth::guard('renter')->user()->profile_pic != '')
-                            <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="img" class="img-fluid">
                             @else
-                            <img src="{{ asset('img/avatar-of-aavtarimg.jpg') }}" alt="logo" class="img-fluid">
+                                <div class="empty-state">
+                                    <i class="bi bi-bell-slash"></i>
+                                    <p>No notifications yet</p>
+                                </div>
                             @endif
                         </div>
+                        @if (count($notifications) > 5)
+                        <div class="dropdown-footer">
+                            <a href="#">View all notifications</a>
+                        </div>
+                        @endif
                     </div>
-                    <div class="profile-menu">
-                        <ul>
-                            <li class=""><a href="{{ route('user-profile') }}" class="">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                        <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
-                                        <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
-                                    </svg>
-                                    Dashboard
-                                </a></li>
-                            <li class=""><a href="{{ route('change-password') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path
-                                            d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
-                                        <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-                                    </svg>
-                                    Change Password
-                                </a></li>
-                        
-                            <li class=""><a href="{{ route('logout') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path
-                                            d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
-                                        <path d="M15 12h-12l3 -3" />
-                                        <path d="M6 15l-3 -3" />
-                                    </svg>
-                                    Sign Out
-                                </a></li>
-                        </ul>
+                </div>
+
+                <!-- Profile Dropdown -->
+                <div class="profile-wrapper">
+                    <button class="profile-button" id="profile-button">
+                        <div class="profile-avatar">
+                            @if (Auth::guard('renter')->user()->profile_pic != '')
+                            <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="Profile">
+                            @else
+                            <img src="{{ asset('img/avatar-of-aavtarimg.jpg') }}" alt="Default Avatar">
+                            @endif
+                        </div>
+                        <div class="profile-info d-none d-lg-block">
+                            <h6 class="profile-name">{{ Auth::guard('renter')->user()->UserName }}</h6>
+                            <p class="profile-email">{{ Auth::guard('renter')->user()->Email }}</p>
+                        </div>
+                        <i class="bi bi-chevron-down profile-chevron"></i>
+                    </button>
+                    <div class="dropdown-panel profile-dropdown" id="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <div class="profile-dropdown-avatar">
+                                @if (Auth::guard('renter')->user()->profile_pic != '')
+                                <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="Profile">
+                                @else
+                                <img src="{{ asset('img/avatar-of-aavtarimg.jpg') }}" alt="Default Avatar">
+                                @endif
+                            </div>
+                            <div class="profile-dropdown-info">
+                                <h6>{{ Auth::guard('renter')->user()->UserName }}</h6>
+                                <p>{{ Auth::guard('renter')->user()->Email }}</p>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-body">
+                            <a href="{{ route('user-profile') }}" class="dropdown-item">
+                                <i class="bi bi-person-circle"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="{{ route('change-password') }}" class="dropdown-item">
+                                <i class="bi bi-shield-lock"></i>
+                                <span>Change Password</span>
+                            </a>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ route('logout') }}" class="dropdown-item logout-item">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Sign Out</span>
+                        </a>
                     </div>
                 </div>
             </div>
-
             @endif
         </div>
     </div>
 </nav>
 
-<script>
-    let profile = document.querySelector('.profile');
-    let menu = document.querySelector('.profile-menu');
-
-    profile.onclick = function() {
-        menu.classList.toggle('active');
+<style>
+    /* Navbar Right Section */
+    .navbar-right-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
-    let hasUserInteracted = false;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        let profile = document.querySelector('.profile');
-        let menu = document.querySelector('.profile-menu');
-        let notificationDropdown = document.getElementById('notification-dropdown');
+    /* Icon Button (Notification) */
+    .icon-button {
+        position: relative;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
 
-        profile.onclick = function() {
-            menu.classList.toggle('active');
-            if (menu.classList.contains('active')) {
-                notificationDropdown.classList.remove('show');
-            }
-        };
-    });
+    .icon-button:hover {
+        background: #e2e8f0;
+        transform: scale(1.05);
+    }
 
-    function toggleNotifications() {
-        const dropdown = document.getElementById('notification-dropdown');
-        dropdown.classList.toggle('show');
+    .icon-button i {
+        font-size: 1.25rem;
+        color: #475569;
+    }
+
+    .badge-count {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ef4444;
+        color: white;
+        border-radius: 12px;
+        padding: 2px 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 20px;
+        text-align: center;
+        border: 2px solid white;
+    }
+
+    /* Profile Button */
+    .profile-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 12px 6px 6px;
+        border-radius: 50px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .profile-button:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .profile-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-info {
+        text-align: left;
+        max-width: 150px;
+    }
+
+    .profile-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-email {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-chevron {
+        font-size: 0.875rem;
+        color: #64748b;
+        transition: transform 0.2s;
+    }
+
+    .profile-button.active .profile-chevron {
+        transform: rotate(180deg);
+    }
+
+    /* Dropdown Panel */
+    .dropdown-panel {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        border: 1px solid #e2e8f0;
+    }
+
+    .dropdown-panel.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Notification Dropdown */
+    .notification-wrapper {
+        position: relative;
+    }
+
+    .notification-dropdown {
+        width: 380px;
+        max-width: calc(100vw - 32px);
+    }
+
+    .dropdown-header {
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .dropdown-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .mark-read-link {
+        font-size: 0.8rem;
+        color: var(--colorPrimary, #6366f1);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .mark-read-link:hover {
+        text-decoration: underline;
+    }
+
+    .dropdown-body {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .dropdown-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .dropdown-body::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    /* Notification Item */
+    .notification-item {
+        display: flex;
+        gap: 12px;
+        padding: 14px 20px;
+        text-decoration: none;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s;
+    }
+
+    .notification-item:hover {
+        background: #f8fafc;
+    }
+
+    .notification-item.unread {
+        background: #f0f9ff;
+        border-left: 3px solid var(--colorPrimary, #6366f1);
+    }
+
+    .notification-item.unread:hover {
+        background: #e0f2fe;
+    }
+
+    .notification-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .notification-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .notification-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-text {
+        font-size: 0.875rem;
+        color: #334155;
+        margin: 0 0 6px 0;
+        line-height: 1.4;
+    }
+
+    .notification-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-time {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .mark-read-btn {
+        background: none;
+        border: none;
+        color: var(--colorPrimary, #6366f1);
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+    .mark-read-btn:hover {
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #cbd5e1;
+        margin-bottom: 12px;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Profile Dropdown */
+    .profile-wrapper {
+        position: relative;
+    }
+
+    .profile-dropdown {
+        width: 280px;
+    }
+
+    .profile-dropdown-header {
+        padding: 20px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .profile-dropdown-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .profile-dropdown-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-dropdown-info h6 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 4px 0;
+    }
+
+    .profile-dropdown-info p {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .dropdown-divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 0;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        text-decoration: none;
+        color: #475569;
+        transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background: #f8fafc;
+        color: var(--colorPrimary, #6366f1);
+    }
+
+    .dropdown-item i {
+        font-size: 1.15rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .dropdown-item span {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .logout-item {
+        color: #ef4444;
+    }
+
+    .logout-item:hover {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .dropdown-footer {
+        padding: 12px 20px;
+        text-align: center;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .dropdown-footer a {
+        font-size: 0.875rem;
+        color: var(--colorPrimary, #6366f1);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .dropdown-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .profile-info {
+            display: none !important;
+        }
         
-        if (dropdown.classList.contains('show')) {
-            const menu = document.querySelector('.profile-menu');
-            menu.classList.remove('active');
+        .profile-button {
+            padding: 6px;
+        }
+        
+        .notification-dropdown {
+            width: 320px;
+        }
+        
+        .profile-dropdown {
+            width: 260px;
         }
     }
 
+    @media (max-width: 576px) {
+        .notification-dropdown,
+        .profile-dropdown {
+            width: calc(100vw - 32px);
+            right: -100px;
+        }
+    }
+</style>
 
-    // const userid = {
-    //     {
-    //         @Auth::guard('renter')->user()->Id;
-    //     }
-    // }
-    // if (userid) {
-    //     document.addEventListener('DOMContentLoaded', function() {
-    //         if (window.Echo) {
-    //             window.Echo.private(`adminNotification.${userid}`)
-    //                 .listen('.NotificationEvent', (e) => {
-    //                     const counterElement = document.getElementById('notifications-count');
-    //                     const notificationList = document.getElementById('notification-list');
-    //                     const newNotification = document.createElement('a');
-    //                     let currentCount = parseInt(counterElement.textContent) || 0;
-    //                     let url = "{{ route('referred-renter') }}";
-    //                     counterElement.textContent = currentCount + 1;
-    //                     newNotification.href = e.notification.url || 'javascript:void(0)';
-    //                     newNotification.className = 'dropdown-link';
-    //                     newNotification.innerHTML = `
-    //                         <a href="${url}">
-    //                             <div class="media d-flex">
-    //                                 <img src="{{ asset('admin_asset/upload_pics') }}/${e.notification.image}" alt="">
-    //                                 <div class="media-body">
-    //                                     <p>${e.notification.message}</p>
-    //                                     <span>Just Now</span>
-    //                                 </div>
-    //                             </div>
-    //                         </a>`;
-    //                     notificationList.prepend(newNotification);
-    //                     $('#notificationsyet').hide();
-    //                     hasUserInteracted = true;
-    //                     var button = document.getElementsByTagName("button")[0];
-    //                     if (button) {
-    //                         button.addEventListener("click", ding);
-    //                     } else {
-    //                         console.error("Button not found!");
-    //                     }
-    //                 });
-    //         }
-    //     });
-    // }
+<script>
+    // Toggle Notifications
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notification-dropdown');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const profileButton = document.getElementById('profile-button');
+        
+        dropdown.classList.toggle('show');
+        profileDropdown.classList.remove('show');
+        profileButton.classList.remove('active');
+    }
 
+    // Toggle Profile
+    document.getElementById('profile-button')?.addEventListener('click', function() {
+        const dropdown = document.getElementById('profile-dropdown');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        
+        dropdown.classList.toggle('show');
+        this.classList.toggle('active');
+        notificationDropdown.classList.remove('show');
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const notificationWrapper = document.querySelector('.notification-wrapper');
+        const profileWrapper = document.querySelector('.profile-wrapper');
+        
+        if (!notificationWrapper?.contains(event.target)) {
+            document.getElementById('notification-dropdown')?.classList.remove('show');
+        }
+        
+        if (!profileWrapper?.contains(event.target)) {
+            document.getElementById('profile-dropdown')?.classList.remove('show');
+            document.getElementById('profile-button')?.classList.remove('active');
+        }
+    });
+
+    // Mark single notification as seen
     function markVisibleNotificationsAsSeen(e) {
         const notificationid = e.dataset.userId;
         $.ajax({
@@ -278,16 +633,29 @@ $settings = DB::table('settings')->pluck('value', 'key');
             success: function(response) {
                 if (response.message) {
                     toastr.success(response.message);
+                    e.closest('.notification-item').classList.remove('unread');
+                    e.closest('.notification-item').classList.add('read');
+                    e.remove();
+                    
+                    // Update badge count
+                    const badge = document.querySelector('.badge-count');
+                    if (badge) {
+                        const currentCount = parseInt(badge.textContent);
+                        if (currentCount > 1) {
+                            badge.textContent = currentCount - 1;
+                        } else {
+                            badge.remove();
+                        }
+                    }
                 }
             },
             error: function(xhr) {
-                if (response.message) {
-                    toastr.error(response.error);
-                }
+                toastr.error("An error occurred");
             },
         });
     }
 
+    // Mark all notifications as read
     function markAllNotificationsAsSeen(e) {
         const userId = e.dataset.userId;
         $.ajax({
@@ -299,18 +667,21 @@ $settings = DB::table('settings')->pluck('value', 'key');
             success: function(response) {
                 if (response.message) {
                     toastr.success(response.message);
+                    
+                    // Update all notification items
+                    document.querySelectorAll('.notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                        item.classList.add('read');
+                        item.querySelector('.mark-read-btn')?.remove();
+                    });
+                    
+                    // Remove badge
+                    document.querySelector('.badge-count')?.remove();
                 }
             },
             error: function(xhr) {
-                if (response.message) {
-                    toastr.error(response.error);
-                }
+                toastr.error("An error occurred");
             },
         });
-    }
-
-    function ding() {
-        var sound = new Audio("sound/notificationsound.mp3");
-        sound.play();
     }
 </script>

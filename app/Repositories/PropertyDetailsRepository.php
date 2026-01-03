@@ -16,7 +16,7 @@ class PropertyDetailsRepository
     {
         $getAllDetails = PropertyInfo::where('Id', $propertyid)
             ->with('propertyfloorplandetails.gallerydetail')
-            ->with('newAdditionalInfo')
+            ->with('propertyAdditionalInfo')
             ->with('gallerytype.gallerydetail')
             ->with('communitydescription')
             ->with('login')
@@ -33,7 +33,7 @@ class PropertyDetailsRepository
     {
         $getAllDetails = PropertyInfo::where('Id', $propertyid)
             ->with('propertyfloorplandetails.gallerydetail')
-            ->with('newAdditionalInfo')
+            ->with('propertyAdditionalInfo')
             ->with('gallerytype.gallerydetail')
             ->with('login')
             ->with('propertyfloorplandetails')

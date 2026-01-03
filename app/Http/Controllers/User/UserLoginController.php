@@ -33,20 +33,53 @@ class UserLoginController extends Controller
 
     public function userLogin(Request $request)
     {
+        $loginId = $request->input('username') ?? $request->input('email') ?? $request->input('login_id');
+        
+        $request->merge(['login_id' => $loginId]);
+
         $request->validate([
-            'username' => 'required',
+            'login_id' => 'required',
             'password' => 'required',
         ]);
 
         try {
-            $user = Login::where('UserName', $request->username)->first();
+            // Support both username and email login
+            $user = Login::where('UserName', $loginId)
+                         ->orWhere('Email', $loginId)
+                         ->first();
 
-            if ($user && Hash::check($request->password, $user->Password)) {
-                Auth::guard('renter')->login($user);
-                return redirect()->intended('/');
+            if ($user) {
+                $isAuthenticated = false;
+                
+                // Try Bcrypt first (Standard Laravel)
+                if (Hash::check($request->password, $user->Password)) {
+                    $isAuthenticated = true;
+                } 
+                // Fallback for legacy plain text passwords if necessary
+                else if ($request->password === $user->Password) {
+                    $isAuthenticated = true;
+                    // Auto-hash it for next time
+                    $user->Password = Hash::make($request->password);
+                    $user->save();
+                    Log::info('Legacy password updated for user: ' . $user->UserName);
+                }
+
+                if ($isAuthenticated) {
+                    Auth::guard('renter')->login($user, $request->has('remember'));
+                    
+                    // Regenerate session for security
+                    $request->session()->regenerate();
+                    
+                    Log::info('User logged in: ' . $user->UserName);
+                    return redirect()->intended('/');
+                }
             }
 
-            return redirect()->back()->with('error', 'Invalid username or password.');
+            Log::warning('Failed login attempt for: ' . $loginId);
+            return redirect()->back()
+                ->withInput($request->all())
+                ->with('error', 'Invalid username or password.');
+
         } catch (\Exception $e) {
             Log::error('Login error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while trying to log in.');
@@ -55,10 +88,10 @@ class UserLoginController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('renter')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+        return redirect()->route('show-login');
     }
 
     public function managerRegister(Request $request)

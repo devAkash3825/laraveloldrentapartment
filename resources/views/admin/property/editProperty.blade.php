@@ -494,7 +494,7 @@
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Leasing Terms ::</h4>
                                 <textarea id="editleasingterm" name="editleasingterm" class="form-control">
-                                {{ @$propertyinfo->newAdditionalInfo->LeasingTerms ? @$propertyinfo->newAdditionalInfo->LeasingTerms : '' }}
+                                {{ @$propertyinfo->propertyAdditionalInfo->LeasingTerms ? @$propertyinfo->propertyAdditionalInfo->LeasingTerms : '' }}
                                 </textarea>
 
                             </div>
@@ -502,14 +502,14 @@
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Qualifiying Criteria ::</h4>
                                 <textarea id="editqualifyingcriteria" name="editqualifyingcriteria" class="form-control">
-                                {{ @$propertyinfo->newAdditionalInfo->QualifiyingCriteria ? @$propertyinfo->newAdditionalInfo->QualifiyingCriteria : '' }}
+                                {{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria ? @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Parking ::</h4>
                                 <textarea id="editparking" name="editparking" class="form-control">
-                                {{ @$propertyinfo->newAdditionalInfo->Parking ? @$propertyinfo->newAdditionalInfo->Parking : '' }}
+                                {{ @$propertyinfo->propertyAdditionalInfo->Parking ? @$propertyinfo->propertyAdditionalInfo->Parking : '' }}
                                 </textarea>
                             </div>
 
@@ -521,14 +521,14 @@
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Neighborhood ::</h4>
                                 <textarea id="editneighbourhood" name="editneighbourhood" class="form-control">
-                                {{ @$propertyinfo->newAdditionalInfo->Neighborhood ? @$propertyinfo->newAdditionalInfo->Neighborhood : '' }}
+                                {{ @$propertyinfo->propertyAdditionalInfo->Neighborhood ? @$propertyinfo->propertyAdditionalInfo->Neighborhood : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Driving Directions ::</h4>
                                 <textarea id="editdrivingdirection" name="editdrivingdirection" class="form-control">
-                                {{ @$propertyinfo->newAdditionalInfo->drivedirection ? @$propertyinfo->newAdditionalInfo->drivedirection : '' }}
+                                {{ @$propertyinfo->propertyAdditionalInfo->drivedirection ? @$propertyinfo->propertyAdditionalInfo->drivedirection : '' }}
                                 </textarea>
                             </div>
 

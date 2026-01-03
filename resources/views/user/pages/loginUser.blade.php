@@ -69,14 +69,17 @@
                         <div class="row">
                             <div class="col-xl-12">
                                 <div class="wsus__login_imput">
-                                    <label>email</label>
-                                    <input type="email" placeholder="Email" name="email" value="{{ old('email') }}" required>
+                                    <label>Email or Username</label>
+                                    <input type="text" placeholder="Email or Username" name="login_id" value="{{ old('login_id') }}" required>
                                 </div>
                             </div>
                             <div class="col-xl-12">
-                                <div class="wsus__login_imput">
+                                <div class="wsus__login_imput" style="position: relative;">
                                     <label>password</label>
-                                    <input type="password" placeholder="Password" name="password" required >
+                                    <input type="password" placeholder="Password" name="password" id="login_user_pass" required >
+                                    <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('login_user_pass', event)" style="position: absolute; right: 15px; top: 40px; border: none; background: none; color: #999;">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                 </div>
                             </div>
 

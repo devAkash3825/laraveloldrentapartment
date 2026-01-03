@@ -41,29 +41,60 @@ class UserFavoriteController extends Controller
         if ($request->ajax()) {
             return DataTables::of($transformeddata)->addIndexColumn()
                 ->addColumn('propertyname', function ($row) {
-                    $propertybtn = "<a href='' class='p-2 fav-link-name'>{$row['propertyname']}</a>";
-                    return $propertybtn;
-                })
-                ->addColumn('quote', function ($row) {
-                    $quotebtn = "<a class='fav-request-quote-btn' href='#'>Request Quote</a>";
-                    return $quotebtn;
-                })
-                ->addColumn('action', function ($row) {
-                    $propertydisplay = route('property-display', ['id' => $row['id']]);
-                    $streetview = route('street-view',['id' => $row['id']]);
-                    $messagePage = route('send-messages',['id' => $row['id']]);
-                    $action = '<div class="demo-btn-list d-flex" style="gap: 5px;">
-                               <a href="'.$propertydisplay. '" class="btn-primary-icon px-2 py-1 border rounded m-1" data-bs-toggle="tooltip" title="View"><i class="bi bi-eye"></i></a>
-                               <a href="'.$streetview.'" class="btn-secondary-icon px-2 py-1 border rounded m-1" data-bs-toggle="tooltip" title="Map"><i class="bi bi-map"></i></a>
-                               <a href="'.$messagePage.'" class="btn-tertiary-icon px-2 py-1 border rounded m-1" data-bs-toggle="tooltip" title="Chat"><i class="bi bi-chat-left"></i></a>
-                           </div>';
-                    return $action;
-                })
+                $url = route('property-display', ['id' => $row['id']]);
+                return '<a href="'.$url.'" class="fav-link-name">
+                            <div class="property-icon-wrapper">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="property-name-text">'.$row['propertyname'].'</span>
+                                <span class="text-muted smaller" style="font-size: 0.75rem;">ID: #'.$row['id'].'</span>
+                            </div>
+                        </a>';
+            })
+            ->addColumn('quote', function ($row) {
+                return '<a class="fav-request-quote-btn" href="javascript:void(0)" onclick="requestQuote('.$row['id'].')">
+                            <i class="bi bi-chat-quote me-1"></i> Request Quote
+                        </a>';
+            })
+            ->addColumn('action', function ($row) {
+                $viewUrl = route('property-display', ['id' => $row['id']]);
+                $mapUrl = route('street-view', ['id' => $row['id']]);
+                
+                return '<div class="action-btns">
+                           <a href="'.$viewUrl.'" class="btn-icon btn-view" data-bs-toggle="tooltip" title="View Details">
+                               <i class="bi bi-eye"></i>
+                           </a>
+                           <a href="'.$mapUrl.'" class="btn-icon btn-map" data-bs-toggle="tooltip" title="Interactive Map">
+                               <i class="bi bi-map"></i>
+                           </a>
+                           <a href="javascript:void(0)" class="btn-icon btn-delete remove-single-fav" data-id="'.$row['id'].'" data-bs-toggle="tooltip" title="Remove from Favorites">
+                               <i class="bi bi-trash"></i>
+                           </a>
+                       </div>';
+            })
                 ->rawColumns(['propertyname', 'quote', 'action'])
                 ->make(true);
         } else {
             return view('user.favorites.listView');
         }
+    }
+
+    public function bulkRemoveFavorites(Request $request)
+    {
+        $ids = $request->ids;
+        $userid = Auth::guard('renter')->user()->Id;
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No properties selected.']);
+        }
+
+        Favorite::whereIn('PropertyId', $ids)->where('UserId', $userid)->delete();
+
+        return response()->json([
+            'success' => true, 
+            'message' => count($ids) . ' properties removed from your favorites.'
+        ]);
     }
 
 

@@ -10,16 +10,22 @@
     };
 </script>
 <script>
-    function togglePasswordVisibility(id) {
+    function togglePasswordVisibility(id, event) {
+        if (event) event.preventDefault();
         const input = document.getElementById(id);
-        const btn = event.currentTarget;
-        const icon = btn.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('bi-eye', 'bi-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        const btn = event ? event.currentTarget : window.event.srcElement;
+        const icon = btn ? btn.querySelector('i') : null;
+        
+        if (input && icon) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
         }
     }
 </script>

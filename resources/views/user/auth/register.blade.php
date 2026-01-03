@@ -1,22 +1,9 @@
 @extends('user.auth.layout.app')
 @section('authcontent')
-    <style>
-        .login-bg a {
-            color: white;
-        }
 
-        .login-bg {
-            background-image: url("{{ asset('img/login-bg.jpg') }}");
-            height: 100vh;
-            align-content: center;
-            align-items: center;
-        }
-    </style>
-
-
-
-<section id="login-section" class="login-viewport">
+<section id="register-section" class="register-viewport">
     <div class="row g-0 h-100 w-100">
+        <!-- Left Side - Hero Section -->
         <div class="col-lg-5 d-none d-lg-block">
             <div class="hero-side h-100">
                 <div class="hero-content">
@@ -34,29 +21,37 @@
                 </div>
             </div>
         </div>
+
+        <!-- Right Side - Form Section -->
         <div class="col-lg-7">
-            <div class="form-side h-100 d-flex flex-column align-items-center">
-                <div class="form-container w-100 px-4 px-md-5 py-5 my-auto" style="max-width: 650px;">
+            <div class="form-side h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="form-container w-100 px-3 px-sm-4 px-md-5 py-4 py-md-5">
+                    <!-- Mobile Logo -->
                     <div class="d-lg-none mb-4 text-center">
                         <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
                     </div>
                     
-                    <h2 class="auth-title mb-2">Create Account</h2>
-                    <p class="auth-subtitle mb-4">Join our community and find your perfect home.</p>
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <h2 class="auth-title mb-2">Create Account</h2>
+                        <p class="auth-subtitle mb-0">Join our community and find your perfect home.</p>
+                    </div>
 
-                    <ul class="nav nav-pills custom-tabs mb-5 w-100" id="pills-tab" role="tablist">
-                        <li class="nav-item flex-grow-1" role="presentation">
-                            <button class="nav-link active w-100" id="pills-renter-tab" data-bs-toggle="pill" data-bs-target="#renterregister" type="button" role="tab">
-                                <i class="bi bi-person-fill me-2"></i> Renter
+                    <!-- Tabs -->
+                    <ul class="nav nav-pills custom-tabs mb-4" id="pills-tab" role="tablist">
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button class="nav-link active" id="pills-renter-tab" data-bs-toggle="pill" data-bs-target="#renterregister" type="button" role="tab">
+                                <i class="bi bi-person-fill me-2"></i> <span>Renter</span>
                             </button>
                         </li>
-                        <li class="nav-item flex-grow-1" role="presentation">
-                            <button class="nav-link w-100" id="pills-manager-tab" data-bs-toggle="pill" data-bs-target="#managerregister" type="button" role="tab">
-                                <i class="bi bi-building-fill me-2"></i> Manager
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button class="nav-link" id="pills-manager-tab" data-bs-toggle="pill" data-bs-target="#managerregister" type="button" role="tab">
+                                <i class="bi bi-building-fill me-2"></i> <span>Manager</span>
                             </button>
                         </li>
                     </ul>
 
+                    <!-- Tab Content -->
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="renterregister" role="tabpanel">
                             <x-renterregister /> 
@@ -72,20 +67,23 @@
 </section>
 
 <style>
-    .login-viewport {
-        height: 100vh;
+    /* Base Viewport */
+    .register-viewport {
+        min-height: 100vh;
         width: 100vw;
-        overflow: hidden;
         background: #fff;
+        overflow-x: hidden;
     }
 
+    /* Hero Side Styling */
     .hero-side {
         background: linear-gradient(135deg, var(--colorPrimary) 0%, #1a202c 100%);
-        padding: 80px 60px;
+        padding: 60px 50px;
         display: flex;
         flex-direction: column;
         color: white;
         position: relative;
+        min-height: 100vh;
     }
 
     .hero-side::after {
@@ -101,12 +99,7 @@
         z-index: 0;
     }
 
-    .hero-content {
-        position: relative;
-        z-index: 1;
-    }
-
-    .hero-footer {
+    .hero-content, .hero-footer {
         position: relative;
         z-index: 1;
     }
@@ -116,6 +109,7 @@
         text-decoration: none;
         font-weight: 500;
         transition: all 0.3s;
+        font-size: 0.95rem;
     }
 
     .back-link:hover {
@@ -123,56 +117,26 @@
         transform: translateX(-5px);
     }
 
+    /* Typography */
     .auth-title {
-        color: #334155;
+        color: #1e293b;
         font-weight: 800;
-        letter-spacing: -1.5px;
+        letter-spacing: -0.05rem;
+        font-size: clamp(1.5rem, 4vw, 2rem);
     }
 
     .auth-subtitle {
         color: #64748b;
-        font-size: 1.1rem;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
     }
 
-    .custom-tabs {
-        background: #f1f5f9;
-        padding: 5px;
-        border-radius: 14px;
-        display: flex;
-        width: 100% !important;
-        margin-bottom: 2rem !important;
-    }
-
-    .custom-tabs .nav-item {
-        flex: 1;
-    }
-
-    .custom-tabs .nav-link {
-        border-radius: 10px;
-        color: #64748b;
-        font-weight: 700;
-        padding: 14px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: none;
-        width: 100%;
-        text-align: center;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .custom-tabs .nav-link.active {
-        background: white;
-        color: var(--colorPrimary);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
+    /* Form Side */
     .form-side {
-        overflow-y: auto;
         background: #ffffff;
+        overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: #e5e7eb transparent;
+        min-height: 100vh;
     }
 
     .form-side::-webkit-scrollbar {
@@ -192,6 +156,51 @@
         background: #d1d5db;
     }
 
+    .form-container {
+        max-width: 650px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Custom Tabs */
+    .custom-tabs {
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 14px;
+        display: flex;
+        gap: 6px;
+    }
+
+    .custom-tabs .nav-link {
+        border-radius: 10px;
+        color: #64748b;
+        font-weight: 600;
+        padding: 12px 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        text-align: center;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .custom-tabs .nav-link i {
+        font-size: 1.1rem;
+    }
+
+    .custom-tabs .nav-link.active {
+        background: white;
+        color: var(--colorPrimary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .custom-tabs .nav-link:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Input Styling */
     .input-group-custom {
         position: relative;
         display: flex;
@@ -199,35 +208,31 @@
         width: 100%;
     }
 
-    .input-group-custom i:first-child {
+    .input-group-custom > i:first-child {
         position: absolute;
-        left: 20px;
+        left: 18px;
         top: 50%;
         transform: translateY(-50%);
         color: #94a3b8;
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         z-index: 5;
-        width: 20px;
-        height: 20px;
-        display: grid;
-        place-items: center;
         pointer-events: none;
         transition: all 0.2s ease;
     }
 
     .input-group-custom .form-control,
     .input-group-custom .form-select {
-        padding-left: 56px !important;
+        padding-left: 50px !important;
         padding-right: 50px !important;
-        height: 60px;
-        border-radius: 16px;
+        height: 54px;
+        border-radius: 12px;
         border: 1.5px solid #e2e8f0;
         background: #f8fafc;
         color: #334155;
         font-weight: 500;
         transition: all 0.2s ease;
         width: 100%;
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .input-group-custom .form-control::placeholder {
@@ -243,14 +248,83 @@
         outline: none;
     }
 
+    .input-group-custom .form-control:focus + i,
+    .input-group-custom .form-select:focus + i {
+        color: var(--colorPrimary);
+    }
+
+    /* Validation States */
+    .input-group-custom .form-control.is-invalid,
+    .input-group-custom .form-select.is-invalid {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+
+    .input-group-custom .form-control.is-valid,
+    .input-group-custom .form-select.is-valid {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+
+    /* Responsive Breakpoints */
     @media (max-width: 991px) {
-        .login-viewport {
+        .register-viewport {
             height: auto;
             min-height: 100vh;
-            overflow-y: auto;
         }
+        
         .form-side {
-            padding: 20px 0;
+            padding: 30px 0;
+        }
+        
+        .custom-tabs .nav-link span {
+            display: inline;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .form-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .custom-tabs .nav-link {
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+        
+        .custom-tabs .nav-link i {
+            margin-right: 4px !important;
+            font-size: 1rem;
+        }
+        
+        .auth-title {
+            font-size: 1.5rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .input-group-custom .form-control,
+        .input-group-custom .form-select {
+            height: 50px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .custom-tabs .nav-link span {
+            display: none;
+        }
+        
+        .custom-tabs .nav-link {
+            padding: 10px;
+        }
+        
+        .custom-tabs .nav-link i {
+            margin-right: 0 !important;
+            font-size: 1.2rem;
         }
     }
 </style>

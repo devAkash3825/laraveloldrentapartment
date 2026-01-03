@@ -93,8 +93,9 @@ class PropertyInfo extends Model
         return $this->hasOne(PropertyAdditionalInfo::class,'PropertyId','Id');
     }
 
-    public function newAdditionalInfo(){
-        return $this->hasOne(PropertyNewAdditionalInfo::class,'PropertyId','Id');
+    // Alias for backward compatibility - points to same relationship
+    public function additionalInfo(){
+        return $this->propertyAdditionalInfo();
     }
 
     public function propertyinquiry(){

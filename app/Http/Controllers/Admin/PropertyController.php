@@ -131,7 +131,7 @@ class PropertyController extends Controller
         
         $propertyinfo = PropertyInfo::where('Id', $id)
             ->with('propertyfloorplandetails.gallerydetail')
-            ->with('newAdditionalInfo')
+            ->with('propertyAdditionalInfo')
             ->with('gallerytype.gallerydetail')
             ->with('login')
             ->with('propertyfloorplandetails')

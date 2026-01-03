@@ -27,23 +27,22 @@ $(function () {
 
     // 2. FAVORITE FUNCTIONALITY
     function checkIsFav() {
-        var propertyId = $("#addtofavorite").val();
+        var $favBtn = $("#addtofavorite");
+        var propertyId = $favBtn.attr('value') || $favBtn.val(); // Handle both li value and data
         if (!propertyId) return;
 
         $.ajax({
             url: "/is-favorite",
             method: "POST",
-            data: JSON.stringify({ propertyId: propertyId }),
-            contentType: "application/json",
+            data: { propertyId: propertyId },
             success: function (data) {
-                var $filledHeartIcon = $("#addtofavorite .bi-heart-fill");
-                var $outlineHeartIcon = $("#addtofavorite .bi-heart");
+                var $link = $favBtn.find('a');
                 if (data.isFavorite) {
-                    $filledHeartIcon.show();
-                    $outlineHeartIcon.hide();
+                    $link.html('<i class="bi bi-heart-fill text-danger me-1"></i> Saved to Favorites');
+                    $favBtn.addClass('is-fav');
                 } else {
-                    $filledHeartIcon.hide();
-                    $outlineHeartIcon.show();
+                    $link.html('<i class="bi bi-heart me-1"></i> Add to Favorite');
+                    $favBtn.removeClass('is-fav');
                 }
             }
         });
@@ -53,9 +52,8 @@ $(function () {
     $("#addtofavorite").on("click", function (e) {
         e.preventDefault();
         var $btn = $(this);
-        var propertyId = $btn.val();
-        var $iconFilled = $btn.find(".bi-heart-fill");
-        var $iconOutline = $btn.find(".bi-heart");
+        var propertyId = $btn.attr('value') || $btn.val();
+        if (!propertyId) return;
 
         $.ajax({
             url: "/add-to-favorite",
@@ -66,16 +64,24 @@ $(function () {
             },
             success: function (response) {
                 if (response.success) {
+                    // Premium Toaster messages
                     if (response.action === 'added') {
-                        toastr.success(response.message);
-                        $iconFilled.show();
-                        $iconOutline.hide();
+                        toastr.success('<i class="bi bi-heart-fill me-2"></i>' + response.message);
                     } else {
-                        toastr.info(response.message);
-                        $iconFilled.hide();
-                        $iconOutline.show();
+                        // This is the "awesome" toast style for removals
+                        toastr.info('<i class="bi bi-heart me-2"></i>' + response.message);
+                    }
+
+                    checkIsFav(); // Refresh state
+
+                    // Reload DataTables if they exist
+                    if ($.fn.DataTable.isDataTable('#fav-listview')) {
+                        $('#fav-listview').DataTable().ajax.reload(null, false);
                     }
                 }
+            },
+            error: function () {
+                toastr.error("Could not update favorites. Please login and try again.");
             },
             complete: function () {
                 $btn.css('pointer-events', 'auto').css('opacity', '1');
@@ -85,13 +91,12 @@ $(function () {
 
     // 3. DATATABLES INITIALIZATION
     const dtConfigs = [
-        { id: "#fav-listview", url: "/favorite/list-view", columns: [{ data: "DT_RowIndex" }, { data: "propertyname" }, { data: "quote" }, { data: "action" }] },
         { id: "#recently-visited", url: "/recently-visited", columns: [{ data: "DT_RowIndex" }, { data: "propertyname" }, { data: "datetime" }] },
         { id: "#myproperties", url: "/my-properties", columns: [{ data: "DT_RowIndex" }, { data: "image" }, { data: "propertyname" }, { data: "action" }] }
     ];
 
     dtConfigs.forEach(config => {
-        if ($(config.id).length) {
+        if ($(config.id).length && !$.fn.DataTable.isDataTable(config.id)) {
             $(config.id).DataTable({
                 processing: true,
                 serverSide: true,

@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\CommunityDescription;
 use Illuminate\Pagination\LengthAwarePaginator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\Models\PropertyNewAdditionalInfo;
 
 
 
@@ -213,7 +212,8 @@ class UserPropertyController extends Controller
     }
     public function addProperty()
     {
-        return view('user.property.addProperty');
+        $state = State::all();
+        return view('user.property.addProperty', compact('state'));
     }
 
     public function addNewProperty(Request $request)
@@ -229,10 +229,13 @@ class UserPropertyController extends Controller
             'pcontact'             => 'required|string|max:100',
             'units'                => 'required|integer|min:1',
             'yearbuilt'            => 'required|date',
+            'year_remodeled'       => 'nullable|date',
             'area'                 => 'required|string|max:255',
             'address'              => 'required|string|max:255',
             'zipcode'              => 'required|string|max:20',
             'contactno'            => 'required|string|max:20',
+            'website'              => 'nullable|url|max:255',
+            'officehours'          => 'nullable|string|max:1000',
             'billto'               => 'required|string|max:255',
             'copyzipcode'          => 'required|string|max:20',
             'bill_address_state'   => 'required',
@@ -551,7 +554,7 @@ class UserPropertyController extends Controller
             'driving_directions'  => 'nullable|string|max:1000',
         ]);
         try {
-            $existingInfo = PropertyNewAdditionalInfo::where('PropertyId', $propertyId)->update([
+            $existingInfo = PropertyAdditionalInfo::where('PropertyId', $propertyId)->update([
                 'LeasingTerms'       => $request->input('leasing_terms'),
                 'QualifiyingCriteria' => $request->input('qualifying_criteria'),
                 'Parking'            => $request->input('parking'),
@@ -567,7 +570,7 @@ class UserPropertyController extends Controller
                 Log::info("✅ Property Additional Info updated", ['PropertyId' => $propertyId]);
                 return redirect()->back()->with('success', 'Property additional details updated successfully!');
             } else {
-                PropertyNewAdditionalInfo::create([
+                PropertyAdditionalInfo::create([
                     'LeasingTerms'       => $request->input('leasing_terms'),
                     'QualifiyingCriteria' => $request->input('qualifying_criteria'),
                     'Parking'            => $request->input('parking'),

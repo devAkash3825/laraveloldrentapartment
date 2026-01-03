@@ -1,232 +1,204 @@
-<style>
-    #q-box__buttons {
-        display: flex;
-        justify-content: flex-end;
-        gap: 15px;
-        margin-top: 20px;
-    }
+<div class="renter-registration-wrapper">
+    <!-- Progress Steps -->
+    <div class="step-progress mb-4">
+        <div class="step-item active" data-step="0">
+            <div class="step-circle"><i class="bi bi-shield-lock"></i></div>
+            <div class="step-label d-none d-md-block">Account</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="1">
+            <div class="step-circle"><i class="bi bi-person-badge"></i></div>
+            <div class="step-label d-none d-md-block">Personal</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="2">
+            <div class="step-circle"><i class="bi bi-cursor"></i></div>
+            <div class="step-label d-none d-md-block">Preferences</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="3">
+            <div class="step-circle"><i class="bi bi-list-stars"></i></div>
+            <div class="step-label d-none d-md-block">Details</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="4">
+            <div class="step-circle"><i class="bi bi-wallet2"></i></div>
+            <div class="step-label d-none d-md-block">Budget</div>
+        </div>
+    </div>
 
-    #q-box__buttons button {
-        padding: 10px 20px;
-        font-size: 14px;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-    }
+    <form class="needs-validation renter-form" id="renter-registration-form" novalidate>
+        @csrf
+        
+        <!-- Step 1: Account Info -->
+        <div class="form-step active" id="step0">
+            <h5 class="step-title mb-4"><i class="bi bi-shield-lock me-2"></i> Account Security</h5>
+            
+            <div class="mb-3">
+                <label class="form-label">Username <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-person"></i>
+                    <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+                </div>
+            </div>
 
-    .prev-btn {
-        background-color: #007bff;
-        color: white;
-    }
+            <div class="mb-3">
+                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-envelope"></i>
+                    <input type="email" class="form-control" name="email" placeholder="email@example.com" required>
+                </div>
+            </div>
 
-    .next-btn {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    .submit-btn {
-        background-color: #28a745;
-        color: white;
-    }
-
-    button:hover {
-        opacity: 0.9;
-    }
-    
-    /* Password toggle styles */
-    .password-toggle {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #6c757d;
-    }
-    
-    .password-input-group {
-        position: relative;
-    }
-    
-    .password-input-group input {
-        padding-right: 40px;
-    }
-</style>
-<div class="qbox-container">
-    <form class="needs-validation" id="form-wrapper" name="form-wrapper" novalidate="">
-        <!-- Step 1 -->
-        <div class="step d-block">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="mt-1">
-                        <label class="form-label f-w700"><i class="fa-solid fa-user"
-                                style="color:var(--btn-color1);"></i>
-                            Username <small style="color:red;">*</small></label>
-                        <input class="form-control" id="username" name="username" type="text" required>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="mt-3">
-                        <label class="form-label f-w700"><i class="fa-solid fa-envelope"
-                                style="color:var(--btn-color1);"></i>
-                            Email <small style="color:red;">*</small></label>
-                        <input class="form-control" id="email" name="email" type="email" required>
-                        <div class="invalid-feedback" id="error-email">Please enter a valid email.</div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="mt-3 password-input-group">
-                        <label class="form-label f-w700"><i class="fa-solid fa-key"
-                                style="color:var(--btn-color1);"></i>
-                            Password <small style="color:red;">*</small></label>
-                        <input class="form-control" id="password" name="password" type="password" required>
-                        <span class="password-toggle mt-1" id="togglePassword">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" class="form-control" id="renter_password" name="password" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('renter_password', event)">
                             <i class="bi bi-eye"></i>
-                        </span>
-                        <div class="invalid-feedback" id="error-password">Please enter a password.</div>
+                        </button>
                     </div>
+                    <div class="form-text mt-1" style="font-size: 0.8rem; color: #64748b;">Min. 8 characters</div>
                 </div>
-                <div class="col-md-12">
-                    <div class="mt-3 password-input-group">
-                        <label class="form-label f-w700"><i class="fa-solid fa-key"
-                                style="color:var(--btn-color1);"></i>
-                            Confirm Password <small style="color:red;">*</small></label>
-                        <input class="form-control" id="password_confirmation" name="password_confirmation"
-                            type="password" required>
-                        <span class="password-toggle mt-1" id="togglePasswordConfirmation">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-shield-check"></i>
+                        <input type="password" class="form-control" id="renter_password_confirmation" name="password_confirmation" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('renter_password_confirmation', event)">
                             <i class="bi bi-eye"></i>
-                        </span>
-                        <div class="invalid-feedback" id="error-password_confirmation">Passwords do not match.</div>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Step 2 -->
-        <div class="step d-none">
+        <!-- Step 2: Personal Info -->
+        <div class="form-step" id="step1">
+            <h5 class="step-title mb-4"><i class="bi bi-person-badge me-2"></i> Personal Details</h5>
+            
             <div class="row">
-                <div class="col-md-4">
-                    <div class="mt-1">
-                        <label class="form-label f-w700">
-                            First Name <small style="color:red;">*</small></label>
-                        <input class="form-control" id="firstname" name="firstname" type="text" required>
-                        <div class="invalid-feedback" id="error-firstname"></div>
-                        <div class="invalid-feedback" id="error-zip">First Name is Required </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-tag"></i>
+                        <input type="text" class="form-control" name="firstname" placeholder="First Name" required>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mt-1">
-                        <label class="form-label f-w700">
-                            Last Name <small style="color:red;">*</small></label>
-                        <input class="form-control" id="lastname" name="lastname" type="text">
-                        <div class="invalid-feedback" id="error-lastname"></div>
-                        <div class="invalid-feedback" id="error-zip">Last Name is Required </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-tag"></i>
+                        <input type="text" class="form-control" name="lastname" placeholder="Last Name" required>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mt-1">
-                        <label class="form-label"><i class="fa-solid fa-user" style="color:var(--btn-color1);"></i> Zip
-                            <small style="color:red;">*</small></label>
-                        <input class="form-control" id="zip" name="zip" type="text" pattern="\d*"
-                            required>
-                        <div class="invalid-feedback" id="error-zip">Please enter a valid zip code.</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label class="form-label f-w700">
-                            Cell<small style="color:red;">*</small> </label>
-                        <input class="form-control" id="cell" name="cell" type="text">
-                        <div class="invalid-feedback" id="error-cell"></div>
-                    </div>
-                </div>
+            </div>
 
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label class="form-label f-w700">Other Phone </label>
-                        <input class="form-control" id="otherphone" name="otherphone" type="text">
-                        <div class="invalid-feedback" id="error-otherphone"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Cell Phone <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-phone"></i>
+                        <input type="tel" class="form-control" name="cell" placeholder="(555) 000-0000" required>
                     </div>
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Other Phone</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-telephone"></i>
+                        <input type="tel" class="form-control" name="otherphone" placeholder="Optional">
+                    </div>
+                </div>
+            </div>
 
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label class="form-label f-w700">State
-                            <small style="color:red;">*</small> </label>
-                        <select class="form-control form-select form-control-a state-select-box" name="renterstate"
-                            id="renterstate" required>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">State <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-geo"></i>
+                        <select class="form-select state-select" name="renterstate" required>
                             <option value="">Select State</option>
                             @foreach ($state as $row)
-                            <option value="{{ $row->Id }}">{{ $row->StateName }}</option>
+                                <option value="{{ $row->Id }}">{{ $row->StateName }}</option>
                             @endforeach
                         </select>
-                        <div class="invalid-feedback">
-                            Please select a state.
-                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label class="form-label f-w700">City
-                            <small style="color:red;">*</small> </label>
-                        <select class="form-control form-select form-control-a" id="rentercity" name="rentercity"
-                            required>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">City <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-geo-alt"></i>
+                        <select class="form-select city-select" name="rentercity" required disabled>
                             <option value="">Select City</option>
                         </select>
-                        <div class="invalid-feedback">
-                            Please select a city.
-                        </div>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="mt-3">
-                        <label class="form-label"><i class="fa-solid fa-key" style="color:var(--btn-color1);"></i>
-                            Moving To
-                            <small style="color:red;">*</small> </label>
-                        <textarea rows="3" name="currentAddress" id="currentAddress" placeholder="Type your message"
-                            class="formbold-form-input" required></textarea>
-                        <div class="invalid-feedback">
-                            This Field is Required .
-                        </div>
-                    </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Current Address <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-house-door" style="top: 20px; transform: none;"></i>
+                    <textarea class="form-control" name="currentAddress" rows="2" placeholder="Your full current address" required style="padding-top: 14px !important;"></textarea>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Zip Code <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-mailbox"></i>
+                    <input type="text" class="form-control" name="zip" placeholder="Zip Code" required>
                 </div>
             </div>
         </div>
 
-        <!-- Step 3 -->
-        <div class="step d-none">
+        <!-- Step 3: Preferences -->
+        <div class="form-step" id="step2">
+            <h5 class="step-title mb-4"><i class="bi bi-cursor me-2"></i> Moving Preferences</h5>
+            
+            <div class="mb-3">
+                <label class="form-label">Target Areas/Neighborhoods <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control" name="aboutmovein" placeholder="e.g. Downtown, Uptown" required>
+                </div>
+            </div>
+
             <div class="row">
-                <div class="col-md-12">
-                    <div class="mt-1">
-                        <label class="form-label f-w700">What area/neighborhoods are you wanting to move to </label>
-                        <input class="form-control" id="aboutmovein" name="aboutmovein" type="text">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Earliest Move Date <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-calendar-event"></i>
+                        <input type="date" class="form-control" name="earliestdate" required>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label for="dob" class="form-label f-w700"> Earliest Move Date </label>
-                        <input type="date" name="earliestdate" id="earliestdate" class="form-control" required />
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Latest Move Date <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-calendar-check"></i>
+                        <input type="date" class="form-control" name="latestdate" required>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label for="dob" class="form-label f-w700"> Latest Move Date </label>
-                        <input type="date" name="latestdate" id="latestdate" class="form-control" required />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Pet Information <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-paw"></i>
+                        <input type="text" class="form-control" name="petinfo" placeholder="Dogs, Cats, None" required>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label class="form-label f-w700">Pet Info </label>
-                        <input class="form-control" id="petinfo" name="petinfo" type="text">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mt-3">
-                        <label class="form-label f-w700">Hear About </label>
-                        <select class="form-control form-select form-control-a" id="source" name="source"
-                            required>
-                            <option value="">Source</option>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">How did you hear about us? <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-megaphone"></i>
+                        <select class="form-select" name="source" required>
+                            <option value="">Select Source</option>
                             @foreach ($source as $row)
-                            <option value="{{ $row->Id }}">{{ $row->SourceName }}</option>
+                                <option value="{{ $row->Id }}">{{ $row->SourceName }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -234,143 +206,481 @@
             </div>
         </div>
 
-        <!-- Step 4 -->
-        <div class="step d-none">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="css-ehvwec er0i63m2">
-                        <div class="css-frayro er0i63m0 mt-2">
-                            <h4> Select how many bedrooms you want. </h4>
-                            <div class="selectbeds-div erdrl0c0 mt-3">
-                                <label class="css-17p3mg6 eyqmukb3">
-                                    <input type="checkbox" name="bedrooms[]" value="1" aria-label="1 Bed"
-                                        class="d-none" />
-                                    <div aria-hidden="true" class="css-fmv2zp eyqmukb2">1</div>
-                                    <div class="css-hh5vnd eyqmukb0">1 Bed</div>
-                                </label>
-                                <label class="css-17p3mg6 eyqmukb3">
-                                    <input type="checkbox" name="bedrooms[]" value="2" aria-label="2 Bed"
-                                        class="d-none" />
-                                    <div aria-hidden="true" class="css-fmv2zp eyqmukb2">2</div>
-                                    <div class="css-hh5vnd eyqmukb0">2 Beds</div>
-                                </label>
-                                <label class="css-17p3mg6 eyqmukb3">
-                                    <input type="checkbox" name="bedrooms[]" value="3" aria-label="3 Beds"
-                                        class="d-none" />
-                                    <div aria-hidden="true" class="css-fmv2zp eyqmukb2">3</div>
-                                    <div class="css-hh5vnd eyqmukb0">3 Beds</div>
-                                </label>
-                                <label class="css-17p3mg6 eyqmukb3">
-                                    <input type="checkbox" name="bedrooms[]" value="4" aria-label="4 Beds"
-                                        class="d-none" />
-                                    <div aria-hidden="true" class="css-fmv2zp eyqmukb2">4</div>
-                                    <div class="css-hh5vnd eyqmukb0">4 Beds</div>
-                                </label>
-                                <label class="css-17p3mg6 eyqmukb3">
-                                    <input type="checkbox" name="bedrooms[]" value="5" aria-label="5+ Beds"
-                                        class="d-none" />
-                                    <div aria-hidden="true" class="css-fmv2zp eyqmukb2">5+</div>
-                                    <div class="css-hh5vnd eyqmukb0">5+ Beds</div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Step 4: Details -->
+        <div class="form-step" id="step3">
+            <h5 class="step-title mb-4"><i class="bi bi-list-stars me-2"></i> Apartment Details</h5>
+            
+            <div class="mb-3">
+                <label class="form-label d-block mb-3">Bedrooms Needed <span class="text-danger">*</span></label>
+                <div class="bedroom-selector">
+                    @foreach (['1', '2', '3', '4', '5+'] as $bed)
+                        <input type="checkbox" class="btn-check" name="bedrooms[]" value="{{ $bed }}" id="bed{{ $bed }}">
+                        <label class="btn btn-outline-primary-custom" for="bed{{ $bed }}">{{ $bed }} Bed</label>
+                    @endforeach
                 </div>
-                <div class="col-md-12">
-                    <div class="mt-4">
-                        <h4> Additional Information. </h4>
-                        <textarea class="form-control mt-3" id="additional_info" name="additional_info" rows="4"></textarea>
-                    </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Additional Information <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-chat-left-text" style="top: 20px; transform: none;"></i>
+                    <textarea class="form-control" name="additional_info" rows="4" placeholder="Any other specific requirements?" required style="padding-top: 14px !important;"></textarea>
                 </div>
             </div>
         </div>
 
-        <div class="step d-none" id="step-5">
+        <!-- Step 5: Budget -->
+        <div class="form-step" id="step4">
+            <h5 class="step-title mb-4"><i class="bi bi-wallet2 me-2"></i> Budget Range</h5>
+            
             <div class="row">
-                <div class="col-md-12">
-                    <div class="mt-4">
-                        <label class="form-label">
-                            <i class="fa-solid fa-bed" style="color:var(--btn-color1);"></i>
-                            What are you looking to pay? <small style="color:red;">*</small>
-                        </label>
-                        <div class="css-ehvwec er0i63m2">
-                            <div class="css-frayro er0i63m0">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <!-- From Price -->
-                                        <label for="price-from" class="form-label">From</label>
-                                        <input type="number" class="form-control" id="price-from" name="price_from"
-                                            placeholder="Min Price" required>
-                                        <div class="invalid-feedback" id="error-price-from">Please enter a minimum
-                                            price.</div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <!-- To Price -->
-                                        <label for="price-to" class="form-label">To</label>
-                                        <input type="number" class="form-control" id="price-to" name="price_to"
-                                            placeholder="Max Price" required>
-                                        <div class="invalid-feedback" id="error-price-to">Please enter a maximum
-                                            price.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Minimum Monthly Rent ($) <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-cash-stack"></i>
+                        <input type="number" class="form-control" name="price_from" placeholder="0" required>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Maximum Monthly Rent ($) <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-cash-stack"></i>
+                        <input type="number" class="form-control" name="price_to" placeholder="99999" required>
                     </div>
                 </div>
             </div>
+
+            <div class="alert alert-info border-0 rounded-3 mt-4" style="background: rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.1); color: var(--colorPrimary);">
+                <i class="bi bi-info-circle-fill me-2"></i> Almost done! Review your details before creating your account.
+            </div>
         </div>
 
-        <div id="q-box__buttons" style="display: flex; gap: 15px; justify-content: flex-end;">
-            <button id="before-btn" type="button" class="prev-btn btn-primary w-10">
-                <span><i class="bi bi-chevron-left text-white"></i></span> Previous
+        <!-- Form Navigation -->
+        <div class="form-navigation mt-4 d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-secondary-custom prev-btn" style="display: none;">
+                <i class="bi bi-arrow-left me-1"></i> Back
             </button>
-            <button id="after-btn" type="button" class="next-btn">
-                Next <span><i class="bi bi-chevron-right text-white"></i></span>
+            <button type="button" class="btn btn-primary-custom next-btn ms-auto">
+                Next <i class="bi bi-arrow-right ms-1"></i>
             </button>
-            <button id="renterRegister-btn" class="submit-btn" type="submit">
-                <span><i class="bi bi-check2-circle text-white"></i></span> Submit
+            <button type="submit" class="btn btn-success-custom submit-btn ms-auto" style="display: none;">
+                <i class="bi bi-check2-circle me-2"></i> Register Now
             </button>
         </div>
-
-        <div class="d-flex justify-content-betweens">
-            <p class="create_account">Already have an account ? <a href="{{ route('show-login') }}"> Login </a></p>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted mb-0">Already have an account? <a href="{{ route('show-login') }}" class="text-primary fw-bold text-decoration-none underline-hover">Login</a></p>
         </div>
     </form>
 </div>
 
-<script>
-// Password toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const togglePassword = document.querySelector('#togglePassword');
-    const togglePasswordConfirmation = document.querySelector('#togglePasswordConfirmation');
-    const password = document.querySelector('#password');
-    const passwordConfirmation = document.querySelector('#password_confirmation');
-    
-    if (togglePassword && password) {
-        togglePassword.addEventListener('click', function() {
-            // Toggle the type attribute
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            
-            // Toggle the eye icon
-            this.querySelector('i').classList.toggle('fa-eye');
-            this.querySelector('i').classList.toggle('fa-eye-slash');
-        });
+<style>
+    /* Step Progress */
+    .step-progress {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding: 0 10px;
     }
-    
-    if (togglePasswordConfirmation && passwordConfirmation) {
-        togglePasswordConfirmation.addEventListener('click', function() {
-            // Toggle the type attribute
-            const type = passwordConfirmation.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordConfirmation.setAttribute('type', type);
-            
-            // Toggle the eye icon
-            this.querySelector('i').classList.toggle('fa-eye');
-            this.querySelector('i').classList.toggle('fa-eye-slash');
-        });
-    }
-});
 
-// Your existing JavaScript code would go here...
-// Make sure to include the JavaScript code I provided earlier for validation
+    .step-item {
+        text-align: center;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .step-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+        margin: 0 auto 0.5rem;
+    }
+
+    .step-item.active .step-circle {
+        background: var(--colorPrimary);
+        color: white;
+        box-shadow: 0 0 0 4px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
+    }
+
+    .step-item.completed .step-circle {
+        background: #10b981;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-top: 0.5rem;
+    }
+
+    .step-item.active .step-label {
+        color: var(--colorPrimary);
+    }
+
+    .step-line {
+        flex: 1;
+        height: 2px;
+        background: #e2e8f0;
+        margin: 0 8px;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Multi-step Form */
+    .form-step {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .form-step.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-title {
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Form Labels */
+    .form-label {
+        color: #475569;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn-primary-custom, .btn-secondary-custom, .btn-success-custom {
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        border: none;
+    }
+
+    .btn-primary-custom {
+        background: var(--colorPrimary);
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        background: var(--colorPrimary);
+        filter: brightness(1.1);
+    }
+
+    .btn-secondary-custom {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #cbd5e1;
+    }
+
+    .btn-success-custom {
+        background: #10b981;
+        color: white;
+    }
+
+    .btn-success-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+        filter: brightness(1.1);
+    }
+
+    /* Bedroom Selector */
+    .bedroom-selector {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .bedroom-selector .btn-outline-primary-custom {
+        border: 2px solid #e2e8f0;
+        color: #64748b;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .bedroom-selector .btn-check:checked + .btn-outline-primary-custom {
+        background: var(--colorPrimary);
+        color: white;
+        border-color: var(--colorPrimary);
+    }
+
+    /* Textarea */
+    .input-group-custom textarea.form-control {
+        min-height: 100px;
+        padding-left: 50px !important;
+        resize: vertical;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .step-progress {
+            padding: 0 5px;
+        }
+
+        .step-circle {
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+        }
+
+        .step-line {
+            margin: 0 4px;
+            margin-bottom: 2rem;
+        }
+
+        .bedroom-selector {
+            gap: 6px;
+        }
+
+        .bedroom-selector .btn-outline-primary-custom {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary-custom, .btn-secondary-custom, .btn-success-custom {
+            padding: 10px 20px;
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .step-label {
+            display: none !important;
+        }
+
+        .step-circle {
+            width: 35px;
+            height: 35px;
+            font-size: 0.9rem;
+        }
+
+        .step-line {
+            margin-bottom: 0.5rem;
+        }
+
+        .step-title {
+            font-size: 1rem;
+        }
+
+        .bedroom-selector .btn-outline-primary-custom {
+            flex: 1 0 calc(33.333% - 6px);
+            min-width: 0;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+    }
+
+    .underline-hover:hover {
+        text-decoration: underline !important;
+    }
+</style>
+
+<script>
+    (function() {
+        let currentStep = 0;
+        const totalSteps = 5;
+        const steps = document.querySelectorAll('.form-step');
+        const stepItems = document.querySelectorAll('.step-item');
+        const nextBtn = document.querySelector('.next-btn');
+        const prevBtn = document.querySelector('.prev-btn');
+        const submitBtn = document.querySelector('.submit-btn');
+        const form = document.getElementById('renter-registration-form');
+
+        function updateUI() {
+            // Update form steps
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index === currentStep);
+            });
+
+            // Update progress indicators
+            stepItems.forEach((item, index) => {
+                if (index < currentStep) {
+                    item.classList.add('completed');
+                    item.classList.remove('active');
+                } else if (index === currentStep) {
+                    item.classList.add('active');
+                    item.classList.remove('completed');
+                } else {
+                    item.classList.remove('active', 'completed');
+                }
+            });
+
+            // Update navigation buttons
+            prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-flex';
+            
+            if (currentStep === totalSteps - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                submitBtn.style.display = 'none';
+            }
+
+            // Scroll to top
+            document.querySelector('.form-side')?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(stepIndex) {
+            const currentStepEl = document.getElementById(`step${stepIndex}`);
+            const inputs = currentStepEl.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+
+            // Password matching validation on step 0
+            if (stepIndex === 0) {
+                const password = document.getElementById('renter_password').value;
+                const confirm = document.getElementById('renter_password_confirmation').value;
+                if (password !== confirm) {
+                    toastr.error("Passwords do not match");
+                    return false;
+                }
+                if (password.length < 8) {
+                    toastr.error("Password must be at least 8 characters");
+                    return false;
+                }
+            }
+
+            // Validate bedroom selection on step 3
+            if (stepIndex === 3) {
+                const bedroomChecked = document.querySelectorAll('input[name="bedrooms[]"]:checked');
+                if (bedroomChecked.length === 0) {
+                    toastr.warning("Please select at least one bedroom option");
+                    return false;
+                }
+            }
+
+            inputs.forEach(input => {
+                if (!input.value || (input.type === 'email' && !input.validity.valid)) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                }
+            });
+
+            if (!isValid) {
+                toastr.warning("Please fill in all required fields correctly.");
+            }
+            return isValid;
+        }
+
+        nextBtn?.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps - 1) {
+                    currentStep++;
+                    updateUI();
+                }
+            }
+        });
+
+        prevBtn?.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                updateUI();
+            }
+        });
+
+        // City handling
+        const stateSelect = document.querySelector('.state-select');
+        const citySelect = document.querySelector('.city-select');
+
+        stateSelect?.addEventListener('change', async function() {
+            const stateId = this.value;
+            if (!stateId) {
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                citySelect.disabled = true;
+                return;
+            }
+
+            citySelect.disabled = true;
+            citySelect.innerHTML = '<option value="">Loading...</option>';
+
+            try {
+                const response = await fetch(`/cities/${stateId}`);
+                const cities = await response.json();
+                
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                cities.forEach(city => {
+                    citySelect.innerHTML += `<option value="${city.Id}">${city.CityName}</option>`;
+                });
+                citySelect.disabled = false;
+            } catch (error) {
+                console.error("Error fetching cities:", error);
+                toastr.error("Failed to load cities");
+            }
+        });
+
+        // Form submission
+        form?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!validateStep(currentStep)) return;
+
+            const formData = new FormData(this);
+            const submitBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Processing...';
+
+            try {
+                const response = await fetch("{{ route('renter-register') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    toastr.success(data.success);
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(key => {
+                            toastr.error(data.errors[key][0]);
+                        });
+                    } else if (data.message) {
+                        toastr.error(data.message);
+                    } else {
+                        toastr.error("Registration failed. Please check your inputs.");
+                    }
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = submitBtnText;
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+                toastr.error("An error occurred. Please try again later.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtnText;
+            }
+        });
+
+        updateUI();
+    })();
 </script>

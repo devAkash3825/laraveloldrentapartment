@@ -33,24 +33,33 @@
                                 <div class="col-xl-12 col-md-6">
                                     <div class="my_listing_single">
                                         <label>current password</label>
-                                        <div class="input_area">
-                                            <input type="password" placeholder="Current Password" name="old_password">
+                                        <div class="input_area" style="position: relative;">
+                                            <input type="password" placeholder="Current Password" name="old_password" id="old_password">
+                                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('old_password', event)" style="position: absolute; right: 10px; top: 12px; border: none; background: none; color: #999;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-md-6">
                                     <div class="my_listing_single">
                                         <label>new password</label>
-                                        <div class="input_area">
-                                            <input type="password" placeholder="New Password" name="password">
+                                        <div class="input_area" style="position: relative;">
+                                            <input type="password" placeholder="New Password" name="password" id="new_password">
+                                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('new_password', event)" style="position: absolute; right: 10px; top: 12px; border: none; background: none; color: #999;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label>confirm password</label>
-                                        <div class="input_area">
-                                            <input type="password" placeholder="Confirm Password" name="password_confirmation">
+                                        <div class="input_area" style="position: relative;">
+                                            <input type="password" placeholder="Confirm Password" name="password_confirmation" id="confirm_password">
+                                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('confirm_password', event)" style="position: absolute; right: 10px; top: 12px; border: none; background: none; color: #999;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

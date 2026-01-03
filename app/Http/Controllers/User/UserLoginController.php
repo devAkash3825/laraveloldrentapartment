@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Login;
 use App\Models\RenterInfo;
 use App\Models\User;
+use App\Models\State;
+use App\Models\Source;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +22,9 @@ class UserLoginController extends Controller
 
     public function showRegisterForm()
     {
-        return view('user.auth.register');
+        $state = State::all();
+        $source = Source::all();
+        return view('user.auth.register', compact('state', 'source'));
     }
     public function showUserLoginForm()
     {
@@ -29,47 +33,65 @@ class UserLoginController extends Controller
 
     public function userLogin(Request $request)
     {
+        $loginId = $request->input('username') ?? $request->input('email') ?? $request->input('login_id');
+        
+        $request->merge(['login_id' => $loginId]);
+
         $request->validate([
-            'username' => 'required',
+            'login_id' => 'required',
             'password' => 'required',
         ]);
 
         try {
-            $renter = Login::where('UserName', $request->username)->first();
+            // Support both username and email login
+            $user = Login::where('UserName', $loginId)
+                         ->orWhere('Email', $loginId)
+                         ->first();
 
-            if ($renter) {
-                $dbPassword    = $renter->Password;
-                $inputPassword = $request->password;
-
-                $passwordMatches = false;
-
-                // Check if password is hashed (e.g., bcrypt hashes start with $2y$)
-                if (Str::startsWith($dbPassword, '$2y$')) {
-                    $passwordMatches = Hash::check($inputPassword, $dbPassword);
-                } else {
-                    // Fallback to plain password comparison
-                    $passwordMatches = $dbPassword === $inputPassword;
+            if ($user) {
+                $isAuthenticated = false;
+                
+                // Try Bcrypt first (Standard Laravel)
+                if (Hash::check($request->password, $user->Password)) {
+                    $isAuthenticated = true;
+                } 
+                // Fallback for legacy plain text passwords if necessary
+                else if ($request->password === $user->Password) {
+                    $isAuthenticated = true;
+                    // Auto-hash it for next time
+                    $user->Password = Hash::make($request->password);
+                    $user->save();
+                    Log::info('Legacy password updated for user: ' . $user->UserName);
                 }
 
-                if ($passwordMatches) {
-                    Auth::guard('renter')->login($renter);
+                if ($isAuthenticated) {
+                    Auth::guard('renter')->login($user, $request->has('remember'));
+                    
+                    // Regenerate session for security
+                    $request->session()->regenerate();
+                    
+                    Log::info('User logged in: ' . $user->UserName);
                     return redirect()->intended('/');
                 }
             }
 
-            return redirect()->route('login')->with('error', 'Invalid credentials');
-        } catch (Exception $e) {
+            Log::warning('Failed login attempt for: ' . $loginId);
+            return redirect()->back()
+                ->withInput($request->all())
+                ->with('error', 'Invalid username or password.');
+
+        } catch (\Exception $e) {
             Log::error('Login error: ' . $e->getMessage());
-            return redirect()->route('login')->with('error', 'An error occurred while trying to log in. Please try again later.');
+            return redirect()->back()->with('error', 'An error occurred while trying to log in.');
         }
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('renter')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+        return redirect()->route('show-login');
     }
 
     public function managerRegister(Request $request)
@@ -79,124 +101,113 @@ class UserLoginController extends Controller
             'email'    => 'required|email|unique:login',
             'password' => 'required|confirmed',
         ]);
-        $email      = $request->email;
-        $password   = $request->password;
-        $username   = $request->username;
-        $ip_address = $request->ip();
-        $createdOn  = Carbon::now();
-        $modifiedOn = Carbon::now();
-        $usertype   = "M";
+
         try {
             $user = Login::create([
-                'UserName'   => $username,
-                'Password'   => $password,
-                'Email'      => $email,
-                'user_type'  => $usertype,
-                'UserIp'     => $ip_address,
-                'CreatedOn'  => $createdOn,
-                'ModifiedOn' => $modifiedOn,
+                'UserName'   => $request->username,
+                'Password'   => Hash::make($request->password),
+                'Email'      => $request->email,
+                'user_type'  => 'M',
+                'UserIp'     => $request->ip(),
+                'CreatedOn'  => now(),
+                'ModifiedOn' => now(),
+                'Status'     => '1',
             ]);
-            $credentials = $request->only('username', 'password');
-            $manager     = Login::where('UserName', $request->username)->first();
 
-            if ($request->password === $manager->Password) {
-                Auth::guard('renter')->login($manager);
-                return redirect()->intended('/');
-                // return response()->json([
-                //     'success' => 'Manager Register success',
-                // ]);
-            } else {
+            Auth::guard('renter')->login($user);
+
+            if ($request->ajax()) {
                 return response()->json([
-                    'error',
-                    'error',
+                    'success' => 'Manager registered and logged in successfully.',
                 ]);
             }
-        } catch (Exception $e) {
-            Log::error('Admin login error: ' . $e->getMessage());
-            return redirect()->route('admin-login')->with('error', 'An error occurred while trying to log in. Please try again later.');
+
+            return redirect()->intended('/');
+        } catch (\Exception $e) {
+            Log::error('Manager registration error: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'An error occurred during registration.',
+                ], 500);
+            }
+            return back()->with('error', 'An error occurred while trying to register. Please try again later.');
         }
     }
 
     public function renterRegister(Request $request)
     {
-        if ($request->ajax()) {
-            $request->validate([
-                'username'              => 'required',
-                'email'                 => 'required|email|unique:login',
-                'password'              => 'required|confirmed',
-                'password_confirmation' => 'required',
-                'firstname'             => 'required',
-                'lastname'              => 'required',
-                'zip'                   => 'required',
-                'cell'                  => 'required',
-                'renterstate'           => 'required',
-                'rentercity'            => 'required',
-                'aboutmovein'           => 'required',
-                'latestdate'            => 'required',
-                'petinfo'               => 'required',
-                'source'                => 'required',
-                'additional_info'       => 'required',
-                'price_from'            => 'required',
-                'price_to'              => 'required',
-                'currentAddress'        => 'required',
+        $request->validate([
+            'username'              => 'required',
+            'email'                 => 'required|email|unique:login',
+            'password'              => 'required|confirmed',
+            'password_confirmation' => 'required',
+            'firstname'             => 'required',
+            'lastname'              => 'required',
+            'zip'                   => 'required',
+            'cell'                  => 'required',
+            'renterstate'           => 'required',
+            'rentercity'            => 'required',
+            'aboutmovein'           => 'required',
+            'latestdate'            => 'required',
+            'petinfo'               => 'required',
+            'source'                => 'required',
+            'additional_info'       => 'required',
+            'price_from'            => 'required',
+            'price_to'              => 'required',
+            'currentAddress'        => 'required',
+        ]);
+
+        try {
+            $login = Login::create([
+                'UserName'         => $request->username,
+                'Password'         => Hash::make($request->password),
+                'Email'            => $request->email,
+                'CreatedOn'        => now(),
+                'ModifiedOn'       => now(),
+                'Status'           => '1',
+                'UserIp'           => $request->ip(),
+                'user_type'        => 'C',
+                'acc_to_craiglist' => 'No',
             ]);
 
-            try {
-                $login = Login::create([
-                    'UserName'         => $request->username,
-                    'Password'         => $request->password,
-                    'Email'            => $request->email,
-                    'CreatedOn'        => now(),
-                    'ModifiedOn'       => now(),
-                    'Status'           => '1',
-                    'UserIp'           => $request->ip(),
-                    'user_type'        => 'C',
-                    'acc_to_craiglist' => 'No',
+            RenterInfo::create([
+                'Login_ID'         => $login->Id,
+                'Firstname'        => $request->firstname,
+                'Lastname'         => $request->lastname,
+                'phone'            => $request->cell,
+                'Evening_phone'    => $request->otherphone,
+                'Current_address'  => $request->currentAddress,
+                'Cityid'           => $request->rentercity,
+                'zipcode'          => $request->zip,
+                'Area_move'        => $request->aboutmovein,
+                'Emove_date'       => $request->earliestdate,
+                'Lmove_date'       => $request->latestdate,
+                'Rent_start_range' => $request->price_from,
+                'Rent_end_range'   => $request->price_to,
+                'Additional_info'  => $request->additional_info,
+                'Hearabout'        => $request->source,
+            ]);
+
+            Auth::guard('renter')->login($login);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => 'Renter registered and logged in successfully.',
                 ]);
+            }
 
-                $Id = $login->Id;
+            return redirect()->intended('/');
 
-                RenterInfo::create([
-                    'Login_ID'         => $Id,
-                    'Firstname'        => $request->firstname,
-                    'Lastname'         => $request->lastname,
-                    'phone'            => $request->cell,
-                    'Evening_phone'    => $request->otherphone,
-                    'Current_address'  => $request->currentAddress,
-                    'Cityid'           => $request->rentercity,
-                    'zipcode'          => $request->zip,
-                    'Area_move'        => $request->aboutmovein,
-                    'Emove_date'       => $request->earliestdate,
-                    'Lmove_date'       => $request->latestdate,
-                    'Rent_start_range' => $request->price_from,
-                    'Rent_end_range'   => $request->price_to,
-                    'Additional_info'  => $request->additional_info,
-                    'Hearabout'        => $request->source,
-                ]);
-
-                $renterlogin = Login::where('Email', $request->email)->first();
-
-                if (Hash::check($request->password, $renterlogin->Password) || $renterlogin->Password === $request->password) {
-                    Auth::guard('renter')->login($renterlogin);
-
-                    return response()->json([
-                        'success' => 'Renter registered and logged in successfully.',
-                    ]);
-                } else {
-                    return response()->json([
-                        'error' => 'Invalid credentials.',
-                    ], 401);
-                }
-
-            } catch (\Exception $e) {
-                Log::error('Error adding renter: ' . $e->getMessage());
-                $file = 'leads-log.log';
-                file_put_contents($file, print_r($e->getMessage(), true), FILE_APPEND);
+        } catch (\Exception $e) {
+            Log::error('Error adding renter: ' . $e->getMessage());
+            if ($request->ajax()) {
                 return response()->json([
                     'status'  => 'error',
                     'message' => 'An error occurred while adding the renter. Please try again later.',
                 ], 500);
             }
+            return back()->with('error', 'An error occurred while trying to register. Please try again later.');
         }
     }
 
@@ -208,41 +219,21 @@ class UserLoginController extends Controller
 
     public function resetPassword(Request $request)
     {
-
         $request->validate([
             'old_password' => 'required',
-            'password'     => 'required|confirmed',
+            'password'     => 'required|confirmed|min:8',
         ]);
 
-        $user            = Auth::guard('renter')->user();
-        $userid          = Auth::guard('renter')->user()->Id;
-        $currentPassword = $user->Password;
+        $user = Auth::guard('renter')->user();
 
-        if (Hash::check($request->old_password, $currentPassword)) {
-            if (! Hash::check($request->old_password, $currentPassword)) {
-                return response()->json(['error' => 'Old password is incorrect'], 400);
-            } else {
-                $updatePassword = $request->password;
-                $changePassword = Login::where('Id', $userid)->update([
-                    'Password' => $updatePassword,
-                ]);
-                if ($$changePassword) {
-                    return response()->json(['success' => 'Password changed successfully'], 200);
-                }
-            }
-        } else {
-            if ($request->old_password !== $currentPassword) {
-                return response()->json(['error' => 'Old password is incorrect'], 400);
-            } else {
-                $updatePassword = $request->password;
-                $changePassword = Login::where('Id', $userid)->update([
-                    'Password' => $updatePassword,
-                ]);
-                if ($changePassword) {
-                    return response()->json(['success' => 'Password changed successfully'], 200);
-                }
-            }
+        if (!Hash::check($request->old_password, $user->Password)) {
+            return response()->json(['error' => 'Current password is incorrect.'], 400);
         }
+
+        $user->Password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json(['success' => 'Password changed successfully!'], 200);
     }
 
     public function forgotPasswod()

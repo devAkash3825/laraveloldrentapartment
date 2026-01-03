@@ -29,30 +29,17 @@ class AdminLoginController extends Controller
         ]);
 
         try {
-            $renter = AdminDetail::where('admin_login_id', $request->admin_login_id)->first();
+            $admin = AdminDetail::where('admin_login_id', $request->admin_login_id)->first();
 
-            if ($renter) {
-                $dbPassword    = $renter->password;
-                $inputPassword = $request->password;
-
-                $passwordMatches = false;
-                
-                if (Str::startsWith($dbPassword, '$2y$')) {
-                    $passwordMatches = Hash::check($inputPassword, $dbPassword);
-                } else {
-                    $passwordMatches = $dbPassword === $inputPassword;
-                }
-
-                if ($passwordMatches) {
-                    Auth::guard('admin')->login($renter);
-                    return redirect()->intended('/admin/agent-remainder');
-                }
+            if ($admin && Hash::check($request->password, $admin->password)) {
+                Auth::guard('admin')->login($admin);
+                return redirect()->intended('/admin/agent-remainder');
             }
 
             return redirect()->route('admin-login')->with('error', 'Invalid credentials');
         } catch (Exception $e) {
             Log::error('Admin login error: ' . $e->getMessage());
-            return redirect()->route('admin-login')->with('error', 'An error occurred while trying to log in. Please try again later.');
+            return redirect()->route('admin-login')->with('error', 'An error occurred while trying to log in.');
         }
     }
     public function logout(Request $request)

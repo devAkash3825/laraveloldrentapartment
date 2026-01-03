@@ -103,6 +103,7 @@ Route::middleware(['authenticated'])->group(function () {
 
     Route::post('/add-to-favorite', [UserFavoriteController::class, 'addToFavoriteByUser'])->name('add-to-favorite');
     Route::post('/is-favorite', [UserFavoriteController::class, 'checkIsFavorite'])->name('check-is-favorite');
+    Route::post('/bulk-remove-favorites', [UserFavoriteController::class, 'bulkRemoveFavorites'])->name('bulk-remove-favorites');
 
     Route::post('request-quote', [UserPropertyController::class, 'requestQuote'])->name('request-quote');
     Route::post('add-new-property', [UserPropertyController::class, 'addNewProperty'])->name('add-new-property');

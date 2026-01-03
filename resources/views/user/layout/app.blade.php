@@ -16,6 +16,9 @@ $settings = DB::table('settings')->pluck('value', 'key');
 </head>
 
 <body>
+    <div id="global-loader">
+        <div class="spinner-premium"></div>
+    </div>
     <div>
         @include('sweetalert::alert')
         @include('user.layout.navbar')

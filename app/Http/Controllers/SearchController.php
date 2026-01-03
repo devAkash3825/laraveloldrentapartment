@@ -27,7 +27,7 @@ class SearchController extends Controller
             'city',
             'communitydescription',
             'propertyfloorplandetails',
-            'newAdditionalInfo',
+            'propertyAdditionalInfo',
             'gallerytype.gallerydetail'
         ]);
 

@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\CommunityDescription;
 use Illuminate\Pagination\LengthAwarePaginator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\Models\PropertyNewAdditionalInfo;
 
 
 
@@ -178,43 +177,6 @@ class UserPropertyController extends Controller
         return 'no records found111';
     }
 
-    public function managerRegister(Request $request)
-    {
-        $request->validate([
-            'username' => 'required',
-            'email' => 'required|email|unique:login',
-            'password' => 'required|confirmed',
-        ]);
-        $email = $request->email;
-        $password = $request->password;
-        $username = $request->username;
-        $ip_address = $request->ip();
-        $createdOn = Carbon::now();
-        $modifiedOn = Carbon::now();
-        $usertype = "M";
-        try {
-            $user = Login::create([
-                'UserName' => $username,
-                'Password' => $password,
-                'Email' => $email,
-                'user_type' => $usertype,
-                'UserIp' => $ip_address,
-                'CreatedOn' => $createdOn,
-                'ModifiedOn' => $modifiedOn,
-            ]);
-            $credentials = $request->only('username', 'password');
-            $manager = Login::where('UserName', $request->username)->first();
-            if (Hash::check($request->password, $manager->Password) || $manager->Password === $request->password) {
-                Auth::guard('renter')->login($manager);
-                return view->json(['success' => 'Registration successful, you are now logged in.', 'redirect' => '/']);
-            } else {
-                return response()->json(['error' => 'Invalid credentials.'], 401);
-            }
-        } catch (Exception $e) {
-            Log::error('Admin login error: ' . $e->getMessage());
-            return redirect()->route('admin-login')->with('error', 'An error occurred while trying to log in. Please try again later.');
-        }
-    }
 
     public function getStates()
     {
@@ -250,7 +212,8 @@ class UserPropertyController extends Controller
     }
     public function addProperty()
     {
-        return view('user.property.addProperty');
+        $state = State::all();
+        return view('user.property.addProperty', compact('state'));
     }
 
     public function addNewProperty(Request $request)
@@ -266,10 +229,13 @@ class UserPropertyController extends Controller
             'pcontact'             => 'required|string|max:100',
             'units'                => 'required|integer|min:1',
             'yearbuilt'            => 'required|date',
+            'year_remodeled'       => 'nullable|date',
             'area'                 => 'required|string|max:255',
             'address'              => 'required|string|max:255',
             'zipcode'              => 'required|string|max:20',
             'contactno'            => 'required|string|max:20',
+            'website'              => 'nullable|url|max:255',
+            'officehours'          => 'nullable|string|max:1000',
             'billto'               => 'required|string|max:255',
             'copyzipcode'          => 'required|string|max:20',
             'bill_address_state'   => 'required',
@@ -361,30 +327,36 @@ class UserPropertyController extends Controller
 
     public function requestQuote(Request $request)
     {
-        $validation = $request->validate([
+        $request->validate([
             'comments' => 'required',
             'propertyId' => 'required',
         ]);
+
         try {
             $userid = Auth::guard('renter')->user()->Id;
-            $data = PropertyInquiry::create([
+            PropertyInquiry::create([
                 'PropertyId' => $request->propertyId,
-                'UserId' => $userid,
-                'UserName' => $request->firstname,
-                'LastName' => $request->lastname,
-                'Email' => $request->email,
-                'Phone' => $request->phone,
-                'MoveDate' => $request->movedate,
-                'Message' => $request->comments,
-                'CreatedOn' => Carbon::now(),
+                'UserId'     => $userid,
+                'UserName'   => $request->firstname,
+                'LastName'   => $request->lastname,
+                'Email'      => $request->email,
+                'Phone'      => $request->phone,
+                'MoveDate'   => $request->movedate,
+                'Message'    => $request->comments,
+                'CreatedOn'  => now(),
             ]);
-            return response()->json(
-                ['success' => true]
-            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Your request has been sent successfully!'
+            ]);
+
         } catch (\Exception $e) {
-            return response()->json(
-                ['error' => false]
-            );
+            Log::error('Request Quote Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while sending your request.'
+            ], 500);
         }
     }
 
@@ -582,7 +554,7 @@ class UserPropertyController extends Controller
             'driving_directions'  => 'nullable|string|max:1000',
         ]);
         try {
-            $existingInfo = PropertyNewAdditionalInfo::where('PropertyId', $propertyId)->update([
+            $existingInfo = PropertyAdditionalInfo::where('PropertyId', $propertyId)->update([
                 'LeasingTerms'       => $request->input('leasing_terms'),
                 'QualifiyingCriteria' => $request->input('qualifying_criteria'),
                 'Parking'            => $request->input('parking'),
@@ -598,7 +570,7 @@ class UserPropertyController extends Controller
                 Log::info("✅ Property Additional Info updated", ['PropertyId' => $propertyId]);
                 return redirect()->back()->with('success', 'Property additional details updated successfully!');
             } else {
-                PropertyNewAdditionalInfo::create([
+                PropertyAdditionalInfo::create([
                     'LeasingTerms'       => $request->input('leasing_terms'),
                     'QualifiyingCriteria' => $request->input('qualifying_criteria'),
                     'Parking'            => $request->input('parking'),

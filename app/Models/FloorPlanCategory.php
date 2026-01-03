@@ -27,20 +27,12 @@ class FloorPlanCategory extends Model
     
     public function getFormattedCreatedOnAttribute()
     {
-        return $this->CreatedOn->format('Y-m-d');
+        return $this->CreatedOn ? $this->CreatedOn->format('Y-m-d') : null;
     }
     
     public function getFormattedModifiedOnAttribute()
     {
-        return $this->ModifiedOn->format('Y-m-d');
-    }
-
-    public function propertyinfo(){
-        return $this->belongsTo(PropertyInfo::class,'PropertyId','Id');
-    }
-
-    public function gallerydetail(){
-        return $this->hasMany(GalleryDetails::class,'floorplan_id','Id');
+        return $this->ModifiedOn ? $this->ModifiedOn->format('Y-m-d') : null;
     }
 
     protected $casts = [

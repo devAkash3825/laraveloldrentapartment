@@ -101,5 +101,6 @@
     </script>
 
     <!-- Load the Google Maps JavaScript API -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMap" async defer>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ config('settings.google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}&callback=initMap" async defer></script>
+
 @endsection

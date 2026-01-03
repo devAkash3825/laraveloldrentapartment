@@ -12,7 +12,7 @@ use App\Models\City;
 use App\Models\State;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Models\propertyNewAdditionalInfo;
+use App\Models\PropertyAdditionalInfo;
 
 
 class SearchRepository
@@ -223,7 +223,7 @@ class SearchRepository
                 'city',
                 'communitydescription',
                 'propertyfloorplandetails',
-                'newAdditionalInfo',
+                'propertyAdditionalInfo',
                 'gallerytype.gallerydetail'
             ])
                 ->select(
@@ -329,7 +329,7 @@ class SearchRepository
             
             if ($pets = request('Pets')) {
                 foreach ($pets as $pet) {
-                    $query->whereRaw("FIND_IN_SET(?, newAdditionalInfo.Pets)", [$pet]);
+                    $query->whereRaw("FIND_IN_SET(?, propertyadditionalinfo.Pets)", [$pet]);
                 }
             }
 

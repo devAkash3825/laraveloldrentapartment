@@ -1,24 +1,25 @@
 @extends('user.layout.app')
 @section('title', 'RentApartement | Thumbnail View')
 @section('content')
-    <div id="breadcrumb_part"
-        style="background: url(../images/breadcroumb_bg.jpg);background-size: cover;background-repeat: no-repeat;background-position: center;">
-        <div class="bread_overlay">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 text-center text-white">
-                        <h4> Thumbnail View </h4>
-                        <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('home') }}"> Home </a></li>
-                                <li class="breadcrumb-item active" aria-current="page"> Thumbnail View </li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
+<!-- Premium Header -->
+<div class="header-premium-gradient py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold display-5 mb-2">My Favorites</h1>
+                <p class="text-white opacity-75 lead mb-0">Browse through your saved property collections</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">Thumbnail View</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
+</div>
     <section id="panels">
         <div class="container">
             <div class="row">
@@ -96,14 +97,15 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="d-flex">
-                                                            <a href="{{ route('property-display', ['id' => $row['id']]) }}"
-                                                                class="btn sample-green-fab-btn quick-btn flex-fill">More
-                                                                Details</a>
-                                                            <button data-bs-toggle="modal"data-bs-target="#staticBackdrop"
-                                                                class="btn sample-grn-fab-btn explore-btn flex-fill">View On
-                                                                Map</button>
-                                                        </div>
+                                                        <div class="d-flex gap-2">
+                                                             <a href="{{ route('property-display', ['id' => $row['id']]) }}"
+                                                                 class="btn sample-green-fab-btn quick-btn flex-fill">
+                                                                 <i class="bi bi-eye me-1"></i> More Details
+                                                             </a>
+                                                             <button class="btn btn-outline-danger btn-remove-fav flex-fill" data-id="{{ $row['id'] }}">
+                                                                 <i class="bi bi-heartbreak-fill me-1"></i> Remove
+                                                             </button>
+                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,7 +184,34 @@
     </script>
 
     <script type="text/javascript">
+        $(document).ready(function() {
+            $('.btn-remove-fav').on('click', function() {
+                var id = $(this).data('id');
+                var $card = $(this).closest('.col-md-12');
+
+                if (confirm('Are you sure you want to remove this property from your favorites?')) {
+                    $.ajax({
+                        url: "{{ route('add-to-favorite') }}",
+                        method: "POST",
+                        data: { propertyId: id },
+                        success: function(response) {
+                            if (response.success) {
+                                toastr.info('<i class="bi bi-heart me-2"></i>' + response.message);
+                                $card.fadeOut(500, function() {
+                                    $(this).remove();
+                                    if ($('.sample-Pcard').length === 0) {
+                                        location.reload(); // Show "no record" state
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
         function initMap() {
+            // ... (rest of the code)
             var marker;
             var map;
             var latElement = document.getElementById('lat');

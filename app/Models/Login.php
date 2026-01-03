@@ -31,13 +31,14 @@ class Login extends Authenticatable
     }
 
 
-    public function getAuthIdentifierName()
+    public function getAuthPassword()
     {
-        return 'UserName';
+        return $this->Password;
     }
+
     public function getFormattedCreatedOnAttribute()
     {
-        return $this->CreatedOn->format('Y-m-d');
+        return $this->CreatedOn ? $this->CreatedOn->format('Y-m-d') : null;
     }
     public function getFormattedModifiedOnAttribute()
     {

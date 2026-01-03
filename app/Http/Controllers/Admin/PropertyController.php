@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\CommunityAmenities;
 use App\Models\CommunityDescription;
 use App\Models\Favorite;
+use App\Services\DataTableService;
 use App\Models\FloorPlanCategory;
 
 // Controller
@@ -47,68 +48,54 @@ class PropertyController extends Controller
     public function listProperty(Request $request)
     {
         try {
-            $listProperties = $this->propertyDetailsRepository->getListProperties();
-
             if ($request->ajax()) {
-                return DataTables::of($listProperties)
+                $query = PropertyInfo::with(['city', 'login'])->select('propertyinfo.*');
+
+                $admin = Auth::guard('admin')->user();
+                if ($admin) {
+                    $query->whereHas('city.adminaccess', function ($q) use ($admin) {
+                        $q->where('admin_detail_id', $admin->id);
+                    });
+                }
+
+                return DataTableService::of($query)
                     ->addIndexColumn()
                     ->addColumn('propertyname', function ($row) {
                         $url = route('admin-property-display', [$row->Id]);
-                        return $row->PropertyName
-                        ? "<a href='{$url}' class='btn delete-btn font-weight-bold bg-link' data-id='{$row->Id}'>{$row->PropertyName}</a>"
-                        : 'N/A';
+                        return sprintf('<a href="%s" class="font-weight-bold text-primary">%s</a>', $url, e($row->PropertyName));
                     })
-                    ->addColumn('city', function ($row) {
-                        return $row->city->CityName ?? 'N/A';
-                    })
+                    ->addColumn('city', DataTableService::safeColumn('city.CityName'))
                     ->addColumn('features', function ($row) {
                         return $row->Featured == 1
-                        ? '<p class="text-success mb-0">Featured</p>'
-                        : '<p class="text-muted mb-0">General</p>';
+                            ? '<span class="badge badge-success">Featured</span>'
+                            : '<span class="badge badge-light">General</span>';
                     })
-                    ->addColumn('status', function ($row) {
-                        if ($row->Status == 1) {
-                            return "<a href='javascript:void(0)' id='changetopropertystatus' class='changetopropertystatus c-pill c-pill--success' data-status='" . $row->Status . "' onclick='changeStatus(" . $row->Id . ")'> Active </a>";
-                        } elseif ($row->Status == 2) {
-                            return "<a href='javascript:void(0)' id='changetopropertystatus' class='changetopropertystatus c-pill c-pill--danger' data-status='" . $row->Status . "' onclick='changeStatus(" . $row->Id . ")'> Leased </a>";
-                        } else {
-                            return "<a href='javascript:void(0)' id='changetopropertystatus' class='changetopropertystatus c-pill c-pill--warning' data-status='" . $row->Status . "' onclick='changeStatus(" . $row->Id . ")'> InActive </a>";
-                        }
-                    })
-                    ->addColumn('action', function ($row) {
-                        $editUrl       = route('admin-edit-property', [$row->Id]);
-                        $deleteurl     = route('admin-delete-property', [$row->Id]);
-                        $user          = Auth::guard('admin')->user();
-                        $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-
-                        if ($user && $user->hasPermission('property_addedit')) {
-                            $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn">
-                                                    <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                                </a>';
-                        }
-                        if ($user && $user->hasPermission('property_delete')) {
-                            $actionButtons .= '<a href="javascript:void(0)" id="delete-property" class="propertyDlt" data-id="' . $row->Id . '" data-url="' . $deleteurl . '">
-                                                    <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                                </a>';
-                        }
-                        $actionButtons .= '</div>';
-                        return $actionButtons;
-                    })
-
-                    ->rawColumns(['propertyname', 'city', 'features', 'status', 'action'])
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('action', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-property', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'property_addedit'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-delete-property', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true,
+                            'permission' => 'property_delete'
+                        ]
+                    ]))
+                    ->rawColumns(['propertyname', 'features', 'status', 'action'])
                     ->make(true);
             }
 
             return view('admin.property.listProperties');
         } catch (\Exception $e) {
-
             \Log::error('Error fetching property list: ' . $e->getMessage());
-
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Unable to fetch property list. Please try again later.'], 500);
-            }
-
-            return redirect()->route('admin-dashboard')->with('error', 'Something went wrong while fetching the property list.');
+            return $request->ajax()
+                ? response()->json(['error' => 'Unable to fetch property list.'], 500)
+                : redirect()->back()->with('error', 'Something went wrong.');
         }
     }
 
@@ -927,23 +914,67 @@ class PropertyController extends Controller
 
     public function propertySearch(Request $request)
     {
-        $searchtext = $request->propertysearch;
+        try {
+            if ($request->ajax()) {
+                $searchtext = $request->propertysearch;
+                $query = PropertyInfo::with(['city.state'])->select('propertyinfo.*');
 
-        $properties = PropertyInfo::where(function ($query) use ($searchtext) {
-            $query->where('PropertyName', 'LIKE', "%{$searchtext}%")
-                ->orWhere('Area', 'LIKE', "%{$searchtext}%")
-                ->orWhere('Zone', 'LIKE', "%{$searchtext}%")
-                ->orWhere('Keyword', 'LIKE', "%{$searchtext}%");
-        })
-            ->orWhereHas('city', function ($query) use ($searchtext) {
-                $query->where('CityName', 'LIKE', "%{$searchtext}%")
-                    ->orWhereHas('state', function ($query) use ($searchtext) {
-                        $query->where('StateName', 'LIKE', "%{$searchtext}%");
+                if ($searchtext) {
+                    $query->where(function ($q) use ($searchtext) {
+                        $q->where('PropertyName', 'LIKE', "%{$searchtext}%")
+                            ->orWhere('Area', 'LIKE', "%{$searchtext}%")
+                            ->orWhere('Zone', 'LIKE', "%{$searchtext}%")
+                            ->orWhere('Keyword', 'LIKE', "%{$searchtext}%")
+                            ->orWhereHas('city', function ($cq) use ($searchtext) {
+                                $cq->where('CityName', 'LIKE', "%{$searchtext}%")
+                                    ->orWhereHas('state', function ($sq) use ($searchtext) {
+                                        $sq->where('StateName', 'LIKE', "%{$searchtext}%");
+                                    });
+                            });
                     });
-            })
-            ->get();
+                }
 
-        return view('admin.property.propertySearch', ['searchproperties' => $properties]);
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('propertyname', function ($row) {
+                        $url = route('admin-property-display', [$row->Id]);
+                        return sprintf('<a href="%s" class="font-weight-bold text-primary">%s</a>', $url, e($row->PropertyName));
+                    })
+                    ->addColumn('city', DataTableService::safeColumn('city.CityName'))
+                    ->addColumn('features', function ($row) {
+                        return $row->Featured == 1
+                            ? '<span class="badge badge-success">Featured</span>'
+                            : '<span class="badge badge-light">General</span>';
+                    })
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('action', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-property', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'property_addedit'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-delete-property', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn',
+                            'delete' => true,
+                            'permission' => 'property_delete'
+                        ]
+                    ]))
+                    ->rawColumns(['propertyname', 'status', 'action'])
+                    ->make(true);
+            }
+
+            return view('admin.property.propertySearch', [
+                'searchText' => $request->propertysearch
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in propertySearch: ' . $e->getMessage());
+            return $request->ajax()
+                ? response()->json(['error' => 'An error occurred.'], 500)
+                : redirect()->back()->with('error', 'An error occurred.');
+        }
     }
 
     public function petsManagement(Request $request)

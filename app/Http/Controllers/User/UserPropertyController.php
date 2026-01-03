@@ -25,12 +25,12 @@ use App\Models\CommunityAmenities;
 use App\Models\FloorPlanCategory;
 use App\Models\PropertyFloorPlanDetail;
 use App\Models\GalleryType;
-use App\Models\propertyAdditionalInfo;
+use App\Models\PropertyAdditionalInfo;
 use Illuminate\Support\Facades\Storage;
 use App\Models\CommunityDescription;
 use Illuminate\Pagination\LengthAwarePaginator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\Models\propertyNewAdditionalInfo;
+use App\Models\PropertyNewAdditionalInfo;
 
 
 
@@ -582,7 +582,7 @@ class UserPropertyController extends Controller
             'driving_directions'  => 'nullable|string|max:1000',
         ]);
         try {
-            $existingInfo = propertyNewAdditionalInfo::where('PropertyId', $propertyId)->update([
+            $existingInfo = PropertyNewAdditionalInfo::where('PropertyId', $propertyId)->update([
                 'LeasingTerms'       => $request->input('leasing_terms'),
                 'QualifiyingCriteria' => $request->input('qualifying_criteria'),
                 'Parking'            => $request->input('parking'),
@@ -594,22 +594,20 @@ class UserPropertyController extends Controller
                 'PropertyId'         => $propertyId,
             ]);
 
-           
-
             if ($existingInfo) {
-                    Log::info("✅ Property Additional Info updated", ['PropertyId' => $propertyId]);
+                Log::info("✅ Property Additional Info updated", ['PropertyId' => $propertyId]);
                 return redirect()->back()->with('success', 'Property additional details updated successfully!');
             } else {
-                propertyNewAdditionalInfo::create([
-                'LeasingTerms'       => $request->input('leasing_terms'),
-                'QualifiyingCriteria' => $request->input('qualifying_criteria'),
-                'Parking'            => $request->input('parking'),
-                'PetPolicy'          => $request->input('pet_policy'),
-                'Neighborhood'       => $request->input('neighborhood'),
-                'Schools'            => $request->input('schools'),
-                'drivedirection'     => $request->input('driving_directions'),
-                'ModifiedOn'         => Carbon::now(),
-                'PropertyId'         => $propertyId,
+                PropertyNewAdditionalInfo::create([
+                    'LeasingTerms'       => $request->input('leasing_terms'),
+                    'QualifiyingCriteria' => $request->input('qualifying_criteria'),
+                    'Parking'            => $request->input('parking'),
+                    'PetPolicy'          => $request->input('pet_policy'),
+                    'Neighborhood'       => $request->input('neighborhood'),
+                    'Schools'            => $request->input('schools'),
+                    'drivedirection'     => $request->input('driving_directions'),
+                    'ModifiedOn'         => Carbon::now(),
+                    'PropertyId'         => $propertyId,
                 ]);
                 Log::info("🆕 Property Additional Info created", ['PropertyId' => $propertyId]);
                 return redirect()->back()->with('success', 'Property additional details updated successfully!');

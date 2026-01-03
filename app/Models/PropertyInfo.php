@@ -90,11 +90,11 @@ class PropertyInfo extends Model
     }
 
     public function propertyAdditionalInfo(){
-        return $this->hasOne(propertyAdditionalInfo::class,'PropertyId','Id');
+        return $this->hasOne(PropertyAdditionalInfo::class,'PropertyId','Id');
     }
 
     public function newAdditionalInfo(){
-        return $this->hasOne(propertyNewAdditionalInfo::class,'PropertyId','Id');
+        return $this->hasOne(PropertyNewAdditionalInfo::class,'PropertyId','Id');
     }
 
     public function propertyinquiry(){

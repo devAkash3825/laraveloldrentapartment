@@ -19,7 +19,8 @@
                                     <th>S.no</th>
                                     <th>Property Name</th>
                                     <th>City</th>
-                                    <th>Status</th>
+                                    <th class="text-center">Features</th>
+                                    <th class="text-center">Status</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -35,82 +36,31 @@
 @push('adminscripts')
     <script>
         $(document).ready(function() {
-            const properties = @json($searchproperties);
-            handleCommissionsResponse(properties);
+            const columns = [
+                { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
+                { data: "propertyname", name: "propertyname" },
+                { data: "city", name: "city" },
+                { data: "features", name: "features", className: "text-center" },
+                { data: "status", name: "status", className: "text-center" },
+                { data: "action", name: "action", orderable: false, searchable: false, className: "text-center" }
+            ];
 
-            $('#searchInput').on('keyup', function() {
-                $('#propertyTable').DataTable().ajax.reload();
-            });
+            const ajaxUrl = {
+                url: "{{ route('admin-property-search') }}",
+                data: function(d) {
+                    d.propertysearch = "{{ $searchText ?? '' }}";
+                }
+            };
 
-            function handleCommissionsResponse(data) {
-                $('#propertyTable').DataTable({
-                    data: data,
-                    columns: [{
-                            data: null,
-                            title: 'S.no',
-                            render: function(data, type, row, meta) {
-                                return meta.row + 1;
-                            }
-                        },
-                        {
-                            data: 'PropertyName',
-                            title: 'Property Name',
-                            render: function(data, type, row) {
-                                var url = "{{ route('admin-property-display', ['id' => ':id']) }}"
-                                    .replace(':id', row.Id);
-                                return `<a class="btn delete-btn font-weight-bold bg-link" href="${url}">${data}</a>`;
-                            }
-                        },
-                        {
-                            data: 'Cityid',
-                            title: 'City',
-                            render: function(data, type, row) {
-                                return row.city && row.city.CityName ? row.city.CityName : '';
-                            }
+            const config = DataTableHelpers.getConfig(
+                ajaxUrl,
+                columns,
+                {
+                    order: [[1, 'asc']]
+                }
+            );
 
-                        },
-                        {
-                            data: 'status',
-                            title: 'Status',
-                            render: function(data, type, row) {
-                                if (row.Status == 1) {
-                                    return `<a href='javascript:void(0)' id='changetopropertystatus' class='changetopropertystatus c-pill c-pill--success' data-status='${row.Status}' onclick='changeStatus(${row.Id})'> Active </a>`;
-                                } else if (row.Status == 2) {
-                                    return `<a href='javascript:void(0)' id='changetopropertystatus' class='changetopropertystatus c-pill c-pill--danger' data-status='${row.Status}' onclick='changeStatus(${row.Id})'> Leased </a>`;
-                                } else {
-                                    return `<a href='javascript:void(0)' id='changetopropertystatus' class='changetopropertystatus c-pill c-pill--warning' data-status='${row.Status}' onclick='changeStatus(${row.Id})'> InActive </a>`;
-                                }
-                            }
-                        },
-                        {
-                            data: null,
-                            title: 'Actions',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, row) {
-                                var editUrl = "{{ route('admin-edit-property', ['id' => ':id']) }}"
-                                    .replace(':id', row.Id);
-                                var deleteurl =
-                                    "{{ route('admin-delete-property', ['id' => ':id']) }}".replace(
-                                        ':id', row.Id);
-                                var dataid = row.Id;
-                                return `<div class="table-actionss-icon table-actions-icons float-none">
-                                    <a href="${editUrl }" class="edit-btn">
-                                        <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" id="delete-property" class="propertyDlt" data-id="${dataid}" data-url="${deleteurl}'">
-                                        <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                    </a>
-                                    </div>`;
-                            }
-                        }
-                    ],
-                    paging: true,
-                    pageLength: 10,
-                    // lengthMenu: [5, 10, 25, 50],
-                    // responsive: true
-                });
-            }
+            $('#propertyTable').DataTable(config);
         });
     </script>
 @endpush

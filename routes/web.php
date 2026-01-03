@@ -205,8 +205,9 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/call-history', [ClientController::class, 'callHistory'])->name('admin-call-history');
             Route::get('/map-view/{id}', [ClientController::class, 'switchMapView'])->name('admin-switch-map-view');
             Route::get('/map-search/{id}', [ClientController::class, 'MapSearch'])->name('admin-map-search');
-            Route::Post('/favorite-listing/{id}', [ClientController::class, 'getFavoriteListing'])->name('admin-fav-listing');
+            Route::get('/favorite-listing/{id}', [ClientController::class, 'getFavoriteListing'])->name('admin-fav-listing');
             Route::get('/history-favorite-listing/{id}', [ClientController::class, 'getHistoryFavoriteListing'])->name('admin-history-fav-listing');
+            Route::get('/property-inquiry-history/{id}', [ClientController::class, 'getPropertyInquiry'])->name('admin-inquiry-history');
 
             Route::get('/search-renter', [ClientController::class, 'searchRenter'])->name('admin-search-renter');
             Route::get('/search-renters', [ClientController::class, 'searchRenters'])->name('admin-search-renters');

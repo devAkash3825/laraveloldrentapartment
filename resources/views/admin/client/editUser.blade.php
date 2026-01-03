@@ -43,7 +43,8 @@
 
 
             <div class="section-wrapper">
-                <form id="editrenterform" novalidate>
+                <form id="editrenterform" action="{{ route('admin-edit-renter-update') }}" method="POST" novalidate>
+                    @csrf
                     <div class="form-row">
 
                         <div class="form-group col-lg-6 col-md-6 col-12">
@@ -304,8 +305,8 @@
                         </div>
 
                     </div>
-                    <div class="form-row justify-content-end">
-                        <button type="submit" class="btn btn-primary submit-spinner">Edit Renter</button>
+                    <div class="form-row justify-content-end mg-t-20">
+                        <button type="submit" class="btn btn-primary btn-premium submit-spinner px-4">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -411,39 +412,14 @@
                 unhighlight: function(element) {
                     $(element).addClass("is-valid").removeClass("is-invalid");
                 },
-                submitHandler: function(form) {
+                submitHandler: function(form, event) {
                     event.preventDefault();
-                    const formData = $(form).serialize();
-                    console.log("formData", formData);
-                    const url = `{{ route('admin-edit-renter-update') }}`;
-                    $.ajax({
-                        url: url,
-                        method: "POST",
-                        data: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        beforeSend: function() {
-                            $(".submit-spinner").prop("disabled", true).text("Editing...");
-                        },
+                    FormHelpers.submit($(form), {
                         success: function(response) {
-                            $(".submit-spinner").prop("disabled", false).text(
-                            "Edit Renter");
                             if (response.success) {
-                                toastr.success(response.message);
-                            } else {
-                                toastr.error(response.message);
-                            }
-                        },
-                        error: function(xhr) {
-                            $(".submit-spinner").prop("disabled", false).text(
-                            "Edit Renter");
-                            if (xhr.responseJSON.errors) {
-                                $.each(xhr.responseJSON.errors, function(key, value) {
-                                    toastr.error(value[0]);
-                                });
-                            } else {
-                                toastr.error("An error occurred while saving.");
+                                setTimeout(() => {
+                                    window.location.href = "{{ route('admin-activeRenter') }}";
+                                }, 1500);
                             }
                         }
                     });

@@ -405,46 +405,12 @@
         $(document).ready(function() {
             $('#propertyForm').on('submit', function(e) {
                 e.preventDefault();
-                let formData = new FormData(this);
-
-                $.ajax({
-                    url: "{{ route('admin-submit-property') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-                    },
-                    beforeSend: function() {
-                        $('.submit-spinner').html(
-                            `<span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-                            <span role="status">Creating...</span>`
-                        );
-                        $('.submit-spinner').prop('disabled', true);
-                    },
+                FormHelpers.submit($(this), {
                     success: function(response) {
                         $('#propertyForm')[0].reset();
-                        toastr.success(response.message);
-                        $("#addourfeatures")[0].reset();
-                        $('.submit-spinner').html(`Create`);
-                        $('.submit-spinner').prop('disabled', false);
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            let errorMessage = "";
-                            for (let field in errors) {
-                                toastr.error(errors[field][0])
-                            }
-                        } else {
-                            toastr.error("Something went wrong. Please try again later.")
-                        }
-                    },
-                    complete: function() {
-                        $('.submit-spinner').html(`Create`);
-                        $('.submit-spinner').prop('disabled', false);
-                    },
+                        $('#preview').empty();
+                        // Toast handled by AdminAjax
+                    }
                 });
             });
         });

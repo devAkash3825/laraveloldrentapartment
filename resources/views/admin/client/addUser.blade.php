@@ -302,8 +302,8 @@
                     </div>
 
                 </div>
-                <div class="form-row justify-content-end">
-                    <button type="submit" class="btn btn-primary submit-spinner">Add Renter</button>
+                <div class="form-row justify-content-end mg-t-20">
+                    <button type="submit" class="btn btn-primary btn-premium submit-spinner px-4">Add Renter</button>
                 </div>
             </form>
         </div>
@@ -390,10 +390,14 @@
             },
             submitHandler: function(form, event) {
                 event.preventDefault();
-                $(".submit-spinner").prop("disabled", true).text("Creating...");
-                setTimeout(function() {
-                    form.submit();
-                }, 800);
+                FormHelpers.submit($(form), {
+                    success: function(response) {
+                        AdminToast.success(response.message || "Renter created successfully!");
+                        setTimeout(() => {
+                            window.location.href = "{{ route('admin-activeRenter') }}";
+                        }, 1500);
+                    }
+                });
             }
         });
 

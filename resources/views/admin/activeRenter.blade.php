@@ -1,11 +1,6 @@
 @extends('admin.layouts.app')
 @section('content')
 @section('title', 'RentApartments Admin | Active Renters')
-<style>
-    td {
-        text-align: center;
-    }
-</style>
 <div class="slim-mainpanel">
     <div class="container">
         <div class="slim-pageheader">
@@ -41,89 +36,15 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $(function() {
-            try {
-                $("#active-renter").DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ route('admin-activeRenter') }}",
-                    columns: [{
-                            data: "DT_RowIndex",
-                            name: "DT_RowIndex",
-                        },
-                        {
-                            data: "firstname",
-                            name: "firstname",
-                        },
-                        {
-                            data: "lastname",
-                            name: "lastname",
-                        },
-                        {
-                            data: "probability",
-                            name: "probability",
-                        },
-                        {
-                            data: "status",
-                            name: "status",
-                        },
-                        {
-                            data: "adminname",
-                            name: "adminname",
-                        },
-                        {
-                            data: "actions",
-                            name: "actions",
-                        },
-                    ],
-                });
-            } catch (err) {
-                console.log("Err in datatables", err);
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.body.addEventListener('click', function(event) {
-            if (event.target.closest('.deleteRenter')) {
-                const button = event.target.closest('.deleteRenter');
-                const id = button.getAttribute('data-id');
-                const url = button.getAttribute('data-url');
-                swal({
-                    title: "Are you sure?",
-                    text: "You will not be able to recover this record!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        fetch(url, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector(
-                                        'meta[name="csrf-token"]').getAttribute(
-                                        'content'),
-                                },
-                            })
-                            .then((response) => {
-                                if (!response.ok) {
-                                    throw new Error(
-                                        'An error occurred while deleting the record.');
-                                }
-                                return response.json();
-                            })
-                            .then((data) => {
-                                toastr.success(data.message);
-                            })
-                            .catch((error) => {
-                                toastr.error(error.message ||
-                                    'An error occurred while deleting the record.');
-                            });
-                    }
-                });
-            }
-        });
+        $('#active-renter').DataTable(DataTableHelpers.getConfig("{{ route('admin-activeRenter') }}", [
+            { data: "DT_RowIndex", orderable: false, searchable: false },
+            { data: "firstname", name: "firstname" },
+            { data: "lastname", name: "lastname" },
+            { data: "probability", name: "probability" },
+            { data: "status", name: "status", orderable: false, searchable: false },
+            { data: "adminname", name: "adminname" },
+            { data: "actions", name: "actions", orderable: false, searchable: false }
+        ]));
     });
 </script>
 @endpush

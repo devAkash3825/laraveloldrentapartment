@@ -11,19 +11,7 @@
         --text-muted: #64748b;
     }
 
-    /* Clean solid breadcrumb */
-    #breadcrumb_part {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-        height: 180px !important;
-        display: flex;
-        align-items: center;
-        border-bottom: 4px solid var(--colorPrimary);
-    }
 
-    .bread_overlay {
-        background: none !important;
-        width: 100%;
-    }
 
     .recent-table-container {
         background: #fff;
@@ -157,19 +145,20 @@
 @endpush
 
 @section('content')
-<div id="breadcrumb_part">
-    <div class="bread_overlay">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center text-white">
-                    <h1 class="fw-bold mb-2" style="font-size: 2.2rem; letter-spacing: -1px;">Recently Visited</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center mb-0">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
-                            <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">History</li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="header-premium-gradient mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold display-5 mb-2">Recently Visited</h1>
+                <p class="text-white opacity-75 lead mb-0">Your browsing history of perfect homes</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">Browsing History</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>

@@ -1,19 +1,20 @@
 @extends('user.layout.app')
 @section('content')
 @section('title', 'RentApartement | Equal Housing ')
-<div id="breadcrumb_part" style="background-image:url('images/breadcroumb_bg.jpg')">
-    <div class="bread_overlay">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center text-white">
-                    <h4> Equal Housing </h4>
-                    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}"> Home </a></li>
-                            <li class="breadcrumb-item active" aria-current="page"> Equal Housing </li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="header-premium-gradient mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold display-5 mb-2">Equal Housing</h1>
+                <p class="text-white opacity-75 lead mb-0">Commitment to fair housing for all</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">Equal Housing</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
@@ -25,7 +26,7 @@
         <div class="col-md-12 pt-3">
             @foreach($terms as $term)
             <div class="mt-3">
-                <h3 class="px-2 py-1 text-left" style="color: #fff;font-size: 1.4rem; background-color:#243642;">
+                <h3 class="px-3 py-2 text-left rounded-3" style="color: #fff; font-size: 1.3rem; background: var(--colorPrimary);">
                     {{ $term->title }}
                 </h3>
             </div>

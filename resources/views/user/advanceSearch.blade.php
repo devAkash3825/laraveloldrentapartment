@@ -21,20 +21,20 @@
     }
     
 </style>
-<div id="breadcrumb_part"
-    style="background: url(../images/breadcroumb_bg.jpg);background-size: cover;background-repeat: no-repeat;background-position: center;">
-    <div class="bread_overlay">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center text-white">
-                    <h4> {{ $pagetitle }} </h4>
-                    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}"> Home </a></li>
-                            <li class="breadcrumb-item active" aria-current="page"> {{ $pagetitle }} </li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="header-premium-gradient mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold display-5 mb-2">{{ $pagetitle }}</h1>
+                <p class="text-white opacity-75 lead mb-0">Find your perfect home with advanced filters</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">{{ $pagetitle }}</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>

@@ -107,22 +107,26 @@
     /* Button Styling */
     .btn-primary-custom {
         background: var(--colorPrimary);
+        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
         border: none;
         color: white;
         font-weight: 700;
-        transition: all 0.3s;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         border-radius: 12px;
         font-size: 0.95rem;
+        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
     }
 
     .btn-primary-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.25);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.35);
         filter: brightness(1.1);
+        color: white;
     }
 
     .btn-primary-custom:active {
-        transform: translateY(0);
+        transform: translateY(-1px);
     }
 
     /* Alert Styling */

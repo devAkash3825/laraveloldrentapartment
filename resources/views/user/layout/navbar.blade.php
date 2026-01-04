@@ -27,17 +27,23 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 </ul>
             </div>
             <div class="col-xl-6 col-md-5">
-                <ul class="wsus__topbar_left float-right gap-2">
+                <ul class="wsus__topbar_left justify-content-end">
                     @guest('renter')
                     <li>
-                        <a href="{{ route('login') }}" class="btn topbar-btn btn-sm px-4"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
+                        <a href="{{ route('login') }}" class="topbar-btn" title="Login">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('user-register') }}" class="btn topbar-btn btn-sm px-4"><i class="bi bi-person-add me-1"></i> Register </a>
+                        <a href="{{ route('user-register') }}" class="topbar-btn" title="Register">
+                            <i class="bi bi-person-add"></i>
+                        </a>
                     </li>
                     @endguest
                     <li>
-                        <a href="{{ route('advance-search') }}" class="btn topbar-btn btn-sm px-4 ml-5"><i class="bi bi-search me-1"></i> Advance Search</a>
+                        <a href="{{ route('advance-search') }}" class="topbar-btn search-btn" title="Advance Search">
+                            <i class="bi bi-search"></i>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -174,6 +180,124 @@ $settings = DB::table('settings')->pluck('value', 'key');
 </nav>
 
 <style>
+    #wsus__topbar {
+        padding: 5px 0;
+        background: var(--colorPrimary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        height: auto !important;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+    }
+
+    .wsus__topbar_left {
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .wsus__topbar_left li a {
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: all 0.2s;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .wsus__topbar_left li a:hover {
+        color: white;
+    }
+
+    .wsus__topbar_left li a i {
+        margin-right: 6px;
+        color: white;
+        font-size: 0.85rem;
+    }
+
+    /* Topbar Buttons - Refined Premium Design */
+    .topbar-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white !important;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(8px);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        position: relative;
+    }
+    
+    .topbar-btn i {
+        font-size: 1rem;
+        transition: transform 0.3s;
+        color: white !important;
+        margin: 0 !important;
+    }
+    
+    .topbar-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white !important;
+        transform: translateY(-1px) scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .topbar-btn:hover i {
+        transform: scale(1.1);
+    }
+    
+    .search-btn {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    .search-btn i {
+        color: white !important;
+    }
+
+    .search-btn:hover {
+        filter: brightness(1.1) saturate(1.1);
+        box-shadow: 0 6px 15px rgba(var(--colorPrimaryRgb), 0.35);
+    }
+
+    /* Global Main Button */
+    .main-btn {
+        background: var(--colorPrimary);
+        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb), 0.8) 100%);
+        color: white !important;
+        padding: 10px 28px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb), 0.25);
+        text-decoration: none;
+    }
+
+    .main-btn:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 8px 25px rgba(var(--colorPrimaryRgb), 0.4);
+        color: white !important;
+        filter: brightness(1.1);
+    }
+    
+    .main-btn:active {
+        transform: translateY(-1px);
+    }
+
     /* Navbar Right Section */
     .navbar-right-section {
         display: flex;
@@ -187,23 +311,32 @@ $settings = DB::table('settings')->pluck('value', 'key');
         width: 42px;
         height: 42px;
         border-radius: 50%;
-        background: #f1f5f9;
-        border: none;
+        background: #ffffff;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1.5px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .icon-button:hover {
-        background: #e2e8f0;
-        transform: scale(1.05);
+        background: #ffffff;
+        transform: translateY(-2px) scale(1.05);
+        border-color: var(--colorPrimary);
+        box-shadow: 0 8px 20px rgba(var(--colorPrimaryRgb), 0.15);
     }
 
     .icon-button i {
         font-size: 1.25rem;
         color: #475569;
+        transition: color 0.3s;
+    }
+
+    .icon-button:hover i {
+        color: var(--colorPrimary);
     }
 
     .badge-count {
@@ -215,28 +348,33 @@ $settings = DB::table('settings')->pluck('value', 'key');
         border-radius: 12px;
         padding: 2px 6px;
         font-size: 0.7rem;
-        font-weight: 700;
+        font-weight: 800;
         min-width: 20px;
         text-align: center;
         border: 2px solid white;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
     }
 
     /* Profile Button */
     .profile-button {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 6px 12px 6px 6px;
+        gap: 12px;
+        padding: 6px 16px 6px 6px;
         border-radius: 50px;
-        background: #f8fafc;
+        background: #ffffff;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1.5px solid #e2e8f0;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .profile-button:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
+        background: #ffffff;
+        transform: translateY(-2px);
+        border-color: var(--colorPrimary);
+        box-shadow: 0 8px 20px rgba(var(--colorPrimaryRgb), 0.15);
     }
 
     .profile-avatar {

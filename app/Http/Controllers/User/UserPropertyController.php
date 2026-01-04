@@ -18,6 +18,7 @@ use App\Services\SearchService;
 use App\Repositories\PropertyDetailsRepository;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\PropertyInquiry;
+use RealRashid\SweetAlert\Facades\Alert;
 use App\Http\Resources\PropertyCollection;
 use App\Models\UserProperty;
 use App\Models\ApartmentFeature;
@@ -29,7 +30,6 @@ use App\Models\PropertyAdditionalInfo;
 use Illuminate\Support\Facades\Storage;
 use App\Models\CommunityDescription;
 use Illuminate\Pagination\LengthAwarePaginator;
-use RealRashid\SweetAlert\Facades\Alert;
 
 
 
@@ -95,7 +95,13 @@ class UserPropertyController extends Controller
 
     public function editProperty($id)
     {
-        $propertyinfo = $this->propertyDetailsRepository->getEditPropertyDetails($id);
+        $propertyinfo = $this->propertyDetailsRepository->getEditPropertyDetails($id)->first();
+        
+        if (!$propertyinfo) {
+            return redirect()->route('my-properties')->with('error', 'Property not found.');
+        }
+
+        $state = State::all();
         $categories = FloorPlanCategory::all();
         $selectFloorPlan = PropertyFloorPlanDetail::where('PropertyId', $id)->get();
         $gallerytype = GalleryType::where('PropertyId', $id)->with('gallerydetail')->get();
@@ -105,6 +111,7 @@ class UserPropertyController extends Controller
 
         return view('user.property.editProperty', [
             'propertyinfo' => $propertyinfo,
+            'state' => $state,
             'categories' => $categories,
             'selectFloorPlan' => $selectFloorPlan,
             'galleryDetails' => $galleryDetailsImages,
@@ -218,37 +225,53 @@ class UserPropertyController extends Controller
 
     public function addNewProperty(Request $request)
     {
-        $userid = Auth::guard('renter')->user()->Id;
-        $validated = $request->validate([
-            'add_property_state'   => 'required',
-            'add_property_city'    => 'required',
-            'termsandcondition'    => 'required',
-            'propertyname'         => 'required|string|max:255',
-            'managementcompany'    => 'required|string|max:255',
-            'addpropertyemail'     => 'required|email',
-            'pcontact'             => 'required|string|max:100',
-            'units'                => 'required|integer|min:1',
-            'yearbuilt'            => 'required|date',
-            'year_remodeled'       => 'nullable|date',
-            'area'                 => 'required|string|max:255',
-            'address'              => 'required|string|max:255',
-            'zipcode'              => 'required|string|max:20',
-            'contactno'            => 'required|string|max:20',
-            'website'              => 'nullable|url|max:255',
-            'officehours'          => 'nullable|string|max:1000',
-            'billto'               => 'required|string|max:255',
-            'copyzipcode'          => 'required|string|max:20',
-            'bill_address_state'   => 'required',
-            'bill_address_city'    => 'required',
-            'billaddress'          => 'required|string|max:255',
-            'billphone'            => 'required|string|max:20',
-            'billcontact'          => 'required|string|max:100',
-            'billemail'            => 'required|email',
-            'billfax'              => 'required|string|max:50',
-            'embddedmap'           => 'required',
+        Log::info('Add property attempt started', [
+            'input' => $request->except(['_token'])
         ]);
 
         try {
+            if (!Auth::guard('renter')->check()) {
+                throw new \Exception('User not authenticated. Please log in again.');
+            }
+            $userid = Auth::guard('renter')->user()->Id;
+
+            $validator = \Validator::make($request->all(), [
+                'add_property_state'   => 'required',
+                'add_property_city'    => 'required',
+                'termsandcondition'    => 'required',
+                'propertyname'         => 'required|string|max:255',
+                'managementcompany'    => 'required|string|max:255',
+                'addpropertyemail'     => 'required|email',
+                'pcontact'             => 'required|string|max:100',
+                'units'                => 'required|integer|min:1',
+                'yearbuilt'            => 'required|date',
+                'year_remodeled'       => 'nullable|date',
+                'area'                 => 'required|string|max:255',
+                'address'              => 'required|string|max:255',
+                'zipcode'              => 'required|string|max:20',
+                'contactno'            => 'required|string|max:20',
+                'website'              => 'nullable|url|max:255',
+                'officehours'          => 'nullable|string|max:1000',
+                'billto'               => 'required|string|max:255',
+                'copyzipcode'          => 'required|string|max:20',
+                'bill_address_state'   => 'required',
+                'bill_address_city'    => 'required',
+                'billaddress'          => 'required|string|max:255',
+                'billphone'            => 'required|string|max:20',
+                'billcontact'          => 'required|string|max:100',
+                'billemail'            => 'required|email',
+                'billfax'              => 'required|string|max:50',
+                'embddedmap'           => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                Log::warning('Add property validation failed', [
+                    'user_id' => $userid,
+                    'errors' => $validator->errors()->all()
+                ]);
+                return back()->withErrors($validator)->withInput()->with('error', 'Validation failed. Please check the form.');
+            }
+
             $year = date('Y', strtotime($request->yearbuilt));
             $yearRemodeled = $request->year_remodeled ? date('Y', strtotime($request->year_remodeled)) : null;
 
@@ -282,25 +305,30 @@ class UserPropertyController extends Controller
                 'ModifiedOn'     => now(),
                 'latitude'       => $coordinates['latitude'],
                 'longitude'      => $coordinates['longitude'],
+                'Fax'            => '', // Default to empty
+                'Zone'           => '', // Default to empty
                 'Status'         => $request->status ?? '1',
                 'Featured'       => $request->featured ?? '1',
                 'ActiveOnSearch' => $request->activeonsearch ?? '1',
             ];
 
-            PropertyInfo::create($propertyData);
+            Log::debug('Data to be inserted into PropertyInfo', $propertyData);
 
-            Alert::success('Success', 'Property added successfully. You can now add floor plans and images.');
-            return back();
+            $property = PropertyInfo::create($propertyData);
+
+            Log::info('Property created successfully', ['property_id' => $property->Id]);
+
+            return redirect()->route('edit-properties', $property->Id)->with('success', 'Property added successfully. You can now add floor plans and images.');
+
         } catch (\Exception $e) {
             Log::error('Error adding property', [
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
-                'user_id' => $userid,
-                'input'   => $request->all()
+                'user_id' => isset($userid) ? $userid : null,
+                'input'   => $request->except(['_token'])
             ]);
 
-            Alert::error('Error', 'An error occurred while adding the property. Please try again later.');
-            return back();
+            return back()->withInput()->with('error', 'An error occurred while adding the property: ' . $e->getMessage());
         }
     }
 
@@ -308,7 +336,9 @@ class UserPropertyController extends Controller
     public function myProperties(Request $request)
     {
         $userid = Auth::guard('renter')->user()->Id;
-        $myproperty = PropertyInfo::where('UserId', $userid)->with('gallerytype.gallerydetail')->get();
+        $myproperty = PropertyInfo::where('UserId', $userid)
+            ->with(['gallerytype.gallerydetail', 'city.state'])
+            ->get();
         $perPage = 5;
         $currentPage = $request->input('page', 1);
         $offset = ($currentPage - 1) * $perPage;
@@ -394,8 +424,18 @@ class UserPropertyController extends Controller
 
     public function storeFloorPlan(Request $request)
     {
+        $request->validate([
+            'propertyId' => 'required',
+            'category' => 'required',
+            'plan_name' => 'required|string|max:255',
+            'starting_at' => 'nullable|numeric',
+        ]);
+
         try {
-            PropertyFloorPlanDetail::create([
+            $dates = $request->dates;
+            $avail_date = is_array($dates) ? implode(',', array_filter($dates)) : '';
+
+            $data = [
                 'PropertyId' => $request->propertyId,
                 'CategoryId' => $request->category,
                 'PlanType' => $request->plan_type,
@@ -405,105 +445,153 @@ class UserPropertyController extends Controller
                 'Available_Url' => $request->available_url,
                 'special' => $request->special,
                 'expiry_date' => $request->expiry_date,
-                'avail_date' => implode(',', $request->dates),
+                'avail_date' => $avail_date,
                 'isavailable' => '1',
+                'Status' => '1',
                 'deposit' => $request->deposit,
                 'floorplan_link' => $request->link,
                 'Price' => $request->starting_at,
+                'Comments' => $request->unit_description,
                 'CreatedOn' => Carbon::now(),
                 'ModifiedOn' => Carbon::now(),
+            ];
+
+            PropertyFloorPlanDetail::create($data);
+
+            Log::info('Floor plan created', ['property_id' => $request->propertyId, 'plan_name' => $request->plan_name]);
+
+            return redirect()->route('edit-properties', $request->propertyId)->with('success', 'Floor plan created successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error storing floor plan', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->all()
             ]);
-            return redirect()->back()->with('success', 'Floor plan created successfully.');
-        } catch (ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'The specified property or category was not found');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while processing your request. Please try again.');
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    public function updateFloorPlan(Request $request, $id)
+    {
+        $request->validate([
+            'category' => 'required',
+            'plan_name' => 'required|string|max:255',
+            'starting_at' => 'nullable|numeric',
+        ]);
+
+        try {
+            $dates = $request->dates;
+            $avail_date = is_array($dates) ? implode(',', array_filter($dates)) : $request->avail_date;
+
+            PropertyFloorPlanDetail::where('Id', $id)->update([
+                'CategoryId' => $request->category,
+                'PlanType' => $request->plan_type,
+                'FloorPlan' => $request->floor_plan,
+                'PlanName' => $request->plan_name,
+                'Footage' => $request->square_footage,
+                'Available_Url' => $request->available_url,
+                'special' => $request->special,
+                'expiry_date' => $request->expiry_date,
+                'avail_date' => $avail_date,
+                'deposit' => $request->deposit,
+                'floorplan_link' => $request->link,
+                'Price' => $request->starting_at,
+                'Comments' => $request->unit_description,
+                'ModifiedOn' => Carbon::now(),
+            ]);
+
+            return redirect()->back()->with('success', 'Floor plan updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error updating floor plan', ['id' => $id, 'error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Failed to update floor plan.');
+        }
+    }
+
+    public function deleteFloorPlan($id)
+    {
+        try {
+            PropertyFloorPlanDetail::where('Id', $id)->delete();
+            return redirect()->back()->with('success', 'Floor plan deleted successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting floor plan', ['id' => $id, 'error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Failed to delete floor plan.');
         }
     }
 
     public function uploadImage(Request $request)
     {
+        Log::info('Image upload attempt', ['property_id' => $request->property_id]);
+
         try {
             $request->validate([
+                'property_id' => 'required',
                 'imagetitle' => 'required|string|max:255',
                 'description' => 'required|string|max:255',
-                'propertyimage' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'propertyimage' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             ]);
 
             $propertyId = $request->property_id;
-            $propertyExist = GalleryType::where('PropertyId', $propertyId)->pluck('Id')->first();
+            
+            // Get or create GalleryType for this property
+            $galleryType = GalleryType::getOrCreateForProperty($propertyId);
+            $galleryTypeId = $galleryType->Id;
+
+            if (!$request->hasFile('propertyimage')) {
+                throw new \Exception('No image file provided.');
+            }
 
             $file = $request->file('propertyimage');
             $fileExtension = $file->getClientOriginalExtension();
 
-            if ($propertyExist) {
-                $galleryDetail = GalleryDetails::create([
-                    'GalleryId' => $propertyExist,
-                    'ImageTitle' => $request->imagetitle,
-                    'Description' => $request->description,
-                    'DefaultImage' => 1,
-                    'display_in_gallery' => 1,
-                    'CreatedOn' => Carbon::now(),
-                    'ModifiedOn' => Carbon::now(),
-                    'Status' => 1,
-                ]);
+            // Create initial detail record to get ID for filename
+            $galleryDetail = GalleryDetails::create([
+                'GalleryId' => $galleryTypeId,
+                'ImageTitle' => $request->imagetitle,
+                'Description' => $request->description,
+                'DefaultImage' => 0, // Don't default to 1 for every upload
+                'display_in_gallery' => 1,
+                'CreatedOn' => Carbon::now(),
+                'ModifiedOn' => Carbon::now(),
+                'Status' => 1,
+            ]);
 
-                $updateImageNameId = $galleryDetail->id;
-                $savedImageName = 'Gallery_propertyimage_' . $updateImageNameId . '_' . $propertyId . '.' . $fileExtension;
-
-                $uploadedImageUrl = $this->uploadToS3($propertyId, $savedImageName, $file);
-                if (!$uploadedImageUrl) {
-                    throw new \Exception('Failed to upload image to S3');
-                }
-
-                GalleryDetails::where('Id', $updateImageNameId)->update([
-                    'ImageName' => $savedImageName,
-                ]);
-            } else {
-                $galleryType = GalleryType::create([
-                    'PropertyId' => $propertyId,
-                    'Title' => 'General',
-                    'Description' => 'GalleryDescription',
-                    'CreatedOn' => Carbon::now(),
-                    'ModifiedOn' => Carbon::now(),
-                    'Status' => 1,
-                ]);
-
-                $galleryTypeId = $galleryType->PropertyId;
-
-                $galleryDetail = GalleryDetails::create([
-                    'GalleryId' => $galleryTypeId,
-                    'ImageTitle' => $request->imagetitle,
-                    'Description' => $request->description,
-                    'DefaultImage' => 1,
-                    'display_in_gallery' => 1,
-                    'CreatedOn' => Carbon::now(),
-                    'ModifiedOn' => Carbon::now(),
-                    'Status' => 1,
-                ]);
-
-                $updateImageNameId = $galleryDetail->id;
-                $savedImageName = 'Gallery_propertyimage_' . $updateImageNameId . '_' . $propertyId . '.' . $fileExtension;
-
-                $uploadedImageUrl = $this->uploadToS3($propertyId, $savedImageName, $file);
-
-                if (!$uploadedImageUrl) {
-                    throw new \Exception('Failed to upload image to S3');
-                }
-                GalleryDetails::where('Id', $updateImageNameId)->update([
-                    'ImageName' => $savedImageName,
-                ]);
+            // Note: If primary key is 'Id', Eloquent might return it via ->getAttribute('Id') or just ->Id
+            // If primaryKey is not set in model, it defaults to 'id'
+            $newId = $galleryDetail->Id ?? $galleryDetail->id;
+            
+            if (!$newId) {
+                throw new \Exception('Failed to generate image ID in database.');
             }
+
+            $savedImageName = 'Gallery_propertyimage_' . $newId . '_' . $propertyId . '.' . $fileExtension;
+
+            Log::debug('Uploading to S3', ['name' => $savedImageName]);
+            $uploadedImageUrl = $this->uploadToS3($propertyId, $savedImageName, $file);
+            
+            if (!$uploadedImageUrl) {
+                // Cleanup database record if upload fails
+                $galleryDetail->delete();
+                throw new \Exception('Failed to upload image to storage.');
+            }
+
+            // Update with final filename
+            $galleryDetail->update([
+                'ImageName' => $savedImageName,
+            ]);
+
+            Log::info('Image upload successful', ['id' => $newId, 'url' => $uploadedImageUrl]);
+
             return redirect()->back()->with('success', 'Image uploaded successfully');
         } catch (\Exception $e) {
-            log::error('Error uploading image', [
+            Log::error('Error uploading image', [
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
-                'input'   => $request->all()
+                'input'   => $request->except(['propertyimage'])
             ]);
-            return redirect()->back()->with('error', 'An error occurred while processing your request. Please try again.');
+            return redirect()->back()->withInput()->with('error', 'Upload failed: ' . $e->getMessage());
         }
     }
+
 
     public function uploadToS3($propertyID, $savedImageName, $file)
     {
@@ -598,9 +686,9 @@ class UserPropertyController extends Controller
     }
 
 
-    public function editGeneralDetail(Request $request)
+    public function editGeneralDetail(Request $request, $id)
     {
-        $propertyId = $request->id;
+        $propertyId = $id;
         $apartmentfeatures = $request->apartmentfeatures ?? [];
         $amenities = $request->amenities ?? [];
         $amenitieslist = implode(",", $amenities);
@@ -629,17 +717,17 @@ class UserPropertyController extends Controller
                     'Agent_comments' => '',
                 ]);
             }
-            return redirect()->back()->with('success', 'Property additional details updated successfully!');
+            return redirect()->back()->with('success', 'General details updated successfully!');
         } catch (\Exception $e) {
-            Log::error('Error updating property additional details: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to update property additional details.');
+            Log::error('Error updating general details: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update general details.');
         }
     }
 
-    public function editPropertyDetail(Request $request)
+    public function editPropertyDetail(Request $request, $id)
     {
         try {
-            $propertyId = $request->id;
+            $propertyId = $id;
             PropertyInfo::where('Id', $propertyId)->update([
                 'PropertyName' => $request->propertyname,
                 'Company' => $request->company,
@@ -655,23 +743,30 @@ class UserPropertyController extends Controller
                 'Zone' => $request->zone,
                 'Zip' => $request->zipcode,
                 'WebSite' => $request->website,
-                'CreatedOn' => Carbon::now(),
                 'latitude' => $request->lat,
                 'longitude' => $request->lon,
                 'officehour' => $request->officehours,
                 'fax' => $request->faxno,
             ]);
-            return response()->json(['message' => 'Property additional details updated successfully.'], 200);
+            return redirect()->back()->with('success', 'Main property details updated successfully!');
         } catch (\Exception $e) {
-            Log::error('Error updating property additional details: ' . $e->getMessage());
-            return response()->json(['message' => 'Failed to update property additional details.'], 500);
+            Log::error('Error updating property details: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update property details.');
         }
     }
 
 
-    private function getLatLonFromIframe($iframeUrl)
+    private function getLatLonFromIframe($iframeHtml)
     {
-        $query = parse_url($iframeUrl, PHP_URL_QUERY);
+        // Extract src from iframe tag if pasted as whole tag
+        $url = $iframeHtml;
+        if (preg_match('/src="([^"]+)"/', $iframeHtml, $match)) {
+            $url = $match[1];
+        }
+
+        $query = parse_url($url, PHP_URL_QUERY);
+        if (!$query) return ['latitude' => null, 'longitude' => null];
+        
         parse_str($query, $params);
 
         if (isset($params['pb'])) {
@@ -681,6 +776,7 @@ class UserPropertyController extends Controller
             $longitude = null;
 
             foreach ($pbParts as $part) {
+                // Google Maps pb format: !3dLAT!2dLON
                 if (strpos($part, '3d') === 0) {
                     $latitude = substr($part, 2);
                 }

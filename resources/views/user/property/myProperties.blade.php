@@ -70,7 +70,7 @@
                                         <td class="align-middle">
                                             <div class="d-flex flex-column">
                                                 <span class="fw-bold text-dark">{{ $row->PropertyName ?? 'N/A' }}</span>
-                                                <span class="text-muted smaller" style="font-size: 0.8rem;"><i class="bi bi-geo-alt me-1"></i> {{ $row->city->CityName ?? 'Unknown City' }}, {{ $row->state->StateShortName ?? 'ST' }}</span>
+                                                <span class="text-muted smaller" style="font-size: 0.8rem;"><i class="bi bi-geo-alt me-1"></i> {{ $row->city->CityName ?? 'Unknown City' }}, {{ $row->city->state->StateShortName ?? 'ST' }}</span>
                                             </div>
                                         </td>
                                         <td class="align-middle">
@@ -146,5 +146,4 @@ $(document).ready(function() {
 });
 </script>
 @endpush
-@endsection
 @endsection

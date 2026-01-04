@@ -16,28 +16,77 @@
         padding-bottom: 12px;
     }
 
+    .section-t2 {
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
     .section-t2 .tabs {
         display: flex;
-        justify-content: space-around;
-        list-style-type: none;
-        flex-wrap: wrap;
-        margin: 0;
+        list-style: none;
         padding: 0;
+        margin: 0;
+        gap: 6px;
+        justify-content: space-between;
     }
-
-    .section-t2 .tab {
+    .tab-li {
         flex: 1;
-        font-weight: 600;
-        text-align: center;
-        text-transform: uppercase;
-        cursor: pointer;
-        padding: 10px;
-        border-bottom: 1px solid #cdcdcd;
     }
-
-    .section-t2 .tab.active {
-        color: #1babf9;
-        border-bottom: 2px solid #1babf9;
+    .tab-li__link {
+        display: block;
+        padding: 12px 10px;
+        text-align: center;
+        text-decoration: none !important;
+        color: #64748b !important;
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: transparent;
+    }
+    .tab-li__link.active {
+        background: white;
+        color: var(--colorPrimary) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .my_listing_single {
+        margin-bottom: 25px;
+    }
+    .my_listing_single label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #475569;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .input_area input, .input_area select, .input_area textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        background: #fdfdfd;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        color: #1e293b;
+    }
+    .input_area input:focus, .input_area select:focus, .input_area textarea:focus {
+        border-color: var(--colorPrimary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(var(--colorPrimaryRgb, 106,100,241), 0.1);
+        outline: none;
+    }
+    .my_listing {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 30px;
     }
 </style>
 <!-- Premium Header -->
@@ -87,8 +136,9 @@
                 </nav>
                 <input type="hidden" name="propertyId" value="{{ $propertyId }}" id="editpropertyId">
                 <section id="maindetails" data-tab-content>
-                    <div class="my_listing list_mar list_padding">
-                        <form class="py-2" id="propertyEditForm">
+                    <div class="my_listing list_padding">
+                        <form class="py-2" action="{{ route('edit-property-detail', ['id' => $propertyinfo->Id]) }}" method="POST" id="propertyEditForm">
+                            @csrf
                             <div class="row mt-2">
                                 <!-- Property Name -->
                                 <div class="col-xl-4 col-md-6">
@@ -209,7 +259,7 @@
                                                 name="editpropertystate" id="editpropertystate" required>
                                                 @foreach ($state as $row)
                                                 <option value="{{ $row->Id }}"
-                                                    {{ $propertyinfo->city->state->Id == $row->Id ? 'selected' : '' }}>
+                                                    {{ (isset($propertyinfo->city->state) && $propertyinfo->city->state->Id == $row->Id) ? 'selected' : '' }}>
                                                     {{ $row->StateName }}
                                                 </option>
                                                 @endforeach
@@ -425,200 +475,110 @@
                 </section>
 
                 <section id="rentspecial" data-tab-content>
-                    <p class="d-flex justify-content-end">
-                        <a href="{{ route('create-floor-plan', ['id' => $propertyinfo->Id]) }}" class="primary-btn d-flex gap-2"><i class="bi bi-clipboard-plus"></i><span class="text-white"> Create New Floorplan </span></a>
-                    </p>
-                    <div class="my_listing list_mar list_padding">
-                        @foreach ($categories as $category)
-                        <h5 class="m-2 p-2">{{ $category->Name }}</h5>
-                        <div class="primary-table table-flex">
-                            <?php
-                            $propertyId = $propertyinfo->Id;
-                            $categoryId = $category['Id'];
-                            $floorDetails = $category->getFloorPlanDetails($propertyId, $categoryId);
-                            $count = count($floorDetails);
-                            ?>
-                            @if ($count > 0)
-                            <div class="row">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Rent & Specials</h4>
+                        <a href="{{ route('create-floor-plan', ['id' => $propertyinfo->Id]) }}" class="read_btn d-inline-flex gap-2 text-decoration-none">
+                            <i class="bi bi-clipboard-plus"></i>
+                            <span>Create New Floorplan</span>
+                        </a>
+                    </div>
+
+                    @foreach ($categories as $category)
+                    <div class="category-section mb-5">
+                        <h5 class="category-title py-2 px-3 bg-light rounded-2 border-start border-4 border-primary mb-4">{{ $category->Name }}</h5>
+                        
+                        @php
+                        $propertyId = $propertyinfo->Id;
+                        $categoryId = $category->Id;
+                        $floorDetails = $category->getFloorPlanDetails($propertyId, $categoryId);
+                        @endphp
+
+                        @if (count($floorDetails) > 0)
+                            <div class="row g-4">
                                 @foreach ($floorDetails as $floorDetail)
-                                <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700"> Delete </label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="checkbox" id="deletefloorPlan"
-                                                    name="deletefloorPlan" value="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700"> Category </label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <select
-                                                    class="form-control form-select form-control-a state-select-box"
-                                                    name="editpropertystate" id="editpropertystate"
-                                                    required>
-                                                    @foreach ($categories as $cat)
-                                                    <option value="{{ $cat->Id }}"
-                                                        {{ $category->Id == $cat->Id ? 'selected' : '' }}>
-                                                        {{ $cat->Name }}
-                                                    </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-md-12">
+                                    <div class="card shadow-sm border-0 h-100 floorplan-card">
+                                        <div class="card-body p-4">
+                                            <form action="{{ route('update-floor-plan', ['id' => $floorDetail->Id]) }}" method="POST">
+                                                @csrf
+                                                <div class="row g-3">
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-bold">Plan Name</label>
+                                                        <input type="text" class="form-control form-control-sm" name="plan_name" value="{{ $floorDetail->PlanName }}" required>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label class="form-label small fw-bold">Plan Type</label>
+                                                        <input type="text" class="form-control form-control-sm" name="plan_type" value="{{ $floorDetail->PlanType }}">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label class="form-label small fw-bold">SQFT</label>
+                                                        <input type="text" class="form-control form-control-sm" name="square_footage" value="{{ $floorDetail->Footage }}">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label class="form-label small fw-bold">Rent ($)</label>
+                                                        <input type="number" class="form-control form-control-sm" name="starting_at" value="{{ $floorDetail->Price }}">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-bold">Category</label>
+                                                        <select class="form-select form-select-sm" name="category" required>
+                                                            @foreach ($categories as $cat)
+                                                                <option value="{{ $cat->Id }}" {{ $category->Id == $cat->Id ? 'selected' : '' }}>{{ $cat->Name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
 
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Plan Type</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="deletefloorPlan"
-                                                    name="deletefloorPlan"
-                                                    value="{{ $floorDetail->PlanType }}">
-                                            </div>
-                                        </div>
-                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-bold">Deposit ($)</label>
+                                                        <input type="text" class="form-control form-control-sm" name="deposit" value="{{ $floorDetail->deposit }}">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-bold">Available Date</label>
+                                                        <input type="text" class="form-control form-control-sm" name="avail_date" value="{{ $floorDetail->avail_date }}" placeholder="YYYY-MM-DD or text">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-bold">Available URL</label>
+                                                        <input type="text" class="form-control form-control-sm" name="available_url" value="{{ $floorDetail->Available_Url }}">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-bold">Link</label>
+                                                        <input type="text" class="form-control form-control-sm" name="link" value="{{ $floorDetail->floorplan_link }}">
+                                                    </div>
 
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Floor Plan</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="floorPlan" name="floorPlan"
-                                                    value="{{ $floorDetail->PlanName }}">
-                                            </div>
-                                        </div>
-                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-bold">Comments / Specials</label>
+                                                        <textarea class="form-control form-control-sm" name="unit_description" rows="2">{{ $floorDetail->Comments }}</textarea>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-bold">Specials Note</label>
+                                                        <textarea class="form-control form-control-sm" name="special" rows="2">{{ $floorDetail->special }}</textarea>
+                                                    </div>
 
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Square Footage</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="floorPlan" name="floorPlan"
-                                                    value="{{ $floorDetail->Footage }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Starting at</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="Price" name="Price"
-                                                    value="{{ $floorDetail->Price }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Deposit</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="Price" name="Price"
-                                                    value="{{ $floorDetail->deposit }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Link</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="Price" name="Price"
-                                                    value="{{ $floorDetail->floorplan_link }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Available Url</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="Price" name="Price"
-                                                    value="{{ $floorDetail->Available_Url }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Deposit</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="text" id="Price" name="Price"
-                                                    value="{{ $floorDetail->deposit }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Unit Description Specials
-                                                Available Dates</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <textarea type="text" id="Price" name="Price" value="">{{ $floorDetail->Comments }}</textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Special</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <textarea type="text" id="Price" name="Price" value=""> {{ @$floorDetail->special }} </textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-md-5">
-                                            <label for="" class="fw-700">Available Date</label>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div class="input_area">
-                                                <input type="date" name="" id=""
-                                                    value="{{ $floorDetail->avail_date }}">
-                                            </div>
+                                                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                                                        <button type="submit" class="read_btn py-1 px-3 fs-6">
+                                                            <i class="bi bi-save me-1"></i> Save Changes
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-danger btn-sm px-3 rounded-pill" onclick="if(confirm('Are you sure you want to delete this floor plan?')) { document.getElementById('delete-fp-{{ $floorDetail->Id }}').submit(); }">
+                                                            <i class="bi bi-trash me-1"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <form id="delete-fp-{{ $floorDetail->Id }}" action="{{ route('delete-floor-plan', ['id' => $floorDetail->Id]) }}" method="POST" style="display: none;">
+                                                @csrf
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
-                            @else
-                            <div class="table-flex">
-                                <div class="table-tbody mt-2 border">
-                                    <h6> No Record Found </h6>
-                                </div>
+                        @else
+                            <div class="alert alert-light border text-center py-4 rounded-3">
+                                <i class="bi bi-info-circle fs-4 d-block mb-2 text-muted"></i>
+                                <p class="mb-0 text-muted">No floor plans found in this category.</p>
                             </div>
-                            @endif
-                        </div>
-                        <hr>
-                        @endforeach
+                        @endif
                     </div>
+                    @endforeach
                 </section>
 
                 <section id="imagegallary" data-tab-content>
@@ -818,12 +778,124 @@
 @endsection
 @push('scripts')
 <script>
-    $('#additionalDetailsForm').on('submit', function() {
-        $('.summer_note').each(function() {
-            $(this).val($(this).summernote('code')); // sync content to textarea
+    $(document).ready(function() {
+        // Additional Details Form Sync
+        $('#additionalDetailsForm').on('submit', function() {
+            $('.summer_note').each(function() {
+                $(this).val($(this).summernote('code'));
+            });
         });
+
+        // Gallery Image Deletion
+        $('.delete-gllry-img').on('click', function() {
+            const id = $(this).data('id');
+            const propertyId = $(this).data('value');
+            const row = $(this).closest('tr');
+
+            if (confirm('Are you sure you want to delete this image?')) {
+                $.ajax({
+                    url: "{{ url('/delete-gallery-image') }}/" + id,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        propertyId: propertyId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            row.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                            toastr.success(response.message);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Error deleting image. Please try again.');
+                    }
+                });
+            }
+        });
+
+        // Year select population
+        const currentYear = new Date().getFullYear();
+        const startYear = 1900;
+        const yearSelect = $('#year-select, #year-remodeled');
+        
+        for (let year = currentYear; year >= startYear; year--) {
+            yearSelect.append(`<option value="${year}">${year}</option>`);
+        }
+
+        // Set selected years if available
+        $('#year-select').val("{{ $propertyinfo->Year }}");
+        $('#year-remodeled').val("{{ $propertyinfo->YearRemodel }}");
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('vendor/js/tabviewform.js') }}"></script>
 @endpush
+
+<style>
+       .read_btn {
+        background: var(--colorPrimary);
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 24px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .read_btn:hover {
+        background: #1a1a1a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        color: white !important;
+    }
+
+    .btn-outline-danger {
+        border: 1px solid #fee2e2;
+        background: #fff;
+        color: #dc2626 !important;
+        transition: all 0.2s;
+    }
+    .btn-outline-danger:hover {
+        background: #dc2626;
+        color: #fff !important;
+        border-color: #dc2626;
+    }
+
+    .floorplan-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9 !important;
+    }
+    .floorplan-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.06) !important;
+        border-color: #e2e8f0 !important;
+    }
+    .category-title {
+        color: #1e293b;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+    .form-control-sm, .form-select-sm {
+        border-radius: 8px;
+        border-color: #e2e8f0;
+        padding: 0.5rem 0.75rem;
+    }
+    .form-label.small {
+        margin-bottom: 0.35rem;
+        color: #64748b;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+</style>

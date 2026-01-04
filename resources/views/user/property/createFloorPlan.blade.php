@@ -1,188 +1,299 @@
 @extends('user/layout/app')
 @section('content')
-    <div id="breadcrumb_part"
-        style="background: url(../images/breadcroumb_bg.jpg);background-size: cover;background-repeat: no-repeat;background-position: center;">
-        <div class="bread_overlay">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 text-center text-white">
-                        <h4> Create Floor Plan </h4>
-                        <nav style="" aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="#"> Home </a></li>
-                                <li class="breadcrumb-item active" aria-current="page"> listing </li>
-                            </ol>
-                        </nav>
+
+<!-- Premium Header -->
+<div class="header-premium-gradient py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold display-5 mb-2">Create Floor Plan</h1>
+                <p class="text-white opacity-75 lead mb-0">Add a new unit type or floor plan to your property</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('my-properties') }}" class="text-white opacity-75 text-decoration-none small">My Properties</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">New Floor Plan</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="dashboard" class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <x-dashboard-sidebar />
+            </div>
+            <div class="col-lg-9">
+                <div class="dashboard_content">
+                    <div class="my_listing list_padding bg-white rounded-3 shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                            <h4 class="fw-bold mb-0">Floor Plan Details</h4>
+                            <a href="{{ route('edit-properties', ['id' => $propertyId]) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Property
+                            </a>
+                        </div>
+                        
+                        <form id="createfloorplan" method="post" action="{{ route('store-floor-plan') }}">
+                            @csrf
+                            <input type="hidden" name="propertyId" value="{{ $propertyId }}">
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-4 py-2">
+                                    <ul class="mb-0 small">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <div class="row g-4">
+                                <!-- Category & Plan Type -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Category <span class="text-danger">*</span></label>
+                                        <div class="input_area">
+                                            <select class="form-select select_2" name="category" required>
+                                                <option value="">Select Category</option>
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->Id }}">{{ $category->Name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Plan Type</label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="plan_type" placeholder="(e.g. Apartment, Loft, Townhome)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Floor Plan & Plan Name -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Floor Plan</label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="floor_plan" placeholder="(e.g. Studio, 2 bed 1 bath)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Plan Name <span class="text-danger">*</span></label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="plan_name" placeholder="Enter Plan Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Stats: Footage, Price, Deposit -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Square Footage</label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="square_footage" placeholder="e.g. 850">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Starting at ($)</label>
+                                        <div class="input_area">
+                                            <input type="number" class="form-control" name="starting_at" placeholder="Monthly rent">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Deposit ($)</label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="deposit" placeholder="Deposit amount">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Links & Dates -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Link</label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="link" placeholder="External link">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Available URL</label>
+                                        <div class="input_area">
+                                            <input type="text" class="form-control" name="available_url" placeholder="Availability link">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Expiry Date</label>
+                                        <div class="input_area">
+                                            <input type="date" class="form-control" name="expiry_date">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rich Text Areas -->
+                                <div class="col-xl-12">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Unit Description / Specials</label>
+                                        <textarea class="form-control summer_note" name="unit_description"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-12">
+                                    <div class="my_listing_single">
+                                        <label class="form-label fw-600">Special Note</label>
+                                        <textarea class="form-control summer_note" name="special"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Available Dates -->
+                                <div class="col-xl-12">
+                                    <div class="my_listing_single" id="medicine_row">
+                                        <label class="form-label fw-600 d-block">Available Dates</label>
+                                        <div class="medicine_row_input d-flex gap-2 mb-2">
+                                            <input type="date" class="form-control" name="dates[]">
+                                            <button type="button" id="add_row" class="btn btn-primary rounded-circle" style="width: 40px; height: 40px; min-width: 40px;">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div id="dynamic_date_rows"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 text-end mt-5 pt-3 border-top">
+                                    <button type="submit" class="read_btn px-5 py-3">
+                                        <i class="bi bi-check2-circle me-2"></i> Save Floor Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <section id="dashboard">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3">
-                    <x-dashboard-sidebar />
-                </div>
-                <div class="col-lg-9">
-                    <div class="dashboard_content">
-                        <div class="my_listing">
-                            <h4> Create Floor Plan </h4>
-                            <form id="createfloorplan" method="post" action="{{ route('store-floor-plan') }}">
-                                @csrf
-                                <div class="row">
-                                    <div class="col-xl-12 col-md-12">
-                                        <div class="row">
-                                            
-                                            <div class="col-xl-6 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="category">Category</label>
-                                                    <div class="input_area">
-                                                        <select
-                                                            class="form-control form-select form-control-a state-select-box mt-1"
-                                                            name="category" id="add-property-state" required>
-                                                            <option value="">Select Category</option>
-                                                            @foreach ($categories as $category)
-                                                                <option value="{{ $category->Id }}">{{ $category->Name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
+</section>
 
-                                            <div class="col-xl-6 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="plan_type">Plan Type</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="plan_type" name="plan_type"
-                                                            placeholder="(e.g. Apartment, Loft, Townhome)" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Initialize Summernote
+    if (typeof $('.summer_note').summernote === 'function') {
+        $('.summer_note').summernote({
+            placeholder: 'Type here...',
+            tabsize: 2,
+            height: 150,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
+    }
 
-                                            <div class="col-xl-6 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="floor_plan">Floor Plan</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="floor_plan" name="floor_plan"
-                                                            placeholder="(e.g. Studio, 2 bed 1 bath Plus Den)"
-                                                            value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            
-
-                                            <div class="col-xl-6 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="plan_name">Plan Name</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="plan_name" name="plan_name"
-                                                            placeholder="Enter Plan Name" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-4 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="square_footage">Square Footage</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="square_footage" name="square_footage"
-                                                            placeholder="Enter Square Footage" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-4 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="starting_at">Starting at</label>
-                                                    <div class="input_area">
-                                                        <input type="number" id="starting_at" name="starting_at"
-                                                            placeholder="Enter Starting Price" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-4 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="deposit">Deposit</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="deposit" name="deposit"
-                                                            placeholder="Enter Deposit Amount" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-4 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="link">Link</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="link" name="link"
-                                                            placeholder="Enter Link" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-4 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="available_url">Available URL</label>
-                                                    <div class="input_area">
-                                                        <input type="text" id="available_url" name="available_url" placeholder="Enter Available URL" value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-4 col-md-6">
-                                                <div class="my_listing_single">
-                                                    <label for="expiry_date">Expiry Date</label>
-                                                    <div class="input_area">
-                                                        <input type="date" id="expiry_date" name="expiry_date"
-                                                            value="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-12">
-                                                <div class="my_listing_single">
-                                                    <label for="unit_description">Unit Description / Specials / Available
-                                                        Dates</label>
-                                                    <textarea class="form-control summer_note mt-1" name="unit_description"></textarea>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-12">
-                                                <div class="my_listing_single">
-                                                    <label for="special">Special</label>
-                                                    <textarea class="form-control summer_note mt-1" name="special"></textarea>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-12 col-md-6">
-                                                <div id="medicine_row">
-                                                    <label for="available_dates">Available Dates</label>
-                                                    <div class="medicine_row_input">
-                                                        <input type="date" name="dates[]" id="available_dates">
-                                                        <button type="button" id="add_row"><i class="fas fa-plus" aria-hidden="true"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" id="propertyId" name="propertyId"
-                                            placeholder="(e.g. Studio, 2 bed 1 bath Plus Den)"
-                                            value="{{$propertyId}}">
-
-                                            <div class="col-12">
-                                                <button type="submit" class="read_btn float-right">Submit</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                    </div>
-                </div>
+    // Dynamic Date Rows
+    $('#add_row').click(function() {
+        const row = `
+            <div class="medicine_row_input d-flex gap-2 mb-2 animate__animated animate__fadeIn">
+                <input type="date" class="form-control" name="dates[]">
+                <button type="button" class="btn btn-danger rounded-circle remove_row" style="width: 40px; height: 40px; min-width: 40px;">
+                    <i class="fas fa-minus"></i>
+                </button>
             </div>
-        </div>
-    </section>
+        `;
+        $('#dynamic_date_rows').append(row);
+    });
+
+    $(document).on('click', '.remove_row', function() {
+        $(this).closest('.medicine_row_input').remove();
+    });
+
+    // Handle form submission with summernote
+    $('#createfloorplan').on('submit', function() {
+        // Summernote should sync automatically, but let's be safe
+        $('.summer_note').each(function() {
+            if ($(this).summernote('isEmpty')) {
+                $(this).val('');
+            }
+        });
+        return true;
+    });
+});
+</script>
+<style>
+    .fw-600 { font-weight: 600; }
+    .animate__fadeIn {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .medicine_row_input .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border-color: #e2e8f0;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--colorPrimary);
+        box-shadow: 0 0 0 3px rgba(var(--colorPrimaryRgb, 13, 124, 102), 0.1);
+    }
+
+    .read_btn {
+        background: var(--colorPrimary);
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 28px;
+        font-weight: 600;
+        font-size: 0.92rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .read_btn:hover {
+        background: #1a1a1a;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        color: white !important;
+    }
+</style>
+@endpush
 @endsection

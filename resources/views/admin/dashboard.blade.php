@@ -18,265 +18,202 @@
                 <p class="mg-b-0">Today is {{ \Carbon\Carbon::today()->format('F d, Y') }}</p>
             </div>
         </div>
-        <hr>
-
-        <div class="card card-dash-one mg-t-20">
-            <div class="row no-gutters">
-                <div class="col-lg-12">
-                    <a href="{{ route('admin-revert-contactus') }}">
-                        <i class="icon ion-ios-analytics-outline"></i>
-                        <div class="dash-content">
-                            <label class="tx-primary">Pending Contact Us Messages </label>
-                            <h2>0</h2>
+        
+        <div class="row row-xs mg-t-20">
+            <!-- Total Renters -->
+            <div class="col-sm-6 col-lg-3">
+                <div class="card card-status">
+                    <div class="media">
+                        <i class="icon fa-solid fa-users tx-purple"></i>
+                        <div class="media-body">
+                            <h1>{{ $totalRenters }}</h1>
+                            <p>Total Renters</p>
                         </div>
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="report-summary-header">
-            <div>
-                <h4 class="tx-inverse mg-b-3">Renters Section</h4>
-            </div>
-            @if (Auth::guard('admin')->user()->hasPermission('user_addedit'))
-            <div>
-                <a href="{{ route('admin-client-adduser') }}" class="btn btn-primary"><i
-                        class="icon ion-ios-clock-outline tx-22"></i> Add Renters
-                </a>
-            </div>
-            @endif
-        </div>
-
-        <div class="row no-gutters dashboard-chart-one">
-            <div class="col-md-4 col-lg">
-                <div class="card card-total">
-                    <div>
-                        <h1>{{ $totalRenters }}</h1>
-                        <p>Total Renters</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg">
-                <a href="{{ route('admin-activeRenter') }}">
-                    <div class="card card-total">
-                        <div>
-                            <h1>{{ $activeRenters }}</h1>
-                            <p>Active Renters </p>
+            <!-- Active Renters -->
+            <div class="col-sm-6 col-lg-3 mg-t-10 mg-sm-t-0">
+                <a href="{{ route('admin-activeRenter') }}" class="text-decoration-none">
+                    <div class="card card-status">
+                        <div class="media">
+                            <i class="icon fa-solid fa-user-check tx-teal"></i>
+                            <div class="media-body">
+                                <h1>{{ $activeRenters }}</h1>
+                                <p>Active Renters</p>
+                            </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4 col-lg">
-                <a href="{{ route('admin-inactiveRenter') }}">
-                    <div class="card card-total">
-                        <div>
-                            <h1>{{ $InactiveRenters }}</h1>
-                            <p>Inactive Renters</p>
+            <!-- Total Properties -->
+            <div class="col-sm-6 col-lg-3 mg-t-10 mg-lg-t-0">
+                <div class="card card-status">
+                    <div class="media">
+                        <i class="icon fa-solid fa-building tx-primary"></i>
+                        <div class="media-body">
+                            <h1>{{ $totalproperty }}</h1>
+                            <p>Total Properties</p>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
-            <div class="col-md-4 col-lg">
-                <a href="{{ route('admin-leasedRenter') }}">
-                    <div class="card card-total">
-                        <div>
-                            <h1>{{ $leasedRenters }}</h1>
-                            <p>Leased Renters</p>
+            <!-- Active Properties -->
+            <div class="col-sm-6 col-lg-3 mg-t-10 mg-lg-t-0">
+                <div class="card card-status">
+                    <div class="media">
+                        <i class="icon fa-solid fa-house-circle-check tx-pink"></i>
+                        <div class="media-body">
+                            <h1>{{ $activeProperty }}</h1>
+                            <p>Active Properties</p>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
         </div>
 
         <div class="row row-sm mg-t-20">
-            <div class="col-lg-6 mg-t-20 mg-lg-t-0">
+            <div class="col-lg-6">
                 <div class="card card-table">
-                    <div class="card-header">
-                        <h6 class="slim-card-title"> Unassigned Renters </h6>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="slim-card-title mb-0">Unassigned Renters</h6>
+                        <a href="{{ route('admin-unassigned-renters') }}" class="tx-12">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table mg-b-0 tx-13">
                             <thead>
                                 <tr class="tx-10">
                                     <th class="wd-10p pd-y-5">S.No</th>
-                                    <th class="pd-y-5">Renter Name </th>
-                                    <th class="pd-y-5">Probability (%) </th>
-                                    <th class="pd-y-5">Actions</th>
+                                    <th class="pd-y-5">Renter Name</th>
+                                    <th class="pd-y-5">Probability</th>
+                                    <th class="pd-y-5 text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($listunassignedRenter as $renter)
+                                @forelse ($listunassignedRenter as $renter)
                                 <tr id="renter-row-{{ $renter['id'] }}">
-                                    <td class="pd-l-20">
-                                        {{ $loop->iteration }}
-                                    </td>
+                                    <td class="pd-l-20">{{ $loop->iteration }}</td>
                                     <td>
-                                        <a href="{{ route('admin-view-profile', ['id' => $renter['id']]) }}"
-                                            class="tx-14 tx-medium d-block"> {{ @$renter['Firstname'] }}
-                                            {{ $renter['Lastname'] }} </a>
-                                    </td>
-                                    <td class="tx-12">
-                                        <a href="#"
-                                            class="tx-inverse tx-14 tx-medium d-block">{{ @$renter['Probability'] ?? '-' }}
+                                        <a href="{{ route('admin-view-profile', ['id' => $renter['id']]) }}" class="tx-inverse tx-medium d-block">
+                                            {{ @$renter['Firstname'] }} {{ $renter['Lastname'] }}
                                         </a>
                                     </td>
+                                    <td><span class="badge badge-warning">{{ @$renter['Probability'] ?? '-' }}%</span></td>
                                     <td class="text-end">
                                         @if (Auth::guard('admin')->user()->hasPermission('renter_claim'))
-                                        <a href="javascript:void(0)"
-                                            class="btn btn-primary btn-sm submit-spinner-{{ $renter['id'] }}"
-                                            onclick="claimRenter({{ $renter['id'] }})"> Claim </a>
+                                        <button class="btn btn-primary btn-xs submit-spinner-{{ $renter['id'] }}" onclick="claimRenter({{ $renter['id'] }})">
+                                            Claim
+                                        </button>
                                         @else
-                                        <a href="javascript:void(0)"
-                                            class="btn btn-secondary disabled btn-sm"> No Acceess </a>
+                                        <button class="btn btn-secondary btn-xs disabled">No Access</button>
                                         @endif
                                     </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center p-3">No unassigned renters found.</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer tx-12 pd-y-15 bg-transparent">
-                        <a href="{{ route('admin-unassigned-renters') }}"><i class="fa fa-angle-down mg-r-5"></i>View All Unassigned Renters </a>
-                    </div>
                 </div>
             </div>
+
             <div class="col-lg-6 mg-t-20 mg-lg-t-0">
                 <div class="card card-table">
-                    <div class="card-header">
-                        <h6 class="slim-card-title">Recent Assigned Renters </h6>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="slim-card-title mb-0">My Recent Renters</h6>
+                        <a href="{{ route('admin-unassigned-renters') }}" class="tx-12">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table mg-b-0 tx-13">
                             <thead>
                                 <tr class="tx-10">
                                     <th class="wd-10p pd-y-5">S.No</th>
-                                    <th class="pd-y-5">First Name </th>
-                                    <th class="pd-y-5">Last Name </th>
-                                    <th class="pd-y-5">Actions</th>
+                                    <th class="pd-y-5">Name</th>
+                                    <th class="pd-y-5 text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($listassignedRenter as $renter)
+                                @forelse ($listassignedRenter as $renter)
                                 <tr id="renter-row-{{ $renter->Id }}">
-                                    <td class="pd-l-20">
-                                        {{ $loop->iteration }}
-                                    </td>
+                                    <td class="pd-l-20">{{ $loop->iteration }}</td>
                                     <td>
-                                        <a href=""
-                                            class="tx-inverse tx-14 tx-medium d-block">{{ $renter->renterinfo->Firstname }}</a>
-                                    </td>
-                                    <td class="tx-12">
-                                        <a href=""
-                                            class="tx-inverse tx-14 tx-medium d-block">{{ $renter->renterinfo->Lastname }}</a>
+                                        <a href="{{ route('admin-view-profile', ['id' => $renter->Id]) }}" class="tx-inverse tx-medium d-block">
+                                            {{ $renter->renterinfo->Firstname }} {{ $renter->renterinfo->Lastname }}
+                                        </a>
                                     </td>
                                     <td class="text-end">
-                                        <a href="{{ route('admin-view-profile', ['id' => $renter->Id]) }}"
-                                            class="btn btn-primary btn-sm submit-spinner-{{ $renter->Id }}"> View
+                                        <a href="{{ route('admin-view-profile', ['id' => $renter->Id]) }}" class="btn btn-outline-primary btn-xs">
+                                            View Profile
                                         </a>
                                     </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="3" class="text-center p-3">No assigned renters found.</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer tx-12 pd-y-15 bg-transparent">
-                        <a href="{{ route('admin-unassigned-renters') }}"><i class="fa fa-angle-down mg-r-5"></i>View
-                            All Assigned Renters </a>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <hr>
-
-        <br>
-
-        <div class="report-summary-header">
-            <div>
-                <h4 class="tx-inverse mg-b-3">Property Section</h4>
-            </div>
-            @if (Auth::guard('admin')->user()->hasPermission('property_addedit'))
-            <div>
-                <a href="{{ route('admin-client-adduser') }}" class="btn btn-primary"><i
-                        class="icon ion-ios-clock-outline tx-22"></i> Add Properties
-                </a>
-            </div>
-            @endif
-        </div>
-
-        <div class="row no-gutters dashboard-chart-one">
-            <div class="col-md-4 col-lg">
-                <div class="card card-total">
-                    <div>
-                        <h1>{{ $totalproperty }}</h1>
-                        <p> Total Properties </p>
+        <div class="row mg-t-20">
+            <div class="col-lg-12">
+                <div class="card card-table">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="slim-card-title mb-0">Recent Active Properties</h6>
+                        @if (Auth::guard('admin')->user()->hasPermission('property_addedit'))
+                        <a href="{{ route('admin-addProperty') }}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-plus mg-r-5"></i> Add Property
+                        </a>
+                        @endif
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mg-b-0 tx-13">
+                            <thead>
+                                <tr class="tx-10">
+                                    <th class="wd-5p pd-y-5 tx-center">S.No</th>
+                                    <th class="pd-y-5">Property Name</th>
+                                    <th class="pd-y-5">Location</th>
+                                    <th class="pd-y-5">Status</th>
+                                    <th class="pd-y-5 text-end">Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($activeProperties as $item)
+                                <tr id="property-row-{{ $item->Id }}">
+                                    <td class="tx-center">{{ $loop->iteration }}</td>
+                                    <td>
+                                        <a href="{{ route('admin-property-display', ['id' => $item->Id]) }}" class="tx-inverse tx-medium d-block">
+                                            {{ $item->PropertyName }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $item->city->CityName }}, {{ $item->city->state->StateName }}</td>
+                                    <td>
+                                        <a href="javascript:void(0)" onclick="changeStatus({{ $item->Id }})">
+                                            <span class="badge badge-success">Active</span>
+                                        </a>
+                                    </td>
+                                    <td class="text-end">
+                                        {{ $item->CreatedOn ? $item->CreatedOn->format('M d, Y') : '-' }}
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="text-center p-3">No recent properties found.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg">
-                <div class="card card-total">
-                    <div>
-                        <h1>{{ $activeProperty }}</h1>
-                        <p> Active Properties </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-lg">
-                <div class="card card-total">
-                    <div>
-                        <h1>{{ $inactiveProperty }}</h1>
-                        <p> Inactive Properties </p>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <div class="card card-table mg-t-20 mg-sm-t-30">
-            <div class="card-header">
-                <h6 class="slim-card-title">Recent Active Properties</h6>
-            </div>
-            <div class="table-responsive">
-                <table class="table mg-b-0 tx-13">
-                    <thead>
-                        <tr class="tx-10">
-                            <th class="wd-10p pd-y-5 tx-center">S.No</th>
-                            <th class="pd-y-5">Property Name</th>
-                            <th class="pd-y-5 tx-right">City</th>
-                            <th class="pd-y-5 tx-center">State</th>
-                            <th class="pd-y-5">Status</th>
-                            <th class="pd-y-5">Created Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($activeProperties as $item)
-                        <tr id="property-row-{{ $item->Id }}">
-                            <td class="tx-center">
-                                {{ $loop->iteration }}
-                            </td>
-                            <td>
-                                <a href="{{ route('admin-property-display', ['id' => $item->Id]) }}"
-                                    class="tx-inverse tx-medium d-block">{{ $item->PropertyName }}</a>
-                            </td>
-                            <td class="valign-middle tx-right">{{ $item->city->CityName }}</td>
-                            <td class="valign-middle tx-center">{{ $item->city->state->StateName }}</td>
-                            <td class="valign-middle tx-left">
-                                <a href="javascript:void(0)" onclick="changeStatus({{ $item->Id }})"
-                                    class="c-pill c-pill--success">
-                                    Active </a>
-                            </td>
-                            <td class="valign-middle tx-left">
-                                {{ $item->CreatedOn ? $item->CreatedOn->format('Y-m-d') : 'Not Available' }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 </div>
 

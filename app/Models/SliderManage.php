@@ -10,7 +10,7 @@ class SliderManage extends Model
     use HasFactory;
 
     protected $table = 'slidermanage';
-
+    protected $primaryKey = 'Id';
     public $timestamps = false;
     protected $guarded = [];
     protected $casts = [

@@ -352,14 +352,11 @@
 </script>
 
 <script>
-    // var ImageData = e.target.result
     $(document).ready(function() {
-        // This is Working Fine
         $("#addourfeatures").submit(function(e) {
-            e.preventDefault(); // Prevent the form from submitting normally
-
+            e.preventDefault();
             if (this.checkValidity() === false) {
-                e.stopPropagation(); // Stop form submission if the form is invalid
+                e.stopPropagation();
             } else {
                 var url = "{{ route('add-feature') }}";
                 var formData = $(this).serialize();
@@ -372,27 +369,21 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     beforeSend: function() {
-                        $('.submit-spinner').html(
-                            `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Creating...`
-                        );
-                        $('.submit-spinner').prop('disabled', true);
+                        $('#add-features').html(`<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Creating...`).prop('disabled', true);
                     },
                     success: function(response) {
                         if (response.success) {
                             toastr.success("Created Successfully");
                             $("#addourfeatures")[0].reset();
-                            $('.submit-spinner').html(`Create`);
-                            $('.submit-spinner').prop('disabled', false);
+                            location.reload();
                         } else {
-                            if (response.errors) {
-                                toastr.error("Not Created");
-                            }
+                            toastr.error(response.message || "Not Created");
                         }
+                        $('#add-features').html(`Create`).prop('disabled', false);
                     },
                     error: function(xhr) {
                         toastr.error("An error occurred. Please try again.");
-                        $('.submit-spinner').html(`Create`);
-                        $('.submit-spinner').prop('disabled', false);
+                        $('#add-features').html(`Create`).prop('disabled', false);
                     },
                 });
             }
@@ -400,8 +391,8 @@
         });
 
         $('#image-preview').css({
-            'background-image': `url({{ asset(@$counter->background) }})`,
-            'background-size': 'contain',
+            'background-image': `url({{ asset(@$counter->background ?: 'img/no-img.jpg') }})`,
+            'background-size': 'cover',
             'background-position': 'center center',
             'background-repeat': 'no-repeat',
         });
@@ -417,15 +408,10 @@
             }
         });
 
-
-        $(".table-icons input").attr("required", "required");
-
         $('textarea[name="our_feature_sub_title"]').on("input", function() {
             var text = $(this).val();
             var charCount = text.length;
-
             $("#charCountMessage").text("Character Count: " + charCount + " / 100");
-
             if (charCount > 100) {
                 $(this).val(text.substring(0, 100));
                 $("#charCountMessage").css("color", "red");
@@ -436,170 +422,83 @@
             }
         });
 
-
-
         $('.delete-btn').on('click', function() {
-            var id = $(this).data('id');
             var url = $(this).data('url');
-            swal({
-                    title: "Are you sure?",
-                    text: "You will not be able to recover this record!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        $.ajax({
-                            url: url,
-                            method: 'Post',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                toastr.success(response.message);
-                                location.reload();
-                            },
-                            error: function() {
-                                toastr.error(
-                                    'An error occurred while deleting the record.'
-                                );
-                            }
-                        });
+            if(confirm("Are you sure you want to delete this feature?")) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        toastr.success(response.message || "Deleted successfully");
+                        location.reload();
+                    },
+                    error: function() {
+                        toastr.error('An error occurred while deleting.');
                     }
                 });
+            }
         });
 
         $("#addcounter").submit(function(e) {
             e.preventDefault();
-            if (this.checkValidity() === false) {
-                event.stopPropagation();
-            } else {
-                var url = "{{ route('update-counter') }}";
-
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function() {
-                        $('.submit-spinner').html(
-                            `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Creating...`
-                        )
-                        $('.submit-spinner').prop('disabled', true);
-                    },
-                    success: function(response) {
-                        if (response.message) {
-                            toastr.success(response.message);
-                            $("#updatesectiontitles")[0].reset();
-                            $('.submit-spinner').html(`Create`)
-                            $('.submit-spinner').prop('disabled', false);
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error("An error occurred. Please try again.");
-                        $('.submit-spinner').html(
-                            `Create`
-                        )
-                        $('.submit-spinner').prop('disabled', false);
-                    },
-                });
-            }
-            $(this).addClass('was-validated');
+            var url = "{{ route('update-counter') }}";
+            var formData = new FormData(this);
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('#add-counter').html(`<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`).prop('disabled', true);
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message || "Updated Successfully");
+                    } else {
+                        toastr.error(response.message || "Update Failed");
+                    }
+                    $('#add-counter').html(`Update`).prop('disabled', false);
+                },
+                error: function(xhr) {
+                    toastr.error("An error occurred. Please try again.");
+                    $('#add-counter').html(`Update`).prop('disabled', false);
+                },
+            });
         });
 
         $("#updatesectiontitles").submit(function(e) {
             e.preventDefault();
-            if (this.checkValidity() === false) {
-                event.stopPropagation();
-            } else {
-                var url = "{{ route('admin-update-section-titles') }}";
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function() {
-                        $('.submit-spinner').html(
-                            `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Creating...`
-                        )
-                        $('.submit-spinner').prop('disabled', true);
-                    },
-                    success: function(response) {
-                        if (response.message) {
-                            toastr.success(response.message);
-                            $("#updatesectiontitles")[0].reset();
-                            $('.submit-spinner').html(`Create`)
-                            $('.submit-spinner').prop('disabled', false);
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error(response.message);
-                        $('.submit-spinner').html(`Update`)
-                        $('.submit-spinner').prop('disabled', false);
-                    },
-                });
-            }
-            $(this).addClass('was-validated');
+            var url = "{{ route('admin-update-section-titles') }}";
+            var formData = $(this).serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('#update-titles').html(`<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`).prop('disabled', true);
+                },
+                success: function(response) {
+                    if (response.message) {
+                        toastr.success(response.message);
+                    }
+                    $('#update-titles').html(`Update`).prop('disabled', false);
+                },
+                error: function(xhr) {
+                    toastr.error("Failed to update titles.");
+                    $('#update-titles').html(`Update`).prop('disabled', false);
+                },
+            });
         });
-
-
-        // $("#addourfeatures").submit(function(e) {
-        //     e.preventDefault();
-        //     alert('ddd');
-        //     if (this.checkValidity() === false) {
-        //         event.stopPropagation();
-        //     } else {
-        //         var url = "{{ route('add-feature') }}";
-        //         var formData = $(this).serialize();
-        //         $.ajax({
-        //             url: url,
-        //             type: "POST",
-        //             data: formData,
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             },
-        //             beforeSend: function() {
-        //                 $('.submit-spinner').html(
-        //                     `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Creating...`
-        //                 )
-        //                 $('.submit-spinner').prop('disabled', true);
-        //             },
-        //             success: function(response) {
-        //                 if (response.success) {
-        //                     toastr.success(" Created Successfully ");
-        //                     $("#addourfeatures")[0].reset();
-        //                     $('.submit-spinner').html(
-        //                         `Create`
-        //                     )
-        //                     $('.submit-spinner').prop('disabled', false);
-        //                 } else {
-        //                     if (response.errors) {
-        //                         toastr.error(" Not Created ");
-        //                     }
-        //                 }
-        //             },
-        //             error: function(xhr) {
-        //                 toastr.error("An error occurred. Please try again.");
-        //                 $('.submit-spinner').html(
-        //                     `Create`
-        //                 )
-        //                 $('.submit-spinner').prop('disabled', false);
-        //             },
-        //         });
-        //     }
-        //     $(this).addClass('was-validated');
-        // });
-
-
-
-
     });
 </script>
 @endpush

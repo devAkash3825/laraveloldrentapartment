@@ -81,6 +81,9 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     <li class="tab-li">
                         <a href="#appearancesettings" class="tab-li__link">Appearance Settings </a>
                     </li>
+                    <li class="tab-li">
+                        <a href="#mailsettings" class="tab-li__link">Mail Settings </a>
+                    </li>
                     {{-- <li class="tab-li">
                             <a href="#pushersettings" class="tab-li__link">Pusher Settings </a>
                         </li> --}}
@@ -210,8 +213,69 @@ $settings = DB::table('settings')->pluck('value', 'key');
 
                         <div class="col-lg-12 mt-4">
                             <div class="form-layout-footer" style="float:right;">
-                                <button type="submit" class="btn btn-primary bd-0 submit-spinner"
-                                    id="update-titles">
+                                <button type="submit" class="btn btn-primary bd-0 submit-spinner">
+                                    Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section id="mailsettings" data-tab-content class="p-0">
+                <form action="" method="POST" id="mailsettingsform">
+                    <div class="row mt-3">
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail Driver</label>
+                                <input type="text" class="form-control" name="mail_driver" value="{{ $settings['mail_driver'] ?? 'smtp' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail Host</label>
+                                <input type="text" class="form-control" name="mail_host" value="{{ $settings['mail_host'] ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail Port</label>
+                                <input type="text" class="form-control" name="mail_port" value="{{ $settings['mail_port'] ?? '587' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail Encryption</label>
+                                <input type="text" class="form-control" name="mail_encryption" value="{{ $settings['mail_encryption'] ?? 'tls' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail Username</label>
+                                <input type="text" class="form-control" name="mail_username" value="{{ $settings['mail_username'] ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail Password</label>
+                                <input type="text" class="form-control" name="mail_password" value="{{ $settings['mail_password'] ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail From Address</label>
+                                <input type="text" class="form-control" name="mail_from_address" value="{{ $settings['mail_from_address'] ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <div class="form-group">
+                                <label for="">Mail From Name</label>
+                                <input type="text" class="form-control" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mt-4">
+                            <div class="form-layout-footer" style="float:right;">
+                                <button type="submit" class="btn btn-primary bd-0 submit-spinner">
                                     Update
                                 </button>
                             </div>
@@ -277,86 +341,74 @@ $settings = DB::table('settings')->pluck('value', 'key');
 
         $("#appearenceform").submit(function(e) {
             e.preventDefault();
-            if (this.checkValidity() === false) {
-                event.stopPropagation();
-            } else {
-                var url = "{{ route('admin-update-appearence') }}";
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function() {
-                        $('.submit-spinner').html(
-                            `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`
-                        )
-                        $('.submit-spinner').prop('disabled', true);
-                    },
-                    success: function(response) {
-                        if (response.message) {
-                            toastr.success(response.message);
-                            $("#appearenceform")[0].reset();
-                            $('.submit-spinner').html(`Update`)
-                            $('.submit-spinner').prop('disabled', false);
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error(response.message);
-                        $('.submit-spinner').html(`Update`)
-                        $('.submit-spinner').prop('disabled', false);
-                    },
-                });
-            }
+            var url = "{{ route('admin-update-appearence') }}";
+            var formData = $(this).serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('.submit-spinner').html(
+                        `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`
+                    )
+                    $('.submit-spinner').prop('disabled', true);
+                },
+                success: function(response) {
+                    if (response.message) {
+                        toastr.success(response.message);
+                    }
+                    $('.submit-spinner').html(`Update`)
+                    $('.submit-spinner').prop('disabled', false);
+                },
+                error: function(xhr) {
+                    toastr.error("Something went wrong");
+                    $('.submit-spinner').html(`Update`)
+                    $('.submit-spinner').prop('disabled', false);
+                },
+            });
             $(this).addClass('was-validated');
         });
 
         $("#updatesitenamesform").submit(function(e) {
             e.preventDefault();
-            if (this.checkValidity() === false) {
-                event.stopPropagation();
-            } else {
-                var url = "{{ route('admin-update-sitenames') }}";
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function() {
-                        $('.submit-spinner').html(
-                            `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`
-                        )
-                        $('.submit-spinner').prop('disabled', true);
-                    },
-                    success: function(response) {
-                        if (response.message) {
-                            toastr.success(response.message);
-                            $("#appearenceform")[0].reset();
-                            $('.submit-spinner').html(`Update`)
-                            $('.submit-spinner').prop('disabled', false);
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error(response.message);
-                        $('.submit-spinner').html(`Update`)
-                        $('.submit-spinner').prop('disabled', false);
-                    },
-                });
-            }
+            var url = "{{ route('admin-update-sitenames') }}";
+            var formData = $(this).serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('.submit-spinner').html(
+                        `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`
+                    )
+                    $('.submit-spinner').prop('disabled', true);
+                },
+                success: function(response) {
+                    if (response.message) {
+                        toastr.success(response.message);
+                    }
+                    $('.submit-spinner').html(`Update`)
+                    $('.submit-spinner').prop('disabled', false);
+                },
+                error: function(xhr) {
+                    toastr.error("Something went wrong");
+                    $('.submit-spinner').html(`Update`)
+                    $('.submit-spinner').prop('disabled', false);
+                },
+            });
             $(this).addClass('was-validated');
         });
 
         $("#updatelogoandfavicons").submit(function(e) {
             e.preventDefault();
-
             var url = "{{ route('admin-update-logo') }}";
             var formData = new FormData(this);
-
             $.ajax({
                 url: url,
                 type: "POST",
@@ -387,7 +439,37 @@ $settings = DB::table('settings')->pluck('value', 'key');
             });
         });
 
-
+        $("#mailsettingsform").submit(function(e) {
+            e.preventDefault();
+            var url = "{{ route('admin-update-mail-settings') }}";
+            var formData = $(this).serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('.submit-spinner').html(
+                        `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`
+                    )
+                    $('.submit-spinner').prop('disabled', true);
+                },
+                success: function(response) {
+                    if (response.message) {
+                        toastr.success(response.message);
+                    }
+                    $('.submit-spinner').html(`Update`)
+                    $('.submit-spinner').prop('disabled', false);
+                },
+                error: function(xhr) {
+                    toastr.error("Failed to update mail settings");
+                    $('.submit-spinner').html(`Update`)
+                    $('.submit-spinner').prop('disabled', false);
+                },
+            });
+        });
     });
 </script>
 @endpush

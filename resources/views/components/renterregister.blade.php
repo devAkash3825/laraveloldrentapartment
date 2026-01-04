@@ -364,46 +364,58 @@
         margin-bottom: 0.5rem;
     }
 
-    /* Buttons */
+    /* Buttons - Standardized Premium */
     .btn-primary-custom, .btn-secondary-custom, .btn-success-custom {
-        padding: 12px 28px;
-        border-radius: 10px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        transition: all 0.3s;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-size: 0.92rem;
+        font-weight: 700;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
 
     .btn-primary-custom {
         background: var(--colorPrimary);
+        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
         color: white;
+        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
     }
 
     .btn-primary-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        background: var(--colorPrimary);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.35);
         filter: brightness(1.1);
+        color: white;
     }
 
     .btn-secondary-custom {
-        background: #e2e8f0;
+        background: #f1f5f9;
         color: #475569;
+        border: 1px solid #e2e8f0;
     }
 
     .btn-secondary-custom:hover {
-        background: #cbd5e1;
+        background: #e2e8f0;
+        color: #1e293b;
+        transform: translateY(-2px);
     }
 
     .btn-success-custom {
         background: #10b981;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
     }
 
     .btn-success-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
         filter: brightness(1.1);
+        color: white;
     }
 
     /* Bedroom Selector */

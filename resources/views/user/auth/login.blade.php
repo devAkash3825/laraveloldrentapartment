@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="mb-4 pt-2">
-                            <button type="submit" class="btn btn-primary-custom w-100 py-3 shadow-sm rounded-4">
+                            <button type="submit" class="btn btn-primary-custom w-100 py-2.5 shadow-sm rounded-4">
                                 <i class="bi bi-box-arrow-in-right me-2"></i> Log In
                             </button>
                         </div>
@@ -217,16 +217,24 @@
 
     .btn-primary-custom {
         background: var(--colorPrimary);
+        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
         border: none;
         color: white;
         font-weight: 700;
-        transition: all 0.3s;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.25);
     }
 
     .btn-primary-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.25);
         filter: brightness(1.1);
+        color: white;
+    }
+
+    .btn-primary-custom:active {
+        transform: translateY(-1px);
     }
 
     .underline-hover:hover {

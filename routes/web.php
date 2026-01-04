@@ -99,6 +99,8 @@ Route::middleware(['authenticated'])->group(function () {
     Route::post('/edit-general-details/{id}', [UserPropertyController::class, 'editGeneralDetail'])->name('edit-general-detail');
     Route::get('/create-floor-plan/{id}', [UserPropertyController::class, 'floorPlanDetail'])->name('create-floor-plan');
     Route::post('/store-floor-plan', [UserPropertyController::class, 'storeFloorPlan'])->name('store-floor-plan');
+    Route::post('/update-floor-plan/{id}', [UserPropertyController::class, 'updateFloorPlan'])->name('update-floor-plan');
+    Route::post('/delete-floor-plan/{id}', [UserPropertyController::class, 'deleteFloorPlan'])->name('delete-floor-plan');
     Route::post('/upload-image', [UserPropertyController::class, 'uploadImage'])->name('upload-image');
 
     Route::post('/add-to-favorite', [UserFavoriteController::class, 'addToFavoriteByUser'])->name('add-to-favorite');

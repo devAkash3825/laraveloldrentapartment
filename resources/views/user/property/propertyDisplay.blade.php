@@ -283,13 +283,42 @@
                             <a href="#rentandspecial" class="tab-li__link">Rent & Special </a>
                         </li>
                         <li class="tab-li">
+                            <a href="#notes-history" class="tab-li__link">Notes</a>
+                        </li>
+                        <li class="tab-li">
                             <a href="#streetviewfull" class="tab-li__link">Street View </a>
                         </li>
                     </ul>
                 </nav>
 
 
-                <section id="maindetails" data-tab-content class="">
+                <section id="notes-history" data-tab-content>
+                    <div class="p-4 bg-white rounded-4 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold text-primary mb-0">Notes & Interactions</h4>
+                            <span class="badge bg-light text-muted p-2" id="notes-count">0 Notes</span>
+                        </div>
+                        
+                        <div id="notes-list-container" class="mb-4" style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                                <p class="text-muted small mt-2">Loading notes...</p>
+                            </div>
+                        </div>
+
+                        <div class="reply-box mt-4 p-3 bg-light rounded-4">
+                            <h6 class="fw-bold mb-3">Add a Note</h6>
+                            <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                                <textarea id="new-note-input" class="form-control border-0" placeholder="Type your message here..." rows="2" style="resize: none;"></textarea>
+                                <button class="btn btn-primary-custom" type="button" onclick="submitNewNote()">
+                                    <i class="bi bi-send-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="maindetails" data-tab-content>
                     <div class="row">
                         <div class="col-md-6 p-0">
                             <input type="hidden" name="" id="lat"
@@ -674,6 +703,7 @@
 
 
 
+
 @endsection
 @push('scripts')
 <script src="{{ asset('user_asset/js/tabview.js') }}"></script>
@@ -818,5 +848,94 @@
             }
         }
     })
+
+    // TAB NAVIGATION for section titles
+    $(document).on('click', '.tab-li__link', function(e) {
+        e.preventDefault();
+        const target = $(this).attr('href');
+        
+        // Update active class on links
+        $('.tab-li__link').removeClass('active');
+        $(this).addClass('active');
+
+        // Show target content
+        $('[data-tab-content]').removeClass('active').hide();
+        $(target).addClass('active').fadeIn();
+
+        // Load notes if needed
+        if (target === '#notes-history') {
+            loadNotesHistory();
+        }
+    });
+
+    function loadNotesHistory() {
+        const propertyId = "{{ $propertyDetails['id'] }}";
+        const container = $('#notes-list-container');
+        
+        $.ajax({
+            url: "{{ route('get-notes-detail') }}",
+            type: "POST",
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            data: { propertyId: propertyId },
+            success: function(response) {
+                let html = '';
+                const notes = response.notedetails;
+                if (notes) $('#notes-count').text(notes.length + ' Notes');
+
+                if (notes && notes.length > 0) {
+                    notes.forEach(note => {
+                        const isMe = note.user_id == "{{ Auth::guard('renter')->id() }}";
+                        const senderName = isMe ? 'You' : (note.admin_id ? 'Admin' : 'Manager');
+                        const alignClass = isMe ? 'flex-row-reverse text-end' : '';
+                        const bgColor = isMe ? 'bg-primary text-white' : 'bg-light text-dark';
+                        const time = new Date(note.send_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        html += `
+                            <div class="d-flex ${alignClass} mb-3 gap-2">
+                                <div class="message-bubble p-3 rounded-4 shadow-sm ${bgColor}" style="max-width: 80%; display: inline-block;">
+                                    <div class="d-flex justify-content-between gap-3 mb-1">
+                                        <small class="fw-bold">${senderName}</small>
+                                        <small class="opacity-75">${time}</small>
+                                    </div>
+                                    <p class="mb-0 text-start" style="font-size: 0.95rem;">${note.message}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div class="text-center py-4 text-muted">No notes found for this property.</div>';
+                }
+                container.html(html);
+                if (container[0] && container[0].scrollHeight) {
+                    container.scrollTop(container[0].scrollHeight);
+                }
+            }
+        });
+    }
+
+    window.submitNewNote = function() {
+        const message = $('#new-note-input').val();
+        const propertyId = "{{ $propertyDetails['id'] }}";
+        
+        if (!message) return;
+
+        $.ajax({
+            url: "{{ route('add-notes') }}",
+            type: "POST",
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            data: { 
+                propertyId: propertyId,
+                message: message
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#new-note-input').val('');
+                    loadNotesHistory();
+                    toastr.success('Note added successfully');
+                }
+            }
+        });
+    }
+
 </script>
 @endpush

@@ -24,6 +24,7 @@ use App\Models\RenterInfo;
 // Models
 use App\Models\Source;
 use App\Models\UserProperty;
+use App\Models\Notification;
 use App\Repositories\FavoriteRepository;
 use App\Services\SearchService;
 use Illuminate\Http\Request;
@@ -131,6 +132,21 @@ class ClientController extends Controller
                 'reminder_note'       => $request->input('remaindernote'),
                 'added_by'            => $validatedData['assignAgent'],
             ]);
+
+            // Notify Assigned Agent if different from creator
+            $currentAdmin = Auth::guard('admin')->user();
+            if ($validatedData['assignAgent'] != $currentAdmin->id) {
+                Notification::create([
+                    'from_id' => $currentAdmin->id,
+                    'form_user_type' => 'A',
+                    'to_id' => $validatedData['assignAgent'],
+                    'to_user_type' => 'A',
+                    'message' => "<strong>{$currentAdmin->admin_name}</strong> assigned a new renter <strong>{$validatedData['firstName']} {$validatedData['lastName']}</strong> to you.",
+                    'notification_link' => route('admin-view-profile', ['id' => $login->Id]),
+                    'seen' => 0,
+                    'CreatedOn' => now(),
+                ]);
+            }
 
             DB::commit();
             session()->flash('toast', [

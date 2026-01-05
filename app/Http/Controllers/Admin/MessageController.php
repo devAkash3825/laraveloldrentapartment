@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\PropertyInfo;
 use App\Models\Message;
 use App\Models\Conversation;
+use App\Models\Notification;
 use App\Events\AdminMessageSent;
 use Illuminate\Support\Facades\Log;
 
@@ -19,9 +20,14 @@ class MessageController extends Controller
     {
         $userid = Auth::guard('admin')->user()->id;
         $messageNotes = Message::where('propertyId', $propertyId)->where('renterId', $renterId)
-            ->with('conversation')
-            ->with('propertyinfo')
+            ->with(['conversation', 'propertyinfo'])
             ->get();
+        
+        // Mark as read for Admin
+        foreach ($messageNotes as $thread) {
+            $thread->conversation()->whereNull('adminId')->update(['is_read' => true]);
+        }
+
         $getPropertyInfo = PropertyInfo::where('Id', $propertyId)->with('gallerytype.gallerydetail')->first();
 
 
@@ -39,7 +45,6 @@ class MessageController extends Controller
 
     public function sendMessage(Request $request)
     {
-
         $authAdmin = Auth::guard('admin')->user();
         $message = $request->adminmessage;
         $propertyId = $request->sendpropertyID;
@@ -47,10 +52,7 @@ class MessageController extends Controller
 
         try {
             $existingMessage = Message::where('propertyId', $propertyId)->where('renterId', $renterId)->first();
-            $notification = [
-                'message' => $message,
-                'renterimageURL' => 'https://cdn-icons-png.flaticon.com/512/2233/2233922.png',
-            ];
+            
             if ($existingMessage) {
                 $messageId = $existingMessage->id;
                 Conversation::create([
@@ -64,13 +66,45 @@ class MessageController extends Controller
                     'adminId' => $authAdmin->id,
                     'renterId' => $renterId,
                 ]);
-                $newRec = $newchat->id;
+                $messageId = $newchat->id;
                 Conversation::create([
-                    'messagesId' => $newRec,
+                    'messagesId' => $messageId,
                     'adminId' => $authAdmin->id,
                     'message' => $message,
                 ]);
             }
+
+            // Create notification for Renter
+            Notification::create([
+                'from_id' => $authAdmin->id,
+                'form_user_type' => 'A',
+                'to_id' => $renterId,
+                'to_user_type' => 'R',
+                'property_id' => $propertyId,
+                'message' => "Admin sent a message for <strong>" . ($existingMessage?->propertyinfo?->PropertyName ?? 'Property') . "</strong>",
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
+            // Notify Manager if attached
+            if ($existingMessage && $existingMessage->managerId) {
+                Notification::create([
+                    'from_id' => $authAdmin->id,
+                    'form_user_type' => 'A',
+                    'to_id' => $existingMessage->managerId,
+                    'to_user_type' => 'M',
+                    'property_id' => $propertyId,
+                    'message' => "Admin sent a message for <strong>{$existingMessage->propertyinfo->PropertyName}</strong>",
+                    'seen' => 0,
+                    'CreatedOn' => now(),
+                ]);
+            }
+
+            // Trigger broadcast for those who use it
+            $notification = [
+                'message' => $message,
+                'renterimageURL' => 'https://cdn-icons-png.flaticon.com/512/2233/2233922.png',
+            ];
             event(new AdminMessageSent($notification, $renterId, $propertyId));
 
             return response()->json([
@@ -81,10 +115,8 @@ class MessageController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in sendMessage:', [
                 'error_message' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
                 'property_id' => $propertyId,
                 'renter_id' => $renterId,
-                'admin_id' => $authAdmin->id,
             ]);
             return response()->json([
                 'status' => 'error',

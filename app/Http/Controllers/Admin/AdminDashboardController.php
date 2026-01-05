@@ -338,7 +338,16 @@ class AdminDashboardController extends Controller
 
     public function adminMessages()
     {
-        return view('admin.adminMessages');
+        $adminId = Auth::guard('admin')->user()->id;
+        $messages = Message::where(function($query) use ($adminId) {
+                $query->where('adminId', $adminId)
+                      ->orWhereNull('adminId'); // Show unassigned threads too
+            })
+            ->with(['loginrenter.renterinfo', 'propertyinfo', 'conversation'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+            
+        return view('admin.adminMessages', compact('messages'));
     }
 
 
@@ -371,10 +380,22 @@ class AdminDashboardController extends Controller
 
     public function markAllAsRead()
     {
-        $userId = auth()->guard('renter')->user()->Id;
-        Notification::where('to_id', $userId)->where('seen', 0)->update(['seen' => 1]);
+        $userId = auth()->guard('admin')->user()->id;
+        Notification::where('to_id', $userId)->where('to_user_type', 'A')->where('seen', 0)->update(['seen' => 1]);
 
         return response()->json(['success' => true, 'message' => 'All notifications marked as read']);
+    }
+
+    public function markAsSeen(Request $request)
+    {
+        $id = $request->id;
+        $userId = auth()->guard('admin')->user()->id;
+        Notification::where('id', $id)
+            ->where('to_id', $userId)
+            ->where('to_user_type', 'A')
+            ->update(['seen' => 1]);
+
+        return response()->json(['success' => true]);
     }
 
     public function claimRenter(Request $request)
@@ -393,8 +414,20 @@ class AdminDashboardController extends Controller
             $notificationToRenter = [
                 'title' => 'Claim Profile',
                 'image' => $adminName,
-                'message' => '<strong>' . $adminName . '</strong> has Claimed Your Profile',
+                'message' => '<strong>' . $adminName . '</strong> has claimed your profile.',
             ];
+            
+            // Store persistent notification
+            Notification::create([
+                'from_id' => $authuser->id,
+                'form_user_type' => 'A',
+                'to_id' => $renterId,
+                'to_user_type' => 'R',
+                'message' => $notificationToRenter['message'],
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
             event(new NotificationEvent($notificationToRenter, $renterId));
         } catch (\Exception $e) {
             $notificationStatus = false;

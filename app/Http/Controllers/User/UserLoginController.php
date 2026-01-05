@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Models\Notification;
 
 class UserLoginController extends Controller
 {
@@ -116,6 +117,18 @@ class UserLoginController extends Controller
 
             Auth::guard('renter')->login($user);
 
+            // Notify Admins about new Manager Registration
+            Notification::create([
+                'from_id' => $user->Id,
+                'form_user_type' => 'M',
+                'to_id' => 1, // Notify Super Admin
+                'to_user_type' => 'A',
+                'message' => "New Manager registration: <strong>{$user->UserName}</strong> ({$user->Email})",
+                'notification_link' => route('admin-list-manager'), 
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => 'Manager registered and logged in successfully.',
@@ -190,6 +203,18 @@ class UserLoginController extends Controller
             ]);
 
             Auth::guard('renter')->login($login);
+
+            // Notify Admins about new Renter Registration
+            Notification::create([
+                'from_id' => $login->Id,
+                'form_user_type' => 'R',
+                'to_id' => 1, // Notify Super Admin
+                'to_user_type' => 'A',
+                'message' => "New Renter registration: <strong>{$request->firstname} {$request->lastname}</strong> ({$request->email})",
+                'notification_link' => route('admin-view-profile', ['id' => $login->Id]),
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
 
             if ($request->ajax()) {
                 return response()->json([

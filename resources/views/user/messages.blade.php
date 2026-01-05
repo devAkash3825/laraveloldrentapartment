@@ -1,6 +1,31 @@
 @extends('user.layout.app')
 @section('content')
-    <section id="dashboard">
+@section('title', 'Messages')
+<style>
+    .avatar-replacement {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+    .tf__chating_text p {
+        border-radius: 15px;
+        padding: 10px 15px !important;
+        max-width: 100%;
+        margin-bottom: 5px !important;
+    }
+    .tf__chating_text span {
+        font-size: 0.75rem;
+        color: #888;
+    }
+    .tf_chat_right .tf__chating_text p {
+        border-bottom-right-radius: 0;
+    }
+    .tf_chat_left .tf__chating_text p {
+        border-bottom-left-radius: 0;
+        background: #f8f9fa !important;
+    }
+</style>
+    <section id="dashboard" class="py-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
@@ -25,23 +50,55 @@
                                     <div id="rentermessage_window">
                                         @foreach ($messages as $message)
                                             @foreach ($message->conversation as $conversation)
-                                                @if ($conversation->renterId == Auth::guard('renter')->user()->Id)
+                                                @php
+                                                    $isMe = $conversation->renterId == Auth::guard('renter')->user()->Id;
+                                                    $role = 'Renter';
+                                                    $roleColor = 'bg-primary';
+                                                    $roleIcon = 'bi-person';
+                                                    
+                                                    if ($conversation->adminId) {
+                                                        $role = 'Admin';
+                                                        $roleColor = 'bg-warning text-dark';
+                                                        $roleIcon = 'bi-shield-check';
+                                                    } elseif ($conversation->managerId) {
+                                                        $role = 'Manager';
+                                                        $roleColor = 'bg-info text-white';
+                                                        $roleIcon = 'bi-building';
+                                                    }
+                                                @endphp
+                                                
+                                                @if ($isMe)
                                                     <div class="tf__chating tf_chat_right">
                                                         <div class="tf__chating_text">
-                                                            <p>{{ $conversation->message }}</p>
+                                                            <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+                                                                <small class="fw-bold text-primary">You</small>
+                                                            </div>
+                                                            <p class="bg-primary text-white shadow-sm">{{ $conversation->message }}</p>
                                                             <span>{{ $conversation->created_at->format('d M, h:i A') }}</span>
                                                         </div>
                                                         <div class="tf__chating_img">
-                                                                <img src="https://cdn-icons-png.flaticon.com/512/2233/2233922.png" alt="logo" class="img-fluid">
+                                                            @if(Auth::guard('renter')->user()->profile_pic)
+                                                                <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="me" class="img-fluid rounded-circle">
+                                                            @else
+                                                                <div class="avatar-replacement bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                                    <i class="bi bi-person-fill"></i>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 @else
                                                     <div class="tf__chating tf_chat_left">
                                                         <div class="tf__chating_img">
-                                                            <img src="https://cdn-icons-png.flaticon.com/512/2233/2233922.png" alt="person" class="img-fluid w-100">
+                                                            <div class="avatar-replacement {{ $roleColor }} rounded-circle d-flex align-items-center justify-content-center shadow-sm" title="{{ $role }}">
+                                                                <i class="bi {{ $roleIcon }}"></i>
+                                                            </div>
                                                         </div>
                                                         <div class="tf__chating_text">
-                                                            <p>{{ $conversation->message }}</p>
+                                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                                <small class="fw-bold">{{ $role }}</small>
+                                                                <span class="badge {{ $roleColor }} border-0" style="font-size: 0.6rem;">{{ $role }}</span>
+                                                            </div>
+                                                            <p class="bg-white border shadow-sm text-dark">{{ $conversation->message }}</p>
                                                             <span>{{ $conversation->created_at->format('d M, h:i A') }}</span>
                                                         </div>
                                                     </div>
@@ -96,20 +153,31 @@
                 },
                 success: function(response) {
                     console.log("response",response);
-                    if (response[0] == 'message') {
+                    if (response.status === 'success' || response[0] === 'message') {
                         $(".send-btn").html(`Submit`);
                         $("#rentermessage_window").append(`
                                 <div class="tf__chating tf_chat_right">
                                     <div class="tf__chating_text">
-                                        <p>${rentermessage}</p>
+                                        <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+                                            <small class="fw-bold text-primary">You</small>
+                                        </div>
+                                        <p class="bg-primary text-white shadow-sm">${rentermessage}</p>
                                         <span>Just Now</span>
                                     </div>
                                     <div class="tf__chating_img">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/2233/2233922.png" alt="user" class="img-fluid w-100">
+                                        @if(Auth::guard('renter')->user()->profile_pic)
+                                            <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="me" class="img-fluid rounded-circle">
+                                        @else
+                                            <div class="avatar-replacement bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                         `);
                         $("#messageInput").val("");
+                        var chatBody = document.getElementById("chatBody");
+                        if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
                     }
                 },
                 error: function(xhr) {
@@ -127,24 +195,44 @@
         if (userid) {
             const propertyId = "{{ $getPropertyInfo['Id'] }}";
             document.addEventListener('DOMContentLoaded', function() {
+                var chatBody = document.getElementById("chatBody");
+                if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
                 if (window.Echo) {
                     window.Echo.private(`message-from-admin.${userid}`)
                         .listen('.AdminMessageSent', (e) => {
-                            if (e.propertyid === propertyId) {
-                                console.log("checking e", e);
-                                $("#rentermessage_window").append(`
-                                <div class="tf__chating tf_chat_left">
-                                    <div class="tf__chating_img">
-                                            <img src="${e.notification.renterimageURL}" alt="person" class="img-fluid w-100">
-                                    </div>
-                                    <div class="tf__chating_text">
-                                        <p>${e.notification.message}</p>
-                                        <span> Just Now </span>
-                                    </div>
-                                </div>
-                        `);
+                            if (e.propertyid == propertyId) {
+                                appendReceivedMessage(e.notification.message, 'Admin', 'bg-warning text-dark', 'bi-shield-check');
                             }
                         });
+
+                    window.Echo.private(`message-from-manager.${userid}`)
+                        .listen('.ManagerMessageSent', (e) => {
+                            if (e.propertyId == propertyId) {
+                                appendReceivedMessage(e.message.message, 'Manager', 'bg-info text-white', 'bi-building');
+                            }
+                        });
+                }
+
+                function appendReceivedMessage(msg, role, colorClass, iconClass) {
+                    $("#rentermessage_window").append(`
+                        <div class="tf__chating tf_chat_left">
+                            <div class="tf__chating_img">
+                                <div class="avatar-replacement ${colorClass} rounded-circle d-flex align-items-center justify-content-center shadow-sm">
+                                    <i class="bi ${iconClass}"></i>
+                                </div>
+                            </div>
+                            <div class="tf__chating_text">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <small class="fw-bold">${role}</small>
+                                    <span class="badge ${colorClass} border-0" style="font-size: 0.6rem;">${role}</span>
+                                </div>
+                                <p class="bg-white border shadow-sm text-dark">${msg}</p>
+                                <span>Just Now</span>
+                            </div>
+                        </div>
+                    `);
+                    var chatBody = document.getElementById("chatBody");
+                    if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
                 }
             });
         }

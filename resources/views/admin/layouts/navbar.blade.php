@@ -17,46 +17,44 @@
             </form>
         </div>
         <div class="slim-header-right">
-            {{-- <div class="dropdown dropdown-b">
+            <div class="dropdown dropdown-b">
                 <a href="" class="header-notification" data-toggle="dropdown">
                     <i class="fa-regular fa-bell ml-3"></i>
-                    <span class="counter">0</span>
+                    @if($unreadCount > 0)
+                        <span class="counter" id="notifications-count">{{ $unreadCount }}</span>
+                    @endif
                 </a>
                 <div class="dropdown-menu">
                     <div class="dropdown-menu-header">
                         <h6 class="dropdown-menu-title">Notifications</h6>
                         <div>
-                            <a href="">Mark All as Read</a>
-                            <a href="">Settings</a>
+                            <a href="javascript:void(0)" onclick="markAllNotificationsAsSeen()">Mark All as Read</a>
                         </div>
                     </div>
-                    <div class="dropdown-list">
-                        <a href="" class="dropdown-link">
+                    <div class="dropdown-list" id="notification-dropdown-list">
+                        @forelse($notifications as $notif)
+                        <a href="{{ $notif->notification_link ?? 'javascript:void(0)' }}" 
+                           class="dropdown-link {{ $notif->seen ? 'read' : 'unseen' }}" 
+                           data-id="{{ $notif->id }}"
+                           onclick="markThisAsSeen(this)">
                             <div class="media">
-                                <img src="" alt="">
+                                <img src="{{ asset('img/temp_profile.png') }}" alt="">
                                 <div class="media-body">
-                                    <p><strong>Mellisa Brown</strong> appreciated your work <strong>The Social
-                                            Network</strong></p>
-                                    <span>October 02, 2017 12:44am</span>
+                                    <p>{!! $notif->message !!}</p>
+                                    <span>{{ $notif->CreatedOn ? $notif->CreatedOn->diffForHumans() : '' }}</span>
                                 </div>
                             </div>
                         </a>
-                        <a href="" class="dropdown-link read">
-                            <div class="media">
-                                <img src="" alt="">
-                                <div class="media-body">
-                                    <p>20+ new items added are for sale in your <strong>Sale Group</strong></p>
-                                    <span>October 01, 2017 10:20pm</span>
-                                </div>
-                            </div><!-- media -->
-                        </a>
+                        @empty
+                        <div class="p-3 text-center text-muted">No notifications</div>
+                        @endforelse
 
                         <div class="dropdown-list-footer">
                             <a href=""><i class="fa fa-angle-down"></i> Show All Notifications</a>
                         </div>
                     </div>
                 </div>
-            </div> --}}
+            </div>
             <div class="dropdown dropdown-c">
                 <a href="#" class="logged-user" data-toggle="dropdown">
                     @if (Auth::guard('admin')->user()->admin_headshot != 'default.png')
@@ -249,39 +247,38 @@
     </div>
 </div>
 <script>
-    function markVisibleNotificationsAsSeen() {
-        const notificationDropdown = document.getElementById('notification-dropdown');
-        const unseenNotifications = Array.from(notificationDropdown.querySelectorAll('.dropdown-link.unseen'));
-        const unseenIds = unseenNotifications.map(notification => notification.dataset.id);
-
-        if (unseenIds.length > 0) {
-            fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ids: unseenIds
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        unseenNotifications.forEach(notification => {
-                            notification.classList.remove('unseen');
-                            notification.classList.add('read');
-                        });
-
-                        const counterElement = document.getElementById('notifications-count');
-                        counterElement.textContent = data.unseenCount;
+    function markThisAsSeen(e) {
+        const notificationid = e.dataset.id;
+        if (e.classList.contains('unseen')) {
+            fetch("{{ route('admin-mark-as-seen') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: notificationid }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    e.classList.remove('unseen');
+                    e.classList.add('read');
+                    const counter = document.getElementById('notifications-count');
+                    if (counter) {
+                        let count = parseInt(counter.textContent);
+                        if (count > 1) {
+                            counter.textContent = count - 1;
+                        } else {
+                            counter.remove();
+                        }
                     }
-                });
+                }
+            });
         }
     }
 
     function markAllNotificationsAsSeen() {
-        fetch('', {
+        fetch("{{ route('admin-mark-all-as-read') }}", {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -298,7 +295,8 @@
                     });
 
                     const counterElement = document.getElementById('notifications-count');
-                    counterElement.textContent = '0';
+                    if (counterElement) counterElement.remove();
+                    toastr.success(data.message);
                 }
             });
     }

@@ -9,4 +9,21 @@ class NoteDetail extends Model
 {
     use HasFactory;
     protected $table = 'notedetails';
+    protected $primaryKey = 'note_id';
+    public $timestamps = false;
+    protected $guarded = [];
+
+    protected $casts = [
+        'send_time' => 'datetime',
+    ];
+
+    public function property()
+    {
+        return $this->belongsTo(PropertyInfo::class, 'property_id', 'Id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(Login::class, 'user_id', 'Id');
+    }
 }

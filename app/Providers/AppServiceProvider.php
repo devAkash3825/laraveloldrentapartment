@@ -26,5 +26,20 @@ class AppServiceProvider extends ServiceProvider
         }
         Paginator::useBootstrap();
 
+        view()->composer('admin.layouts.navbar', function ($view) {
+            if (auth()->guard('admin')->check()) {
+                $authId = auth()->guard('admin')->user()->id;
+                $notifications = \App\Models\Notification::where('to_id', $authId)
+                    ->where('to_user_type', 'A')
+                    ->orderBy('CreatedOn', 'desc')
+                    ->take(20)
+                    ->get();
+                $unreadCount = \App\Models\Notification::where('to_id', $authId)
+                    ->where('to_user_type', 'A')
+                    ->where('seen', 0)
+                    ->count();
+                $view->with(compact('notifications', 'unreadCount'));
+            }
+        });
     }
 }

@@ -40,11 +40,7 @@ class AdminDetail extends Authenticatable
 
     public function renterUpdateHistories()
     {
-        $fetch_history = Login::with(['renterInfo.addedByAdmin'])
-            ->where($searchConditions)
-            ->orderBy('Id', 'desc')
-            ->get();
-        return $this->hasMany(RenterUpdateHistory::class, 'admin_id', 'admin_detail_id');
+        return $this->hasMany(RenterUpdateHistory::class, 'admin_id', 'id');
     }
 
     public static function getAdminNameById($adminId)

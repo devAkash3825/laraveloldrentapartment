@@ -367,6 +367,9 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('update-manager-terms', [SettingsController::class, 'updateManagerTerms'])->name('admin-update-manager-terms');
             Route::get('add-slider-image', [SettingsController::class, 'addSliderImage'])->name('admin-add-slider-image');
             Route::post('store-slider-image', [SettingsController::class, 'store'])->name('admin-store-slider-image');
+            Route::get('edit-slider-image/{id}', [SettingsController::class, 'editSliderImage'])->name('admin-edit-slider-image');
+            Route::post('update-slider-image/{id}', [SettingsController::class, 'updateSliderImage'])->name('admin-update-slider-image');
+            Route::post('delete-slider-image/{id}', [SettingsController::class, 'deleteSliderImage'])->name('admin-delete-slider-image');
             Route::post('slider-status/{id}', [SettingsController::class, 'changeStatus'])->name('admin-slider-status');
             Route::post('add-features', [SettingsController::class, 'addFeatures'])->name('add-feature');
             Route::get('edit-our-features/{id}', [SettingsController::class, 'editOurFeatures'])->name('edit-feature');
@@ -382,6 +385,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('update-site-names', [SettingsController::class, 'updateSiteName'])->name('admin-update-sitenames');
             Route::post('update-logo', [SettingsController::class, 'updateLogo'])->name('admin-update-logo');
             Route::post('update-contactus-cms', [SettingsController::class, 'updateContactUsCMS'])->name('admin-update-contactusCMS');
+            Route::post('update-mail-settings', [SettingsController::class, 'updateMailSettings'])->name('admin-update-mail-settings');
         });
 
 

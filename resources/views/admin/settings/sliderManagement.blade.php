@@ -102,13 +102,12 @@
 
                             <td>
                                 <div class="table-actions-icons float-left">
-                                    <a href="http://127.0.0.1:8000/admin/administration/edit-admin/94"
+                                    <a href="{{ route('admin-edit-slider-image', $sliderImage->Id) }}"
                                         class="edit-btn">
                                         <i class="fa-regular fa-pen-to-square border px-2 py-2 edit-icon"></i>
                                     </a>
-                                    <a href="http://127.0.0.1:8000/admin/administration/edit-admin/94"
-                                        class="delete-icon">
-                                        <i class="fa-solid fa-trash  border px-2 py-2 delete-icon"></i>
+                                    <a href="javascript:void(0)" class="delete-btn" data-id="{{ $sliderImage->Id }}">
+                                        <i class="fa-solid fa-trash border px-2 py-2 delete-icon"></i>
                                     </a>
                                 </div>
                             </td>
@@ -120,4 +119,62 @@
         </div>
     </div>
 </div>
+
+@push('adminscripts')
+<script>
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Toggle Status
+        $('.toggle-status').change(function() {
+            var status = $(this).prop('checked') ? 1 : 0;
+            var sliderId = $(this).data('id');
+            
+            $.ajax({
+                url: "{{ route('admin-slider-status', '') }}/" + sliderId,
+                type: 'POST',
+                data: {
+                    is_active: status
+                },
+                success: function(response) {
+                    if(response.success){
+                        toastr.success(response.message);
+                    } else {
+                        toastr.error('Failed to update status.');
+                    }
+                },
+                error: function() {
+                    toastr.error('Something went wrong.');
+                }
+            });
+        });
+
+        // Delete Image
+        $('.delete-btn').click(function() {
+            var sliderId = $(this).data('id');
+            if(confirm("Are you sure you want to delete this slider image?")) {
+                $.ajax({
+                    url: "{{ route('admin-delete-slider-image', '') }}/" + sliderId,
+                    type: 'POST',
+                    success: function(response) {
+                        if(response.success){
+                            toastr.success(response.message);
+                            location.reload(); 
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Something went wrong.');
+                    }
+                });
+            }
+        });
+    });
+</script>
+@endpush
 @endsection

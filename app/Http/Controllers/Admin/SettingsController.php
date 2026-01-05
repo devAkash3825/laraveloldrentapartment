@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Services\SettingsService;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -144,7 +145,7 @@ class SettingsController extends Controller
             $counterUpdate = Counter::updateOrCreate(
                 ['id' => 1],
                 [
-                    'background' => !empty($imagePath) ? $imagePath : $request->old_background,
+                    'background' => $imagePath,
                     'counter_one' => $request->counter_one,
                     'counter_title_one' => $request->counter_title_one,
                     'counter_two' => $request->counter_two,
@@ -157,12 +158,12 @@ class SettingsController extends Controller
             );
             return response()->json([
                 'success' => true,
-                'message' => 'Feature deleted successfully.'
+                'message' => 'Counter updated successfully.'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete feature.'
+                'message' => 'Failed to update counter.'
             ]);
         }
     }
@@ -250,13 +251,81 @@ class SettingsController extends Controller
     public function changeStatus(Request $request, $id)
     {
         try {
-            $sliderId = SliderManage::where('Id', $id)->update([
+            $slider = SliderManage::findOrFail($id);
+            $slider->update([
                 'is_active' => $request->is_active,
             ]);
-            return response()->json(['success' => 'Status Changed Successfully '], 200);
+            return response()->json(['success' => true, 'message' => 'Status Changed Successfully'], 200);
         } catch (Exception $e) {
-            \Log::error('Error updating property additional details: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to update Status'], 500);
+            \Log::error('Error updating slider status: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to update Status'], 500);
+        }
+    }
+
+    public function editSliderImage($id)
+    {
+        $sliderImage = SliderManage::findOrFail($id);
+        return view('admin.settings.editSliderImage', compact('sliderImage'));
+    }
+
+    public function updateSliderImage(Request $request, $id)
+    {
+        $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'alt_text' => 'required|string|max:255',
+            'is_active' => 'required|boolean',
+        ]);
+
+        try {
+            $slider = SliderManage::findOrFail($id);
+            
+            if ($request->hasFile('image')) {
+                // Delete old image if it exists on S3
+                if ($slider->image_path) {
+                    $oldPath = parse_url($slider->image_path, PHP_URL_PATH);
+                    // Remove leading slash for S3 delete
+                    $oldPath = ltrim($oldPath, '/');
+                    // Only try to delete if it's an S3 link (heuristic)
+                    if (strpos($slider->image_path, 'amazonaws.com') !== false) {
+                        Storage::disk('s3')->delete($oldPath);
+                    }
+                }
+
+                $imagePath = $request->file('image')->store('Slider/slider_images', 's3');
+                $slider->image_path = Storage::disk('s3')->url($imagePath);
+            }
+
+            $slider->alt_text = $request->alt_text;
+            $slider->is_active = $request->is_active;
+            $slider->save();
+
+            return redirect()->route('admin-slider-management')->with('success', 'Slider image updated successfully.');
+        } catch (Exception $e) {
+            \Log::error('Error updating slider: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update slider image.');
+        }
+    }
+
+    public function deleteSliderImage($id)
+    {
+        try {
+            $slider = SliderManage::findOrFail($id);
+            
+            // Delete image from S3
+            if ($slider->image_path) {
+                $oldPath = parse_url($slider->image_path, PHP_URL_PATH);
+                $oldPath = ltrim($oldPath, '/');
+                if (strpos($slider->image_path, 'amazonaws.com') !== false) {
+                    Storage::disk('s3')->delete($oldPath);
+                }
+            }
+
+            $slider->delete();
+
+            return response()->json(['success' => true, 'message' => 'Slider image deleted successfully.']);
+        } catch (Exception $e) {
+            \Log::error('Error deleting slider: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete slider image.']);
         }
     }
 
@@ -316,11 +385,12 @@ class SettingsController extends Controller
 
     public function updateManagerTerms(Request $request)
     {
-        $update = ManagerTermsCMS::where('id', $request->index + 1)->update([
+        $update = ManagerTermsCMS::where('id', $request->id)->update([
             'title' => $request->title,
             'description' => $request->description
         ]);
         if ($update) {
+            (new SettingsService())->clearCachedSettings();
             return response()->json([
                 'success' => true,
                 'message' => 'Manager terms Update Successfully'
@@ -335,14 +405,15 @@ class SettingsController extends Controller
 
     public function updateTerms(Request $request)
     {
-        $update = termsCMS::where('id', $request->index + 1)->update([
+        $update = termsCMS::where('id', $request->id)->update([
             'title' => $request->title,
             'description' => $request->description
         ]);
         if ($update) {
+            (new SettingsService())->clearCachedSettings();
             return response()->json([
                 'success' => true,
-                'message' => 'Terma & Conditions Update Successfully'
+                'message' => 'Terms & Conditions Update Successfully'
             ]);
         } else {
             return response()->json([
@@ -354,11 +425,12 @@ class SettingsController extends Controller
 
     public function updateEqualHousing(Request $request)
     {
-        $update = EqualHousingCMS::where('id', $request->index + 1)->update([
+        $update = EqualHousingCMS::where('id', $request->id)->update([
             'title' => $request->title,
             'description' => $request->description
         ]);
         if ($update) {
+            (new SettingsService())->clearCachedSettings();
             return response()->json([
                 'success' => true,
                 'message' => 'Equal Housing Update Successfully'
@@ -411,6 +483,7 @@ class SettingsController extends Controller
             'value' => $request->site_btn_color,
         ]);
         if ($sitecolor && $btnColor) {
+            (new SettingsService())->clearCachedSettings();
             return response()->json(['message' => 'Site Color Updated Successfully']);
         } else {
             return response()->json(['error' => 'Not Updated Please Try Again Later']);
@@ -432,6 +505,7 @@ class SettingsController extends Controller
                 ['value' => $value]
             );
         }
+        (new SettingsService())->clearCachedSettings();
         return response()->json([
             'message' => "Updated Successfully",
         ]);
@@ -439,18 +513,44 @@ class SettingsController extends Controller
 
     public function updateLogo(Request $request)
     {
-        dd($request->all());
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('settings', 'public');
-            // Save $logoPath in DB
+            $logoPath = $this->uploadImage($request, 'logo', Setting::where('key', 'logo')->value('value'));
+            Setting::updateOrCreate(['key' => 'logo'], ['value' => $logoPath]);
         }
 
         if ($request->hasFile('favicon')) {
-            $faviconPath = $request->file('favicon')->store('settings', 'public');
-            // Save $faviconPath in DB
+            $faviconPath = $this->uploadImage($request, 'favicon', Setting::where('key', 'favicon')->value('value'));
+            Setting::updateOrCreate(['key' => 'favicon'], ['value' => $faviconPath]);
         }
+        
+        (new SettingsService())->clearCachedSettings();
 
         return response()->json(['message' => 'Logo and Favicon updated successfully']);
+    }
+
+    public function updateMailSettings(Request $request)
+    {
+        $validatedData = $request->validate([
+            'mail_driver' => 'required|string',
+            'mail_host' => 'required|string',
+            'mail_port' => 'required|string',
+            'mail_username' => 'required|string',
+            'mail_password' => 'required|string',
+            'mail_encryption' => 'required|string',
+            'mail_from_address' => 'required|email',
+            'mail_from_name' => 'required|string',
+        ]);
+
+        foreach ($validatedData as $key => $value) {
+            Setting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value]
+            );
+        }
+
+        (new SettingsService())->clearCachedSettings();
+
+        return response()->json(['message' => 'Mail Settings Updated Successfully']);
     }
 
 

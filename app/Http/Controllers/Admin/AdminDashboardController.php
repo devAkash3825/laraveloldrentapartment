@@ -38,15 +38,9 @@ class AdminDashboardController extends Controller
     public function index()
     {
         $totalproperty    = PropertyInfo::count();
-        $last7days        = PropertyInfo::where('CreatedOn', '>=', Carbon::now()->subDays(7))->count();
         $activeProperty   = PropertyInfo::where('Status', 1)->count();
-        $inactiveProperty = PropertyInfo::where('Status', '!=', 1)->count();
-        $totalUser        = Login::count();
-
-        $totalRenters    = Login::where('user_type', 'C')->count();
-        $activeRenters   = Login::where('user_type', 'C')->where('Status', '1')->count();
-        $InactiveRenters = Login::where('user_type', 'C')->where('Status', '0')->count();
-        $leasedRenters   = Login::where('user_type', 'C')->where('Status', '2')->count();
+        $totalRenters     = Login::where('user_type', 'C')->count();
+        $activeRenters    = Login::where('user_type', 'C')->where('Status', '1')->count();
 
         $listUnassignedRenter = Login::where('user_type', 'C')
             ->whereHas('renterinfo', function ($query) {
@@ -75,13 +69,6 @@ class AdminDashboardController extends Controller
             ->orderBy('Id', 'desc')
             ->get();
 
-        $pendingProperties = PropertyInfo::where('Status', '0')
-            ->with('city.state')
-            ->orderBy('Id', 'desc')
-            ->take(5)
-            ->get();
-
-
         $activeProperties = PropertyInfo::where('Status', '1')
             ->with('city.state')
             ->orderBy('Id', 'desc')
@@ -90,16 +77,10 @@ class AdminDashboardController extends Controller
 
         return view('admin.dashboard', [
             'totalproperty'        => $totalproperty,
-            'last7days'            => $last7days,
             'activeProperty'       => $activeProperty,
-            'inactiveProperty'     => $inactiveProperty,
-            'totalUser'            => $totalUser,
-            'pendingProperties'    => $pendingProperties,
             'activeProperties'     => $activeProperties,
             'totalRenters'         => $totalRenters,
             'activeRenters'        => $activeRenters,
-            'InactiveRenters'      => $InactiveRenters,
-            'leasedRenters'        => $leasedRenters,
             'listunassignedRenter' => $listUnassignedRenter,
             'listassignedRenter'   => $listassignedRenter,
         ]);

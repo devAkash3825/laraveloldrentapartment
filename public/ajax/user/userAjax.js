@@ -38,10 +38,10 @@ $(function () {
             success: function (data) {
                 var $link = $favBtn.find('a');
                 if (data.isFavorite) {
-                    $link.html('<i class="bi bi-heart-fill text-danger me-1"></i> Saved to Favorites');
+                    $link.html('<i class="fa-solid fa-heart text-danger me-1"></i> Saved to Favorites');
                     $favBtn.addClass('is-fav');
                 } else {
-                    $link.html('<i class="bi bi-heart me-1"></i> Add to Favorite');
+                    $link.html('<i class="fa-regular fa-heart me-1"></i> Add to Favorite');
                     $favBtn.removeClass('is-fav');
                 }
             }
@@ -73,9 +73,9 @@ $(function () {
             success: function (response) {
                 if (response.success) {
                     if (response.action === 'added') {
-                        toastr.success('<i class="bi bi-heart-fill me-2"></i>' + response.message);
+                        toastr.success('<i class="fa-solid fa-heart me-2"></i>' + response.message);
                     } else {
-                        toastr.info('<i class="bi bi-heart me-2"></i>' + response.message);
+                        toastr.info('<i class="fa-regular fa-heart me-2"></i>' + response.message);
                     }
                     checkIsFav(); // Refresh state
                     if ($.fn.DataTable.isDataTable('#fav-listview')) {
@@ -207,7 +207,7 @@ $(function () {
             <div class="remove-container mt-2">
                 <div class="d-flex gap-2">
                     <input type="date" name="name[]" class="form-control">
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-row"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-row"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             </div>`;
         $("#medicine_row").append(html);

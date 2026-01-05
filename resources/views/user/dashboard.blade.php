@@ -1,17 +1,16 @@
 @extends('user.layout.app')
 @section('content')
 @section('title', 'RentApartments | Dashboard')
-<div id="breadcrumb_part"
-    style="background: url(../images/breadcroumb_bg.jpg);background-size: cover;background-repeat: no-repeat;background-position: center;">
+<div id="breadcrumb_part" class="header-premium-gradient">
     <div class="bread_overlay">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 text-center text-white">
-                    <h4> My Profile  </h4>
-                    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}"> Home </a></li>
-                            <li class="breadcrumb-item active" aria-current="page"> My Profile </li>
+                    <h2 class="fw-bold mb-3"> Dashboard </h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75"> <i class="fa-solid fa-house-chimney me-1"></i> Home </a></li>
+                            <li class="breadcrumb-item active text-white fw-bold" aria-current="page"> My Profile </li>
                         </ol>
                     </nav>
                 </div>
@@ -42,7 +41,7 @@
                                             <div class="row">
                                                 <div class="col-xl-12 col-md-6">
                                                     <div class="my_listing_single">
-                                                        <label for="username">User Name</label>
+                                                        <label for="username"><i class="fa-solid fa-user-tag me-2"></i> User Name</label>
                                                         <div class="input_area">
                                                             <input type="text" id="username" name="username"
                                                                 placeholder="User Name" value="{{ $renterInfo->UserName }}">

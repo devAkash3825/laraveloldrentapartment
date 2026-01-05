@@ -201,13 +201,29 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                 <label for="">Default Buttons Color <span class="text-danger"> * </span></label>
                                 <div class="input-group colorpickerinput">
                                     <input type="text" class="form-control" name="site_btn_color"
-                                        value="{{ $settings['site_btn_color'] }}">
+                                        value="{{ $settings['site_btn_color'] ?? '#0D7C66' }}">
                                     <div class="input-group-append">
                                         <div class="input-group-text">
                                             <i class="fas fa-fill-drip"></i>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="form-group">
+                                <label for="">Site Gradient Color <span class="text-danger"> * </span></label>
+                                <div class="input-group colorpickerinput">
+                                    <input type="text" class="form-control" name="site_gradient_color"
+                                        value="{{ $settings['site_gradient_color'] ?? '#398e91' }}">
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <i class="fas fa-fill-drip"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="text-muted">This color will be used for buttons and header gradients.</small>
                             </div>
                         </div>
 

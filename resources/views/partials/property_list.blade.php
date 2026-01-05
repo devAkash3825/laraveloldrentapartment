@@ -21,7 +21,7 @@
                     <a class="d-block h5 mb-2 list-property-name" href="{{ route('property-display', ['id' => $row['Id']]) }}"
                         style="overflow: hidden;text-wrap:nowrap;">{{ @$row->PropertyName }}
                     </a>
-                    <p><i class="fa fa-map-marker-alt text-primary me-2"></i>{{ $row->Zip }},
+                    <p><i class="fa-solid fa-location-dot text-primary me-2"></i>{{ $row->Zip }},
                         {{ @$row->city->CityName }} {{ @$row->city->state->StateName }} {{ @$row['area'] }}
                     </p>
                 </div>

@@ -11,7 +11,7 @@
         border: none;
     }
     .message-center-header {
-        background: linear-gradient(135deg, #0a5d4d 0%, #0d8a72 100%);
+        background: linear-gradient(135deg, var(--colorPrimary) 0%, var(--gradientColor) 100%);
         padding: 30px;
         color: #fff;
     }
@@ -48,17 +48,19 @@
     }
 </style>
 
-<div id="breadcrumb_part" class="py-5" style="background: #f8fafc;">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h4 class="fw-bold mb-2">Message Center</h4>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active">Messages</li>
-                    </ol>
-                </nav>
+<div id="breadcrumb_part" class="header-premium-gradient">
+    <div class="bread_overlay">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 text-center text-white">
+                    <h2 class="fw-bold mb-3"> Message Center </h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75"> <i class="fa-solid fa-house-chimney me-1"></i> Home </a></li>
+                            <li class="breadcrumb-item active text-white fw-bold" aria-current="page"> Messages </li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
@@ -127,7 +129,7 @@
                                             </div>
                                             <div class="d-flex align-items-center gap-2">
                                                 <span class="property-tag">
-                                                    <i class="bi bi-building me-1"></i> {{ $row->propertyinfo->PropertyName }}
+                                                    <i class="fa-solid fa-building me-1"></i> {{ $row->propertyinfo->PropertyName }}
                                                 </span>
                                                 @if($row->notify_manager == 1)
                                                     <span class="badge bg-info-subtle text-info status-badge">Referral</span>
@@ -138,7 +140,7 @@
                                             @if($unreadCount > 0)
                                                 <span class="badge bg-primary rounded-pill px-2 py-1" style="font-size: 0.7rem;">New</span>
                                             @else
-                                                <i class="bi bi-chevron-right text-muted"></i>
+                                                <i class="fa-solid fa-chevron-right text-muted"></i>
                                             @endif
                                         </div>
                                     </div>
@@ -147,7 +149,7 @@
                         @else
                             <div class="text-center py-5">
                                 <div class="mb-3">
-                                    <i class="bi bi-chat-dots text-muted" style="font-size: 3rem;"></i>
+                                    <i class="fa-solid fa-comment-dots text-muted" style="font-size: 3rem;"></i>
                                 </div>
                                 <h5 class="text-muted">No messages found</h5>
                                 <p class="text-muted px-4">When you inquire about properties or receive referrals, they will appear here.</p>

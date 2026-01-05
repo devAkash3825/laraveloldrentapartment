@@ -44,7 +44,7 @@ class UserFavoriteController extends Controller
                 $url = route('property-display', ['id' => $row['id']]);
                 return '<a href="'.$url.'" class="fav-link-name">
                             <div class="property-icon-wrapper">
-                                <i class="bi bi-building"></i>
+                                <i class="fa-solid fa-building"></i>
                             </div>
                             <div class="d-flex flex-column">
                                 <span class="property-name-text">'.$row['propertyname'].'</span>
@@ -54,7 +54,7 @@ class UserFavoriteController extends Controller
             })
             ->addColumn('quote', function ($row) {
                 return '<a class="fav-request-quote-btn" href="javascript:void(0)" onclick="requestQuote('.$row['id'].')">
-                            <i class="bi bi-chat-quote me-1"></i> Request Quote
+                            <i class="fa-solid fa-comment-dollar me-1"></i> Request Quote
                         </a>';
             })
             ->addColumn('action', function ($row) {
@@ -63,13 +63,13 @@ class UserFavoriteController extends Controller
                 
                 return '<div class="action-btns">
                            <a href="'.$viewUrl.'" class="btn-icon btn-view" data-bs-toggle="tooltip" title="View Details">
-                               <i class="bi bi-eye"></i>
+                               <i class="fa-solid fa-eye"></i>
                            </a>
                            <a href="'.$mapUrl.'" class="btn-icon btn-map" data-bs-toggle="tooltip" title="Interactive Map">
-                               <i class="bi bi-map"></i>
+                               <i class="fa-solid fa-map-location-dot"></i>
                            </a>
                            <a href="javascript:void(0)" class="btn-icon btn-delete remove-single-fav" data-id="'.$row['id'].'" data-bs-toggle="tooltip" title="Remove from Favorites">
-                               <i class="bi bi-trash"></i>
+                               <i class="fa-solid fa-trash-can"></i>
                            </a>
                        </div>';
             })

@@ -15,7 +15,7 @@
                     <h3>My Account</h3>
                     <ul class="footer_link">
                         @foreach (Menu::getByName('Footer Menu One') as $footerMenuOne)
-                        <li><a href="{{ $footerMenuOne['link'] }}"><i class="far fa-chevron-double-right"></i> {{ $footerMenuOne['label'] }}</a></li>
+                        <li><a href="{{ $footerMenuOne['link'] }}"><i class="fa-solid fa-angles-right"></i> {{ $footerMenuOne['label'] }}</a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -25,7 +25,7 @@
                     <h3>Helpful Links</h3>
                     <ul class="footer_link">
                         @foreach (Menu::getByName('Footer Menu Two') as $footerMenuOne)
-                        <li><a href="{{ $footerMenuOne['link'] }}"><i class="far fa-chevron-double-right"></i> {{ $footerMenuOne['label'] }}</a></li>
+                        <li><a href="{{ $footerMenuOne['link'] }}"><i class="fa-solid fa-angles-right"></i> {{ $footerMenuOne['label'] }}</a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -37,12 +37,12 @@
                     <h3>Information</h3>
                     <ul class="footer_link">
                         <li>
-                            <p><i class="far fa-map-marker-alt"></i> {{ $footerInfo?->address }}</p>
+                            <p><i class="fa-solid fa-location-dot"></i> {{ $footerInfo?->address }}</p>
                         </li>
-                        <li><a href="#"><a href="mailto:{{ $footerInfo?->email }}"><i class="fal fa-envelope"></i>
+                        <li><a href="mailto:{{ $footerInfo?->email }}"><i class="fa-solid fa-envelope"></i>
                                     {{ $footerInfo?->email }}</a></li>
-                        <li><a href="#"><a href="callto:{{ $footerInfo?->phone }}"><i
-                                        class="fal fa-phone-alt"></i>
+                        <li><a href="callto:{{ $footerInfo?->phone }}"><i
+                                        class="fa-solid fa-phone"></i>
                                     {{ $footerInfo?->phone }}</a></li>
                     </ul>
                 </div>

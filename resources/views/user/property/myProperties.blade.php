@@ -1,5 +1,68 @@
 @extends('user.layout.app')
 @section('title', 'RentApartements | My Properties')
+
+@push('style')
+<style>
+    /* Square Premium Button Override for this page specifically if needed */
+    .btn-sm-premium {
+        padding: 8px 16px; 
+        font-size: 0.9rem;
+        border-radius: 4px; /* Square Premium */
+    }
+
+    /* Custom Table Styles matching Favorites List View */
+    .custom-premium-table thead th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        padding: 16px 24px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .custom-premium-table tbody td {
+        padding: 16px 24px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .custom-premium-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .btn-edit:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+    
+    /* Pagination Styles */
+    .custom-pagination-premium .page-link {
+        border-radius: 4px; /* Square Premium */
+        margin: 0 4px;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        padding: 8px 16px;
+        font-weight: 600;
+    }
+
+    .custom-pagination-premium .page-item.active .page-link {
+        background-color: var(--colorPrimary);
+        border-color: var(--colorPrimary);
+        color: #fff;
+    }
+
+    .custom-pagination-premium .page-link:hover {
+        background-color: #f1f5f9;
+        color: var(--colorPrimary);
+    }
+    
+    .custom-pagination-premium .page-item.active .page-link:hover {
+        color: #fff;
+        background-color: var(--colorPrimary);
+    }
+</style>
+@endpush
+
 @section('content')
 
 <!-- Premium Header -->
@@ -30,27 +93,27 @@
             </div>
             <div class="col-lg-9">
                 <div class="dashboard_content">
-                    <div class="favorite-table-container">
-                        <div class="table-header d-flex justify-content-between align-items-center mb-4">
+                    <div class="favorite-table-container bg-white rounded-1 shadow-sm border overflow-hidden">
+                        <div class="table-header d-flex justify-content-between align-items-center bg-white p-4 border-bottom">
                             <div>
-                                <h2 class="table-title">Listed Properties</h2>
-                                <p class="text-muted small mb-0 mt-1">Review and manage your active property listings</p>
+                                <h2 class="table-title fw-bold text-dark fs-4 mb-1">Listed Properties</h2>
+                                <p class="text-muted small mb-0">Review and manage your active property listings</p>
                             </div>
-                            <a href="{{ route('add-property') }}" class="btn btn-primary btn-sm rounded-pill px-4" style="height: 38px; display: flex; align-items: center;">
-                                <i class="bi bi-plus-circle me-2"></i> Add New Property
+                            <a href="{{ route('add-property') }}" class="read_btn btn-sm-premium text-decoration-none">
+                                <i class="fa-solid fa-circle-plus me-2"></i> Add New Property
                             </a>
                         </div>
 
                         <div class="table-responsive">
                             @if(count($paginatedRecords) > 0)
-                            <table class="table custom-premium-table" id="my-properties-table">
+                            <table class="table custom-premium-table mb-0" id="my-properties-table">
                                 <thead>
                                     <tr>
                                         <th width="80">S.No</th>
                                         <th width="120">Preview</th>
                                         <th>Property Details</th>
                                         <th width="120">Status</th>
-                                        <th width="150" class="text-center">Action</th>
+                                        <th width="150" class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,32 +124,32 @@
                                             <div class="property-img-wrapper">
                                                 @if (isset($row->gallerytype->gallerydetail[0]->ImageName))
                                                     <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $row->Id }}/Original/{{ $row->gallerytype->gallerydetail[0]->ImageName }}" 
-                                                         alt="Property" class="rounded-3 shadow-sm border" style="width: 80px; height: 60px; object-fit: cover;">
+                                                         alt="Property" class="rounded-1 shadow-sm border-0" style="width: 80px; height: 60px; object-fit: cover;">
                                                 @else
-                                                    <img src="{{ asset('img/No_Image_Available.jpg') }}" alt="No Image" class="rounded-3 shadow-sm border" style="width: 80px; height: 60px; object-fit: cover;">
+                                                    <img src="{{ asset('img/No_Image_Available.jpg') }}" alt="No Image" class="rounded-1 shadow-sm border-0" style="width: 80px; height: 60px; object-fit: cover;">
                                                 @endif
                                             </div>
                                         </td>
                                         <td class="align-middle">
                                             <div class="d-flex flex-column">
-                                                <span class="fw-bold text-dark">{{ $row->PropertyName ?? 'N/A' }}</span>
-                                                <span class="text-muted smaller" style="font-size: 0.8rem;"><i class="bi bi-geo-alt me-1"></i> {{ $row->city->CityName ?? 'Unknown City' }}, {{ $row->city->state->StateShortName ?? 'ST' }}</span>
+                                                <a href="{{ route('property-display', ['id' => $row->Id]) }}" class="fw-bold text-dark text-decoration-none mb-1 fs-6 fav-link-name">{{ $row->PropertyName ?? 'N/A' }}</a>
+                                                <span class="text-muted smaller" style="font-size: 0.8rem;"><i class="fa-solid fa-location-dot me-1 text-primary"></i> {{ $row->city->CityName ?? 'Unknown City' }}, {{ $row->city->state->StateShortName ?? 'ST' }}</span>
                                             </div>
                                         </td>
                                         <td class="align-middle">
                                             @if ($row->Status == 1)
-                                                <span class="badge rounded-pill bg-success-subtle text-success px-3 border border-success-subtle">Active</span>
+                                                <span class="badge rounded-1 bg-success-subtle text-success px-3 py-2 border border-success-subtle fw-bold">Active</span>
                                             @else
-                                                <span class="badge rounded-pill bg-danger-subtle text-danger px-3 border border-danger-subtle">Inactive</span>
+                                                <span class="badge rounded-1 bg-danger-subtle text-danger px-3 py-2 border border-danger-subtle fw-bold">Inactive</span>
                                             @endif
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <div class="action-btns">
-                                                <a href="{{ route('property-display', ['id' => $row->Id]) }}" class="btn-icon btn-view" data-bs-toggle="tooltip" title="View Public Page">
-                                                    <i class="bi bi-eye"></i>
+                                        <td class="align-middle text-end">
+                                            <div class="d-flex gap-2 justify-content-end">
+                                                <a href="{{ route('property-display', ['id' => $row->Id]) }}" class="btn-icon btn-view fs-6" data-bs-toggle="tooltip" title="View Public Page">
+                                                    <i class="fa-solid fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('edit-properties', ['id' => $row->Id]) }}" class="btn-icon btn-edit" data-bs-toggle="tooltip" title="Edit Listing">
-                                                    <i class="bi bi-pencil-square"></i>
+                                                <a href="{{ route('edit-properties', ['id' => $row->Id]) }}" class="btn-icon btn-edit fs-6" data-bs-toggle="tooltip" title="Edit Listing">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -97,11 +160,11 @@
                             
                             <!-- Custom Pagination -->
                             @if ($paginatedRecords->lastPage() > 1)
-                            <div class="mt-4 d-flex justify-content-center">
+                            <div class="p-4 d-flex justify-content-center bg-white border-top">
                                 <nav aria-label="Page navigation">
-                                    <ul class="pagination custom-pagination-premium">
+                                    <ul class="pagination custom-pagination-premium mb-0">
                                         <li class="page-item {{ $paginatedRecords->currentPage() == 1 ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ $paginatedRecords->previousPageUrl() }}"><i class="bi bi-chevron-left"></i></a>
+                                            <a class="page-link" href="{{ $paginatedRecords->previousPageUrl() }}"><i class="fa-solid fa-chevron-left"></i></a>
                                         </li>
                                         @for ($i = 1; $i <= $paginatedRecords->lastPage(); $i++)
                                             <li class="page-item {{ $paginatedRecords->currentPage() == $i ? 'active' : '' }}">
@@ -109,7 +172,7 @@
                                             </li>
                                         @endfor
                                         <li class="page-item {{ $paginatedRecords->currentPage() == $paginatedRecords->lastPage() ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ $paginatedRecords->nextPageUrl() }}"><i class="bi bi-chevron-right"></i></a>
+                                            <a class="page-link" href="{{ $paginatedRecords->nextPageUrl() }}"><i class="fa-solid fa-chevron-right"></i></a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -119,12 +182,12 @@
                             @else
                                 <div class="text-center py-5">
                                     <div class="mb-3">
-                                        <i class="bi bi-building-exclamation text-muted display-1"></i>
+                                        <i class="fa-solid fa-building-circle-exclamation text-muted display-1 opacity-25"></i>
                                     </div>
-                                    <h3>No properties found</h3>
-                                    <p class="text-muted">You haven't listed any properties yet.</p>
-                                    <a href="{{ route('add-property') }}" class="btn btn-primary rounded-pill px-4 mt-2">
-                                        <i class="bi bi-plus-circle me-1"></i> List your first property
+                                    <h3 class="fw-bold text-dark">No properties found</h3>
+                                    <p class="text-muted mb-4">You haven't listed any properties yet. Start your journey today.</p>
+                                    <a href="{{ route('add-property') }}" class="read_btn rounded-1 px-4 text-decoration-none">
+                                        <i class="fa-solid fa-circle-plus me-2"></i> List your first property
                                     </a>
                                 </div>
                             @endif

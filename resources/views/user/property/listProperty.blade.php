@@ -137,74 +137,71 @@
 @endsection
 @push('scripts')
     <script>
-        $(document).on("keypress", "#filterForm input", function(e) {
-            if (e.which === 13) {
-                e.preventDefault();
-            }
-        });
-
-        $("#filterForm").on("submit", function(e) {
-            e.preventDefault();
-
-            var search = $("#quicksearch").val();
-            var state = $("#state").val();
-            var city = $("#city").val();
-
-            $.ajax({
-                url: "",
-                method: "GET",
-                data: {
-                    quicksearch: search,
-                    state: state,
-                    city: city,
-                },
-                success: function(response) {
-                    if (response.data.length > 0) {
-                        $("#propertyGrid").html(response.html);
-                        $("#notFoundMessage").hide();
-                    } else {
-                        $("#propertyGrid").html("");
-                        $("#notFoundMessage").show();
-                        $('#pagination').hide();
-                    }
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText); // Handle errors
-                },
+        $(document).ready(function() {
+            // Toggle Custom Date Range visibility
+            $('#date_filter').on('change', function() {
+                if ($(this).val() == 'custom_range') {
+                    $('#customDateRange').show();
+                } else {
+                    $('#customDateRange').hide();
+                    $('#filterForm').submit(); // Auto submit on change for non-custom
+                }
             });
-        });
 
-        // Prevent Enter key press for quick search form
-        $(document).on("keypress", ".quicksearchform input", function(e) {
-            if (e.which === 13) {
+            // Handle Filter Form Submit
+            $("#filterForm").on("submit", function(e) {
                 e.preventDefault();
-            }
-        });
+                fetchProperties();
+            });
 
-        // AJAX call for quick search input event
-        $(".quicksearchform").on("input", function() {
-            var formData = $(this).serialize();
-            var searchText = $("#listquicksearch").val().trim();
-            $.ajax({
-                url: "list-properties",
-                method: "GET",
-                data: formData,
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-                },
-                success: function(response) {
-                    if (response.data != '') {
-                        $("#propertyGrid").html(response.html);
-                        $("#notFoundMessage").hide();
-                    } else {
-                        $("#propertyGrid").html("");
-                        $("#notFoundMessage").show();
-                        $('.ajax-pagination').hide();
-                    }
-                },
-                error: function(xhr) {
-                    console.error("Error fetching search results:", xhr.responseText);
-                },
+            // Handle Quick Search Input
+            $("#listquicksearch").on("input", function() {
+                fetchProperties();
+            });
+
+            // Common Fetch Function
+            function fetchProperties() {
+                var search = $("#listquicksearch").val();
+                var dateFilter = $("#date_filter").val();
+                var startDate = $("#start_date").val();
+                var endDate = $("#end_date").val();
+
+                $.ajax({
+                    url: "{{ route('list-properties') }}",
+                    method: "GET",
+                    data: {
+                        quicksearch: search,
+                        date_filter: dateFilter,
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    success: function(response) {
+                        if (response.html) {
+                            $("#propertyGrid").html(response.html);
+                            $("#pagination").html(response.pagination);
+                            if(response.showPagination) {
+                                $('#pagination').show();
+                            } else {
+                                $('#pagination').hide();
+                            }
+                            $("#notFoundMessage").hide();
+                        } else {
+                            $("#propertyGrid").html("");
+                            $("#notFoundMessage").show();
+                            $('#pagination').hide();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    },
+                });
+            }
+
+            // Prevent Enter key on form inputs
+            $(document).on("keypress", "input", function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                }
             });
         });
     </script>

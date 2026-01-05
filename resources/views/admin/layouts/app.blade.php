@@ -1,3 +1,4 @@
+<x-toast />
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +8,7 @@
 </head>
 
 <body>
-    <x-toast />
+    @stack('toast_html')
     @include('admin.layouts.navbar')
     @yield('content')
 @include('admin.layouts.footer')

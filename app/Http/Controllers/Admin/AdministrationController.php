@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Login;
 use App\Models\RenterInfo;
+use App\Services\DataTableService;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Hash;
 use Validator;
@@ -24,34 +25,32 @@ class AdministrationController extends Controller
 
     public function manageMyAgents(Request $request)
     {
-        $agents = AdminDetail::all();
-
         if ($request->ajax()) {
-            return DataTables::of($agents)
+            $query = AdminDetail::query();
+            return DataTableService::of($query)
                 ->addIndexColumn()
                 ->addColumn('username', function ($row) {
-                    $adminamebtn = '<a href="javascript:void(0)" class="font-weight-bold">' . $row->admin_name . '</a>';
-                    return $adminamebtn;
+                    return '<a href="javascript:void(0)" class="font-weight-bold">' . e($row->admin_name) . '</a>';
                 })
                 ->addColumn('userloginid', function ($row) {
-                    return '<p class="font-weight-bold">' . $row->admin_login_id . '</p>';
+                    return '<p class="mb-0">' . e($row->admin_login_id) . '</p>';
                 })
-                ->addColumn('edit', function ($row) {
-                    $editurl = route('admin-edit-admin-users', ['id' => $row->id]);
-                    return '<div class="table-actions-icons float-left">
-                                <a href="' . $editurl . '" class="edit-btn">
-                                    <i class="fa-regular fa-pen-to-square border px-2 py-2 edit-icon"></i>
-                                </a>
-                                <a href="javascript:void(0)" data-id="' . $row->id . '" onclick="deleteAgent(' . $row->id . ')">
-                                    <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                </a>
-                            </div>';
-                })
+                ->addColumn('edit', DataTableService::actionColumn([
+                    'edit' => [
+                        'route' => fn($row) => route('admin-edit-admin-users', ['id' => $row->id]),
+                        'icon' => 'fa-pen',
+                        'class' => 'edit-btn'
+                    ],
+                    'delete' => [
+                        'route' => fn($row) => route('admin-delete-agent', ['id' => $row->id]),
+                        'icon' => 'fa-trash',
+                        'class' => 'delete-btn'
+                    ]
+                ]))
                 ->rawColumns(['username', 'userloginid', 'edit'])
                 ->make(true);
-        } else {
-            return view('admin.administration.manageMyAgents');
         }
+        return view('admin.administration.manageMyAgents');
     }
     public function addAdminUsers()
     {
@@ -71,90 +70,53 @@ class AdministrationController extends Controller
 
     public function myOfficeReport(Request $request)
     {
-
         try {
-            $data = Login::where('user_type', 'C')
-                ->orderBy('Id', 'ASC')
-                ->whereHas('renterinfo', function ($query) {
-                    $query->where(function ($subQuery) {
-                        $newloginid = Auth::guard('admin')->user()->id ?? null;
-                        $subQuery->where('added_by', $newloginid)->orderBy('Id', 'ASC');
-                    });
-                })
-                ->with('renterinfo')
-                ->get();
-
             if ($request->ajax()) {
-                return DataTables::of($data)->addIndexColumn()
-                    ->addColumn('firstname', function ($row) {
-                        return optional($row->renterinfo)->Firstname ?? '-';
+                $newloginid = Auth::guard('admin')->user()->id ?? null;
+                $query = Login::where('user_type', 'C')
+                    ->whereHas('renterinfo', function ($q) use ($newloginid) {
+                        $q->where('added_by', $newloginid);
                     })
-                    ->addColumn('lastname', function ($row) {
-                        return optional($row->renterinfo)->Lastname ?? '-';
-                    })
+                    ->with('renterinfo');
+
+                return DataTableService::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('firstname', DataTableService::safeColumn('renterinfo.Firstname'))
+                    ->addColumn('lastname', DataTableService::safeColumn('renterinfo.Lastname'))
                     ->addColumn('probability', function ($row) {
-                        return !empty(optional($row->renterinfo)->probability) ? optional($row->renterinfo)->probability . "%" : '-';
+                        $prob = optional($row->renterinfo)->probability;
+                        return $prob ? $prob . "%" : '-';
                     })
-                    ->addColumn('status', function ($row) {
-                        $status = '';
-                        switch ($row->Status) {
-                            case "1":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--success">Active</a>';
-                                break;
-                            case "0":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--warning">Inactive</a>';
-                                break;
-                            case "2":
-                                $status = '<a href="javascript:void(0)" class="c-pill c-pill--danger">Leased</a>';
-                                break;
-                            default:
-                                $status = 'Unknown';
-                        }
-                        $statusText = $row->Status == 2 ? "Leased" : "Unknown";
-                        return $status;
-                    })
-                    ->addColumn('adminname', function ($row) {
-                        $adminId = optional($row->renterinfo)->added_by;
-                        return $adminId ? AdminDetail::getAdminNameById($adminId) : '-';
-                    })
-                    ->addColumn('actions', function ($row) {
-                        $user = Auth::guard('admin')->user();
-                        $editUrl = route('admin-edit-renter', ['id' => $row->Id]);
-                        $viewUrl = route('admin-view-profile', ['id' => $row->Id]);
-                        $deleteUrl = route('admin-deleteRenter', ['id' => $row->Id]);
-                        $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-
-                        if ($user && $user->hasPermission('property_addedit')) {
-                            $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn">
-                                                <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
-                                            </a>';
-                        }
-                        $actionButtons .= '<a href="' . $viewUrl . '" class=""><i class="fa-regular fa-eye border px-2 py-2 view-icon"></i></a> ';
-                        if ($user && $user->hasPermission('user_delete')) {
-                            $actionButtons .= '<a href="javascript:void(0)" class="deleteRenter" data-id="' . $row->Id . '" data-url="' . $deleteUrl . '">
-                                                <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                            </a>';
-                        }
-                        $actionButtons .= '</div>';
-                        return $actionButtons;
-                    })
-                    ->rawColumns(['firstname', 'lastname', 'probability', 'status', 'adminname', 'actions'])
+                    ->addColumn('status', DataTableService::statusColumn())
+                    ->addColumn('adminname', DataTableService::adminColumn('renterinfo.added_by'))
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'view' => [
+                            'route' => fn($row) => route('admin-view-profile', ['id' => $row->Id]),
+                            'icon' => 'fa-eye',
+                            'class' => 'view-btn'
+                        ],
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-renter', ['id' => $row->Id]),
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn',
+                            'permission' => 'property_addedit'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-deleteRenter', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn deleteRenter',
+                            'permission' => 'user_delete'
+                        ]
+                    ]))
+                    ->rawColumns(['status', 'actions'])
                     ->make(true);
-            } else {
-                return view('admin.administration.myOfficeReport');
             }
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Database error in activeRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Database error. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Database error. Please try again later.');
+            return view('admin.administration.myOfficeReport');
         } catch (\Exception $e) {
-            \Log::error('General error in activeRenter method: ' . $e->getMessage());
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
-            }
-            return redirect()->back()->withErrors('Something went wrong. Please try again later.');
+            \Log::error('Error in myOfficeReport: ' . $e->getMessage());
+            return $request->ajax()
+                ? response()->json(['error' => 'An error occurred.'], 500)
+                : redirect()->back()->withErrors('An error occurred.');
         }
     }
 
@@ -250,37 +212,34 @@ class AdministrationController extends Controller
     public function manageSource(Request $request)
     {
         try {
-            $sources = Source::all();
             if ($request->ajax()) {
-                return DataTables::of($sources)
+                $query = Source::query();
+                return DataTableService::of($query)
                     ->addIndexColumn()
                     ->addColumn('sourcename', function ($row) {
-                        $sourceName = $row->SourceName ?? 'N/A';
-                        return '<a href="javascript:void(0)" class="font-weight-bold">' . e($sourceName) . '</a>';
+                        return '<a href="javascript:void(0)" class="font-weight-bold">' . e($row->SourceName ?? 'N/A') . '</a>';
                     })
-                    ->addColumn('actions', function ($row) {
-                        $editUrl = route('admin-edit-admin-users', ['id' => $row->Id]);
-                        $deleteUrl = route('admin-delete-source', ['id' => $row->Id]);
-                        return '<div class="table-actions-icons float-left">
-                                <a href="' . e($editUrl) . '" class="edit-btn">
-                                <i class="fa-regular fa-pen-to-square border px-2 py-2 edit-icon"></i>
-                            </a>
-                            <a href="javascript:void(0)" id="delete-source" class="" data-id="' . $row->Id . '" data-url="' . $deleteUrl . '">
-                                    <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                            </a>
-                            </div>';
-                    })
+                    ->addColumn('actions', DataTableService::actionColumn([
+                        'edit' => [
+                            'route' => fn($row) => route('admin-edit-admin-users', ['id' => $row->Id]), // Check if this should be a different route
+                            'icon' => 'fa-pen',
+                            'class' => 'edit-btn'
+                        ],
+                        'delete' => [
+                            'route' => fn($row) => route('admin-delete-source', ['id' => $row->Id]),
+                            'icon' => 'fa-trash',
+                            'class' => 'delete-btn'
+                        ]
+                    ]))
                     ->rawColumns(['sourcename', 'actions'])
                     ->make(true);
             }
             return view('admin.administration.manageSource');
         } catch (\Exception $e) {
-
             \Log::error("Error in manageSource: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while fetching sources. Please try again later.'
-            ], 500);
+            return $request->ajax()
+                ? response()->json(['error' => 'An error occurred.'], 500)
+                : redirect()->back()->withErrors('An error occurred.');
         }
     }
 

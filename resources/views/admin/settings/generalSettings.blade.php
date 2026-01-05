@@ -358,13 +358,13 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 },
                 success: function(response) {
                     if (response.message) {
-                        toastr.success(response.message);
+                        AdminToast.success(response.message);
                     }
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error("Something went wrong");
+                    AdminToast.error("Something went wrong");
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
@@ -391,13 +391,13 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 },
                 success: function(response) {
                     if (response.message) {
-                        toastr.success(response.message);
+                        AdminToast.success(response.message);
                     }
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error("Something went wrong");
+                    AdminToast.error("Something went wrong");
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
@@ -426,13 +426,13 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 },
                 success: function(response) {
                     if (response.message) {
-                        toastr.success(response.message);
+                        AdminToast.success(response.message);
                     }
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error("Something went wrong");
+                    AdminToast.error("Something went wrong");
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
@@ -458,13 +458,13 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 },
                 success: function(response) {
                     if (response.message) {
-                        toastr.success(response.message);
+                        AdminToast.success(response.message);
                     }
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error("Failed to update mail settings");
+                    AdminToast.error("Failed to update mail settings");
                     $('.submit-spinner').html(`Update`)
                     $('.submit-spinner').prop('disabled', false);
                 },

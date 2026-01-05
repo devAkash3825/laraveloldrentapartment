@@ -50,6 +50,7 @@ $(document).ready(function () {
     });
     */
 
+    /*
     $(function () {
         try {
             $("#add-admin-agents").DataTable({
@@ -73,7 +74,9 @@ $(document).ready(function () {
             console.log("err", err);
         }
     });
+    */
 
+    /*
     $(function () {
         try {
             $("#manage-source").DataTable({
@@ -100,6 +103,7 @@ $(document).ready(function () {
             console.log("Err in datatables", err);
         }
     });
+    */
 
     $(function () {
         try {
@@ -119,6 +123,7 @@ $(document).ready(function () {
         }
     });
 
+    /*
     $(function () {
         try {
             $("#citymanagement").DataTable({
@@ -148,6 +153,7 @@ $(document).ready(function () {
             console.log("err", err);
         }
     });
+    */
 
     // ajax embroidery
     $(function () {

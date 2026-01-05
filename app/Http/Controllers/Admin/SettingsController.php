@@ -579,20 +579,21 @@ class SettingsController extends Controller
 
     public function updateAboutUs(Request $request)
     {
+        $aboutUs = AboutUsCMS::first();
+        if (!$aboutUs) {
+            $aboutUs = new AboutUsCMS();
+        }
+
         if ($request->hasFile('background') && $request->file('background')->isValid()) {
-            // Retrieve the file
             $file = $request->file('background');
             $fileExtension = $file->getClientOriginalExtension();
 
-            // Ensure the file extension is not empty
             if (empty($fileExtension)) {
                 return response()->json(['error' => 'Invalid file extension'], 400);
             }
 
-            // Create a unique filename for the uploaded image
             $savedImageName = 'aboutimage_' . time() . '.' . $fileExtension;
 
-            // Upload the image to S3
             try {
                 $imagePath = $file->storeAs('CMS/Images', $savedImageName, 's3');
 
@@ -601,35 +602,25 @@ class SettingsController extends Controller
                 }
 
                 $imageUrl = Storage::disk('s3')->url($imagePath);
+                $aboutUs->image = $imageUrl;
             } catch (\Exception $e) {
-                // Log the exception message to help diagnose the issue
                 \Log::error('S3 Upload Error: ' . $e->getMessage());
-
                 return response()->json([
                     'error' => 'Error uploading image to S3: ' . $e->getMessage()
                 ], 500);
             }
-
-            // Handle the AboutUsCMS record
-            $aboutUs = AboutUsCMS::first();
-            if (!$aboutUs) {
-                $aboutUs = new AboutUsCMS();
-            }
-
-            // Save data
-            $aboutUs->title = $request->input('title');
-            $aboutUs->heading = $request->input('heading');
-            $aboutUs->description = $request->input('aboutdescription');
-            $aboutUs->image = $imageUrl;
-            $aboutUs->save();
-
-            return response()->json([
-                'message' => 'About Us section updated successfully!',
-                'data' => $aboutUs
-            ]);
-        } else {
-            return response()->json(['error' => 'Invalid or no file uploaded'], 400);
         }
+
+        // Save data
+        $aboutUs->title = $request->input('title');
+        $aboutUs->heading = $request->input('heading');
+        $aboutUs->description = $request->input('aboutdescription');
+        $aboutUs->save();
+
+        return response()->json([
+            'message' => 'About Us section updated successfully!',
+            'data' => $aboutUs
+        ]);
     }
 
     public function addHousing()
@@ -692,9 +683,40 @@ class SettingsController extends Controller
             'title' => $request->title,
             'description' => $request->description,
         ]);
+        (new SettingsService())->clearCachedSettings();
         return response()->json([
             'success' => true,
             'message' => 'Terms & Conditions added successfully.'
         ]);
+    }
+
+    public function deleteManagerTerms($id)
+    {
+        $delete = ManagerTermsCMS::findOrFail($id)->delete();
+        if ($delete) {
+            (new SettingsService())->clearCachedSettings();
+            return response()->json(['success' => true, 'message' => 'Manager terms deleted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'Failed to delete manager terms']);
+    }
+
+    public function deleteTerms($id)
+    {
+        $delete = termsCMS::findOrFail($id)->delete();
+        if ($delete) {
+            (new SettingsService())->clearCachedSettings();
+            return response()->json(['success' => true, 'message' => 'Terms deleted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'Failed to delete terms']);
+    }
+
+    public function deleteEqualHousing($id)
+    {
+        $delete = EqualHousingCMS::findOrFail($id)->delete();
+        if ($delete) {
+            (new SettingsService())->clearCachedSettings();
+            return response()->json(['success' => true, 'message' => 'Equal housing deleted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'Failed to delete equal housing']);
     }
 }

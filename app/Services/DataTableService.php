@@ -35,14 +35,14 @@ class DataTableService
             $value = (string) data_get($row, $field, 'unknown');
             
             $config = match ($value) {
-                '1' => ['label' => 'Active', 'class' => 'c-pill--success'],
-                '0' => ['label' => 'Inactive', 'class' => 'c-pill--warning'],
-                '2' => ['label' => 'Leased', 'class' => 'c-pill--danger'],
-                default => ['label' => 'Unknown', 'class' => ''],
+                '1' => ['label' => 'Active', 'class' => 'status-pill-success'],
+                '0' => ['label' => 'Inactive', 'class' => 'status-pill-warning'],
+                '2' => ['label' => 'Leased', 'class' => 'status-pill-danger'],
+                default => ['label' => 'Unknown', 'class' => 'status-pill-info'],
             };
             
-            return '<a href="javascript:void(0)" class="c-pill ' . $config['class'] . '">' 
-                   . $config['label'] . '</a>';
+            return '<span class="status-pill ' . $config['class'] . '">' 
+                   . $config['label'] . '</span>';
         };
     }
 
@@ -57,7 +57,7 @@ class DataTableService
     {
         return function ($row) use ($actions) {
             $user = Auth::guard('admin')->user();
-            $html = '<div class="table-actions-icons">';
+            $html = '<div class="table-actions">';
 
             foreach ($actions as $type => $config) {
                 // Check specific permission if provided
@@ -75,16 +75,16 @@ class DataTableService
                 $onclickHtml = $onclick ? "onclick=\"{$onclick}\"" : "";
                 
                 $premiumClass = match($type) {
-                    'edit' => 'edit-icon-premium',
-                    'view' => 'view-icon-premium',
-                    'delete' => 'delete-icon-premium',
+                    'edit' => 'edit-btn',
+                    'view' => 'view-btn',
+                    'delete' => 'delete-btn',
                     default => ''
                 };
 
-                if (isset($config['delete']) && $config['delete'] === true) {
+                if ($type === 'delete' || (isset($config['delete']) && $config['delete'] === true)) {
                     $traditional = isset($config['traditional']) && $config['traditional'] === true ? 'data-traditional="true"' : '';
                     $html .= sprintf(
-                        '<a href="javascript:void(0)" class="%s action-icon delete-btn %s" data-url="%s" data-id="%s" %s title="Delete" %s><i class="fa-solid %s"></i></a>',
+                        '<a href="javascript:void(0)" class="%s action-btn delete-btn %s" data-url="%s" data-id="%s" %s title="Delete" %s><i class="fa-solid %s"></i></a>',
                         $class,
                         $premiumClass,
                         $url,
@@ -95,9 +95,9 @@ class DataTableService
                     );
                 } else if ($label) {
                     $html .= sprintf(
-                        '<a href="%s" class="btn btn-sm btn-premium %s %s" title="%s" %s>%s</a>',
+                        '<a href="%s" class="btn btn-premium %s %s" title="%s" %s>%s</a>',
                         $url,
-                        strpos($class, 'btn-danger') !== false ? 'btn-premium-danger' : 'btn-premium-primary',
+                        strpos($class, 'btn-danger') !== false ? 'btn-premium-outline-danger' : 'btn-premium-primary',
                         $class,
                         ucfirst($type),
                         $onclickHtml,
@@ -105,7 +105,7 @@ class DataTableService
                     );
                 } else {
                     $html .= sprintf(
-                        '<a href="%s" class="%s action-icon %s" title="%s" %s><i class="fa-solid %s"></i></a>',
+                        '<a href="%s" class="%s action-btn %s" title="%s" %s><i class="fa-solid %s"></i></a>',
                         $url,
                         $class,
                         $premiumClass,

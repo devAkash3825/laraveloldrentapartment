@@ -31,12 +31,14 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $('#listofmanagers-table').DataTable(DataTableHelpers.getConfig("{{ route('admin-list-manager') }}", [
+        $('#listofmanagers-table').DataTable($.extend(DataTableHelpers.getConfig("{{ route('admin-list-manager') }}", [
             { data: "DT_RowIndex", orderable: false, searchable: false },
             { data: "managername", name: "UserName" },
-            { data: "status", name: "Status", orderable: false, searchable: false },
-            { data: "action", name: "action", orderable: false, searchable: false }
-        ]));
+            { data: "status", name: "Status", orderable: false, searchable: false, className: "text-center" },
+            { data: "action", name: "action", orderable: false, searchable: false, className: "text-center" }
+        ]), {
+            order: [[1, 'asc']]
+        }));
     });
 </script>
 @endpush

@@ -2,6 +2,8 @@
 @section('title', 'RentApartments Admin | Edit Renter')
 @section('content')
 
+
+
 <div class="slim-mainpanel">
     <div class="container">
         <div class="slim-pageheader">
@@ -21,7 +23,7 @@
                 </h6>
             </div>
             <div class="card-body">
-                <form id="editRenterForm" action="{{ route('admin-edit-renter-update') }}" method="POST">
+                <form id="editRenterForm" action="{{ route('admin-edit-renter-update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="userId" value="{{ $userid }}">
 
@@ -78,6 +80,21 @@
                                 <input type="number" class="form-control" name="editprobability" id="editprobability"
                                        min="0" max="100"
                                        value="{{ old('editprobability', $data->renterinfo->probability ?? '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Profile Picture</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        @if($data->profile_pic)
+                                            <img src="{{ asset('uploads/profile_pics/' . $data->profile_pic) }}" alt="Profile" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('img/temp_profile.png') }}" alt="Profile" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                        @endif
+                                    </div>
+                                    <input type="file" class="form-control" name="profile_pic" id="profile_pic" accept="image/*">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -399,11 +416,11 @@
 
                     {{-- Form Actions --}}
                     <div class="form-actions mt-4 pt-3 border-top d-flex justify-content-between">
-                        <a href="{{ route('admin-view-profile', ['id' => $userid]) }}" class="btn btn-outline-secondary">
-                            <i class="fa-solid fa-arrow-left me-1"></i> Cancel
+                        <a href="{{ route('admin-view-profile', ['id' => $userid]) }}" class="btn btn-premium btn-premium-outline-secondary">
+                            <i class="fa-solid fa-arrow-left"></i> Cancel
                         </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-save me-1"></i> Save Changes
+                        <button type="submit" class="btn btn-premium btn-premium-primary">
+                            <i class="fa-solid fa-save"></i> Save Changes
                         </button>
                     </div>
                 </form>

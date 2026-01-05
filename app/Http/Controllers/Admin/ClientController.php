@@ -73,6 +73,13 @@ class ClientController extends Controller
         DB::beginTransaction();
 
         try {
+            $profilePicName = null;
+            if ($request->hasFile('profile_pic')) {
+                $file = $request->file('profile_pic');
+                $profilePicName = 'renter_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/profile_pics'), $profilePicName);
+            }
+
             $login = Login::create([
                 'UserName'         => $validatedData['userName'],
                 'Password'         => bcrypt($validatedData['password']),
@@ -83,6 +90,7 @@ class ClientController extends Controller
                 'UserIp'           => $request->ip(),
                 'user_type'        => 'C',
                 'acc_to_craiglist' => 'No',
+                'profile_pic'      => $profilePicName,
             ]);
 
             if (! $login) {
@@ -443,6 +451,17 @@ class ClientController extends Controller
                     'Y-m-d H:i',
                     $request->editsetremainderdate . ' ' . $request->editsetremaindertime
                 )->format('Y-m-d H:i:s');
+            }
+
+            // Handle profile picture upload
+            $profilePicName = null;
+            if ($request->hasFile('profile_pic')) {
+                $file = $request->file('profile_pic');
+                $profilePicName = 'renter_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/profile_pics'), $profilePicName);
+                
+                // Update profile_pic in login table
+                Login::where('Id', $loginid)->update(['profile_pic' => $profilePicName]);
             }
 
             // Update login details

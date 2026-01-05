@@ -1,238 +1,313 @@
-{{-- Bootstrap 5 Toast Container --}}
-<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+@push('toast_html')
+<div class="minimal-toast-container position-fixed top-0 end-0 mt-4 me-4" style="z-index: 99999;">
 </div>
+@endpush
 
-@push('styles')
+@push('style')
 <style>
-    /* Bootstrap 5 Style Toast */
-    .toast-container .toast {
-        min-width: 320px;
-        max-width: 420px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
+    :root {
+        --m-toast-success: #059669;
+        --m-toast-error: #dc2626;
+        --m-toast-warning: #d97706;
+        --m-toast-info: #2563eb;
+        --m-toast-bg: #ffffff;
+        --m-toast-border: #e5e7eb;
+        --m-toast-text: #1f2937;
+        --m-toast-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .minimal-toast-container {
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 380px;
+        width: 100%;
+    }
+
+    .m-toast {
+        pointer-events: auto;
+        background: var(--m-toast-bg);
+        border: 1px solid var(--m-toast-border);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        box-shadow: var(--m-toast-shadow);
+        margin-bottom: 0;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform: translateX(100px);
         opacity: 0;
-        transform: translateX(100%);
-        animation: toastSlideIn 0.4s ease forwards;
+        position: relative;
+        overflow: hidden;
     }
 
-    .toast-container .toast.hiding {
-        animation: toastSlideOut 0.3s ease forwards;
+    .m-toast::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: currentColor;
+        opacity: 0.15;
     }
 
-    .toast-container .toast .toast-header {
-        padding: 12px 16px;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .toast-container .toast .toast-header .toast-icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-    }
-
-    .toast-container .toast .toast-header strong {
-        flex: 1;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .toast-container .toast .toast-header .btn-close {
-        font-size: 10px;
-        opacity: 0.5;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 4px;
-    }
-
-    .toast-container .toast .toast-header .btn-close:hover {
+    .m-toast.show {
+        transform: translateX(0);
         opacity: 1;
     }
 
-    .toast-container .toast .toast-body {
-        padding: 12px 16px;
-        font-size: 13px;
-        color: #333;
+    .m-toast.hide {
+        transform: translateX(100px);
+        opacity: 0;
     }
 
-    .toast-container .toast .toast-progress {
+    .m-toast-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 18px;
+        color: #fff;
+        margin-top: -2px;
+    }
+
+    .m-toast-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .m-toast-message {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--m-toast-text);
+        line-height: 1.4;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .m-toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
         height: 3px;
+        background: currentColor;
+        opacity: 0.3;
         width: 100%;
-        background: rgba(0,0,0,0.1);
+        transform-origin: left;
+        transform: scaleX(1);
+        transition: transform 4s linear;
     }
 
-    .toast-container .toast .toast-progress-bar {
-        height: 100%;
-        animation: progressShrink 5s linear forwards;
+    .m-toast.hide .m-toast-progress {
+        transform: scaleX(0);
+        transition: transform 0.6s linear;
     }
 
-    /* Toast Types */
-    .toast-container .toast.toast-success .toast-icon {
-        background: #d1fae5;
-        color: #059669;
-    }
-    .toast-container .toast.toast-success .toast-progress-bar {
-        background: #10b981;
-    }
-
-    .toast-container .toast.toast-error .toast-icon {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-    .toast-container .toast.toast-error .toast-progress-bar {
-        background: #ef4444;
-    }
-
-    .toast-container .toast.toast-warning .toast-icon {
-        background: #fef3c7;
-        color: #d97706;
-    }
-    .toast-container .toast.toast-warning .toast-progress-bar {
-        background: #f59e0b;
+    .m-toast-close {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+        margin-top: -8px;
+        margin-right: -8px;
+        width: 32px;
+        height: 32px;
     }
 
-    .toast-container .toast.toast-info .toast-icon {
-        background: #dbeafe;
-        color: #2563eb;
-    }
-    .toast-container .toast.toast-info .toast-progress-bar {
-        background: #3b82f6;
+    .m-toast-close:hover {
+        background: #f3f4f6;
+        color: #374151;
     }
 
-    @keyframes toastSlideIn {
-        from {
-            opacity: 0;
-            transform: translateX(100%);
+    /* Toast types */
+    .m-toast-success { color: var(--m-toast-success); }
+    .m-toast-error { color: var(--m-toast-error); }
+    .m-toast-warning { color: var(--m-toast-warning); }
+    .m-toast-info { color: var(--m-toast-info); }
+
+    .m-toast-success .m-toast-icon { 
+        background: var(--m-toast-success); 
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+    
+    .m-toast-error .m-toast-icon { 
+        background: var(--m-toast-error); 
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+    
+    .m-toast-warning .m-toast-icon { 
+        background: var(--m-toast-warning); 
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+    }
+    
+    .m-toast-info .m-toast-icon { 
+        background: var(--m-toast-info); 
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .minimal-toast-container {
+            max-width: calc(100vw - 32px);
+            margin: 0 16px;
+            left: 0;
+            right: 0;
+            top: 0;
+            end: initial;
         }
-        to {
-            opacity: 1;
-            transform: translateX(0);
+        
+        .m-toast {
+            max-width: 100%;
         }
-    }
-
-    @keyframes toastSlideOut {
-        from {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        to {
-            opacity: 0;
-            transform: translateX(100%);
-        }
-    }
-
-    @keyframes progressShrink {
-        from { width: 100%; }
-        to { width: 0%; }
     }
 </style>
 @endpush
 
 @push('adminscripts')
 <script>
-    /**
-     * Bootstrap 5 Style Toast Notification System
-     */
-    window.AdminToast = window.AdminToast || {};
-    
-    const TOAST_DURATION = 5000;
-    
-    const TOAST_ICONS = {
-        success: '<i class="fa-solid fa-check"></i>',
-        error: '<i class="fa-solid fa-xmark"></i>',
-        warning: '<i class="fa-solid fa-exclamation"></i>',
-        info: '<i class="fa-solid fa-info"></i>'
-    };
-
-    const TOAST_TITLES = {
-        success: 'Success',
-        error: 'Error',
-        warning: 'Warning',
-        info: 'Information'
-    };
-
-    function showToast(message, type = 'success') {
-        const container = document.querySelector('.toast-container');
-        if (!container) return;
-
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-
-        toast.innerHTML = `
-            <div class="toast-header">
-                <span class="toast-icon">${TOAST_ICONS[type] || TOAST_ICONS.info}</span>
-                <strong>${TOAST_TITLES[type] || 'Notification'}</strong>
-                <button type="button" class="btn-close" aria-label="Close">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="toast-body">${message}</div>
-            <div class="toast-progress">
-                <div class="toast-progress-bar"></div>
-            </div>
-        `;
-
-        container.appendChild(toast);
-
-        const removeToast = () => {
-            toast.classList.add('hiding');
-            setTimeout(() => toast.remove(), 300);
+    (function() {
+        const ICONS = {
+            success: '<i class="fa-solid fa-check"></i>',
+            error: '<i class="fa-solid fa-xmark"></i>',
+            warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
+            info: '<i class="fa-solid fa-circle-info"></i>'
         };
 
-        // Close button
-        toast.querySelector('.btn-close').addEventListener('click', removeToast);
+        function showToast(message, type = 'success') {
+            const container = document.querySelector('.minimal-toast-container');
+            if (!container) return;
 
-        // Auto remove after duration
-        setTimeout(removeToast, TOAST_DURATION);
-    }
+            const toast = document.createElement('div');
+            toast.className = `m-toast m-toast-${type}`;
+            
+            toast.innerHTML = `
+                <div class="m-toast-icon">${ICONS[type] || ICONS.success}</div>
+                <div class="m-toast-content">
+                    <div class="m-toast-message">${message}</div>
+                </div>
+                <button class="m-toast-close" aria-label="Close toast">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="m-toast-progress"></div>
+            `;
 
-    // Expose globally
-    window.showToast = showToast;
-    
-    // Override AdminToast for consistency
-    window.AdminToast.success = (msg) => showToast(msg, 'success');
-    window.AdminToast.error = (msg) => showToast(msg, 'error');
-    window.AdminToast.warning = (msg) => showToast(msg, 'warning');
-    window.AdminToast.info = (msg) => showToast(msg, 'info');
+            // Add to top of container (newest first)
+            container.insertBefore(toast, container.firstChild);
+            
+            // Forced reflow to trigger animation
+            toast.offsetHeight;
+            
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Start progress bar animation
+            setTimeout(() => {
+                const progress = toast.querySelector('.m-toast-progress');
+                if (progress) {
+                    progress.style.transform = 'scaleX(0)';
+                    progress.style.transition = 'transform 4s linear';
+                }
+            }, 50);
 
-    // Handle Laravel session flash messages on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        @if(session('success'))
-            showToast(@json(session('success')), 'success');
-        @endif
+            const removeToast = () => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 500);
+            };
+
+            // Close button
+            toast.querySelector('.m-toast-close').addEventListener('click', removeToast);
+            
+            // Auto dismiss after 5 seconds
+            const dismissTimeout = setTimeout(removeToast, 5000);
+            
+            // Pause dismissal on hover
+            toast.addEventListener('mouseenter', () => {
+                clearTimeout(dismissTimeout);
+                const progress = toast.querySelector('.m-toast-progress');
+                if (progress) {
+                    progress.style.transition = 'none';
+                }
+            });
+            
+            toast.addEventListener('mouseleave', () => {
+                const progress = toast.querySelector('.m-toast-progress');
+                if (progress) {
+                    const remainingWidth = progress.getBoundingClientRect().width / toast.getBoundingClientRect().width;
+                    const remainingTime = remainingWidth * 5000;
+                    
+                    progress.style.transition = `transform ${remainingTime}ms linear`;
+                    progress.style.transform = 'scaleX(0)';
+                    
+                    setTimeout(removeToast, remainingTime);
+                } else {
+                    setTimeout(removeToast, 5000);
+                }
+            });
+        }
+
+        // Global toast functions
+        window.AdminToast = {
+            success: (msg) => showToast(msg, 'success'),
+            error: (msg) => showToast(msg, 'error'),
+            warning: (msg) => showToast(msg, 'warning'),
+            info: (msg) => showToast(msg, 'info')
+        };
         
-        @if(session('error'))
-            showToast(@json(session('error')), 'error');
-        @endif
-        
-        @if(session('warning'))
-            showToast(@json(session('warning')), 'warning');
-        @endif
-        
-        @if(session('message') || session('info'))
-            showToast(@json(session('message') ?? session('info')), 'info');
-        @endif
+        window.showToast = showToast;
+        window.toastr = window.AdminToast;
 
-        @if(session('status'))
-            showToast(@json(session('status')), 'info');
-        @endif
+        // Show session toasts
+        document.addEventListener('DOMContentLoaded', () => {
+            const shownMessages = new Set();
+            
+            const triggerToast = (message, type) => {
+                const key = `${type}:${message}`;
+                if (shownMessages.has(key)) return;
+                showToast(message, type);
+                shownMessages.add(key);
+            };
 
-        // Handle validation errors
-        @if($errors->any())
-            showToast(@json($errors->first()), 'error');
-        @endif
-    });
+            // Toast from session
+            @if(session('toast'))
+                @php $toast = session('toast'); @endphp
+                triggerToast(@json($toast['message']), @json($toast['type'] ?? 'success'));
+            @endif
+
+            // Legacy session messages
+            @if(session('success')) triggerToast(@json(session('success')), 'success'); @endif
+            @if(session('error')) triggerToast(@json(session('error')), 'error'); @endif
+            @if(session('warning')) triggerToast(@json(session('warning')), 'warning'); @endif
+            @if(session('info')) triggerToast(@json(session('info')), 'info'); @endif
+            @if(session('message')) triggerToast(@json(session('message')), 'info'); @endif
+            @if(session('status')) triggerToast(@json(session('status')), 'info'); @endif
+            
+            @if($errors->any()) 
+                @foreach($errors->all() as $error)
+                    triggerToast(@json($error), 'error');
+                @endforeach
+            @endif
+        });
+    })();
 </script>
 @endpush

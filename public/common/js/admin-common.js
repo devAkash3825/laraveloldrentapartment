@@ -26,23 +26,19 @@
     window.AdminToast = {
         success: function (msg) {
             if (window.showToast) window.showToast(msg, 'success');
-            else if (window.toastr) toastr.success(msg);
-            else alert(msg);
+            else console.log('Success: ' + msg);
         },
         error: function (msg) {
             if (window.showToast) window.showToast(msg, 'error');
-            else if (window.toastr) toastr.error(msg);
-            else alert('Error: ' + msg);
+            else console.error('Error: ' + msg);
         },
         info: function (msg) {
             if (window.showToast) window.showToast(msg, 'info');
-            else if (window.toastr) toastr.info(msg);
-            else console.info(msg);
+            else console.info('Info: ' + msg);
         },
         warning: function (msg) {
             if (window.showToast) window.showToast(msg, 'warning');
-            else if (window.toastr) toastr.warning(msg);
-            else console.warn(msg);
+            else console.warn('Warning: ' + msg);
         }
     };
 
@@ -124,7 +120,7 @@
                 }, 2000);
             }
 
-            toastr.error(errorMessage);
+            AdminToast.error(errorMessage);
             console.error('AJAX Error:', error);
         }
     };
@@ -310,7 +306,7 @@
 
                     // Reload any DataTable on the page
                     if ($.fn.DataTable) {
-                        $('.dataTable, table.display').each(function () {
+                        $('table').each(function () {
                             if ($.fn.DataTable.isDataTable(this)) {
                                 $(this).DataTable().ajax.reload(null, false);
                             }
@@ -470,15 +466,6 @@
             $('.alert:not(.alert-permanent)').fadeOut(300);
         }, 5000);
 
-        // Toastr configuration
-        if (typeof toastr !== 'undefined') {
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "3000"
-            };
-        }
 
         console.log('Admin Common JS Loaded');
     });

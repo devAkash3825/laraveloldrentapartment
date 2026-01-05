@@ -548,49 +548,34 @@ class PropertyController extends Controller
 
     public function schoolManagement(Request $request)
     {
-        $SchoolManagement = School::all();
-
         if ($request->ajax()) {
-            $schools = $SchoolManagement = School::all();
-            return DataTables::of($schools)
+            $query = School::query();
+            return DataTableService::of($query)
                 ->addIndexColumn()
                 ->addColumn('schoolname', function ($row) {
-                    return $row->school_name;
+                    return e($row->school_name);
                 })
                 ->addColumn('type', function ($row) {
                     return $row->school_type ?? 'N/A';
                 })
-                ->addColumn('status', function ($row) {
-                    $status = '';
-                    switch ($row->status) {
-                        case "1":
-                            $status = '<a href="javascript:void(0)" class="c-pill c-pill--success">Active</a>';
-                            break;
-                        case "0":
-                            $status = '<a href="javascript:void(0)" class="c-pill c-pill--warning">Inactive</a>';
-                            break;
-                        default:
-                            $status = 'Unknown';
-                    }
-                    $statusText = $row->Status == 2 ? "Leased" : "Unknown";
-                    return $status;
-                })
-                ->addColumn('actions', function ($row) {
-                    $user          = Auth::guard('admin')->user();
-                    $editUrl       = route('admin-edit-city', ['id' => $row->school_id]);
-                    $deleteUrl     = route('admin-delete-school', ['id' => $row->school_id]);
-                    $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-                    $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn"> <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i> </a>';
-                    $actionButtons .= '<a href="javascript:void(0)" class="deleterecords" data-id="' . $row->school_id . '" data-url="' . $deleteUrl . '">
-                                        <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                        </a>';
-                    $actionButtons .= '</div>';
-
-                    return $actionButtons;
-                })
-                ->rawColumns(['cityname', 'statename', 'status', 'actions'])
+                ->addColumn('status', DataTableService::statusColumn('status'))
+                ->addColumn('actions', DataTableService::actionColumn([
+                    'edit' => [
+                        'route' => fn($row) => route('admin-edit-city', ['id' => $row->school_id]),
+                        'icon' => 'fa-pen',
+                        'class' => 'edit-btn'
+                    ],
+                    'delete' => [
+                        'route' => fn($row) => route('admin-delete-school', ['id' => $row->school_id]),
+                        'icon' => 'fa-trash',
+                        'class' => 'delete-btn',
+                        'delete' => true
+                    ]
+                ]))
+                ->rawColumns(['status', 'actions'])
                 ->make(true);
         }
+        $SchoolManagement = School::all();
         return view('admin.property.schoolManagement', ['data' => $SchoolManagement]);
     }
 
@@ -700,26 +685,27 @@ class PropertyController extends Controller
 
     public function manageStates(Request $request)
     {
-        $states = State::all();
         if ($request->ajax()) {
-            return DataTables::of($states)->addIndexColumn()
+            $query = State::query();
+            return DataTableService::of($query)
+                ->addIndexColumn()
                 ->addColumn('statename', function ($row) {
-                    return $row->StateName;
+                    return e($row->StateName);
                 })
-                ->addColumn('actions', function ($row) {
-                    $editUrl     = route('admin-edit-states', ['id' => $row->Id]);
-                    $deleteState = route('admin-delete-states', ['id' => $row->Id]);
-
-                    $actionbtn = '<div class="table-actionss-icon table-actions-icons float-none">
-                                    <a href="' . $editUrl . '" class="edit-btn"><i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i></a>
-                                    <a href="javascript:void(0)" id="delete-property" class="propertyDlt" data-id="' . $row->Id . '" data-url="' . $deleteState . '">
-                                            <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                    </a>
-                            </div>';
-
-                    return $actionbtn;
-                })
-                ->rawColumns(['managername', 'actions'])
+                ->addColumn('actions', DataTableService::actionColumn([
+                    'edit' => [
+                        'route' => fn($row) => route('admin-edit-states', ['id' => $row->Id]),
+                        'icon' => 'fa-pen',
+                        'class' => 'edit-btn'
+                    ],
+                    'delete' => [
+                        'route' => fn($row) => route('admin-delete-states', ['id' => $row->Id]),
+                        'icon' => 'fa-trash',
+                        'class' => 'delete-btn',
+                        'delete' => true
+                    ]
+                ]))
+                ->rawColumns(['actions'])
                 ->make(true);
         }
         return view('admin.property.manageStates');
@@ -769,44 +755,30 @@ class PropertyController extends Controller
     public function manageCity(Request $request)
     {
         if ($request->ajax()) {
-            $cities = City::with('state')->get();
-            return DataTables::of($cities)
+            $query = City::with('state')->select('city.*');
+            return DataTableService::of($query)
                 ->addIndexColumn()
                 ->addColumn('cityname', function ($row) {
-                    return $row->CityName;
+                    return e($row->CityName);
                 })
                 ->addColumn('statename', function ($row) {
                     return optional($row->state)->StateName ?? 'N/A';
                 })
-                ->addColumn('status', function ($row) {
-                    $status = '';
-                    switch ($row->status) {
-                        case "1":
-                            $status = '<a href="javascript:void(0)" class="c-pill c-pill--success">Active</a>';
-                            break;
-                        case "0":
-                            $status = '<a href="javascript:void(0)" class="c-pill c-pill--warning">Inactive</a>';
-                            break;
-                        default:
-                            $status = 'Unknown';
-                    }
-                    $statusText = $row->Status == 2 ? "Leased" : "Unknown";
-                    return $status;
-                })
-                ->addColumn('actions', function ($row) {
-                    $user          = Auth::guard('admin')->user();
-                    $editUrl       = route('admin-edit-city', ['id' => $row->Id]);
-                    $deleteUrl     = route('admin-delete-city', ['id' => $row->Id]);
-                    $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
-                    $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn"> <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i> </a>';
-                    $actionButtons .= '<a href="javascript:void(0)" class="deleterecords" data-id="' . $row->Id . '" data-url="' . $deleteUrl . '">
-                                        <i class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                        </a>';
-                    $actionButtons .= '</div>';
-
-                    return $actionButtons;
-                })
-                ->rawColumns(['cityname', 'statename', 'status', 'actions'])
+                ->addColumn('status', DataTableService::statusColumn('status'))
+                ->addColumn('actions', DataTableService::actionColumn([
+                    'edit' => [
+                        'route' => fn($row) => route('admin-edit-city', ['id' => $row->Id]),
+                        'icon' => 'fa-pen',
+                        'class' => 'edit-btn'
+                    ],
+                    'delete' => [
+                        'route' => fn($row) => route('admin-delete-city', ['id' => $row->Id]),
+                        'icon' => 'fa-trash',
+                        'class' => 'delete-btn',
+                        'delete' => true
+                    ]
+                 ]))
+                ->rawColumns(['status', 'actions'])
                 ->make(true);
         }
 

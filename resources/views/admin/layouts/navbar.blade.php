@@ -96,17 +96,24 @@
                     'admin-client-adduser',
                     'admin-leasedRenter',
                     'admin-search-renter',
+                    'admin-search-renters',
+                    'admin-searched-renter-result',
                     'admin-call-history',
                     'admin-activeRenter',
                     'admin-inactiveRenter',
                     'admin-create-renter',
-                    'admin-search-renter',
                     'admin-notify-history',
                     'admin-edit-renter',
                     'admin-view-profile',
                     'admin-unassigned-renters',
                     'admin-client-search',
                     'admin-agent-remainder',
+                    'admin-client-infoUpdate',
+                    'admin-renter-reports',
+                    'admin-listing-fav',
+                    'admin-listing-fav-reports',
+                    'admin-switch-map-view',
+                    'admin-map-search',
                 ]) }}
             ">
                 <a class="nav-link nav-routes" href="javascript:void(0)">
@@ -116,15 +123,15 @@
                 <div class="sub-item">
                     <ul>
                     @if (Auth::guard('admin')->user()->hasPermission('user_addedit'))
-                        <li><a href="{{ route('admin-client-adduser') }}">Add New Renter</a></li>
+                        <li class="{{ isActiveRoutes(['admin-client-adduser']) }}"><a href="{{ route('admin-client-adduser') }}">Add New Renter</a></li>
                     @endif
-                        <li><a href="{{ route('admin-activeRenter') }}"> Active Renters </a></li>
-                        <li><a href="{{ route('admin-inactiveRenter') }}"> InActive Renter </a></li>
-                        <li><a href="{{ route('admin-leasedRenter') }}"> Leased Renter </a></li>
-                        <li><a href="{{ route('admin-unassigned-renters') }}"> Unassigned Renter </a></li>
-                        <li><a href="{{ route('admin-search-renter') }}">Search Renter</a></li>
-                        <li><a href="{{ route('admin-call-history') }}">Call History</a></li>
-                        <li><a href="{{ route('admin-agent-remainder') }}">Agent Remainder Log</a></li>
+                        <li class="{{ isActiveRoutes(['admin-activeRenter']) }}"><a href="{{ route('admin-activeRenter') }}"> Active Renters </a></li>
+                        <li class="{{ isActiveRoutes(['admin-inactiveRenter']) }}"><a href="{{ route('admin-inactiveRenter') }}"> InActive Renter </a></li>
+                        <li class="{{ isActiveRoutes(['admin-leasedRenter']) }}"><a href="{{ route('admin-leasedRenter') }}"> Leased Renter </a></li>
+                        <li class="{{ isActiveRoutes(['admin-unassigned-renters']) }}"><a href="{{ route('admin-unassigned-renters') }}"> Unassigned Renter </a></li>
+                        <li class="{{ isActiveRoutes(['admin-search-renter']) }}"><a href="{{ route('admin-search-renter') }}">Search Renter</a></li>
+                        <li class="{{ isActiveRoutes(['admin-call-history']) }}"><a href="{{ route('admin-call-history') }}">Call History</a></li>
+                        <li class="{{ isActiveRoutes(['admin-agent-remainder']) }}"><a href="{{ route('admin-agent-remainder') }}">Agent Remainder Log</a></li>
                     </ul>
                 </div>
             </li>
@@ -137,7 +144,7 @@
                     'admin-edit-property',
                     'admin-search-property',
                     'admin-property-display',
-                    'admin-property-display',
+                    'admin-renter-property-display',
                     'admin-school-management',
                     'admin-manage-states',
                     'admin-manage-city',
@@ -146,7 +153,11 @@
                     'admin-edit-states',
                     'admin-add-states',
                     'admin-add-city',
-                    'admin-view-city','admin-edit-city','admin-school-add',
+                    'admin-view-city',
+                    'admin-edit-city',
+                    'admin-school-add',
+                    'admin-fee-management',
+                    'admin-pets-management',
                 ]) }}">
                 <a class="nav-link nav-routes" href="javascript:void(0)">
                     <i class="fa-solid fa-building"></i>
@@ -154,15 +165,15 @@
                 </a>
                 <div class="sub-item">
                     <ul>
-                            <li><a href="{{ route('admin-property-listproperty') }}">List of Properties</a></li>
+                            <li class="{{ isActiveRoutes(['admin-property-listproperty']) }}"><a href="{{ route('admin-property-listproperty') }}">List of Properties</a></li>
                         @if (Auth::guard('admin')->user()->hasPermission('property_addedit'))
-                            <li><a href="{{ route('admin-addProperty') }}"> Add Property </a></li>
+                            <li class="{{ isActiveRoutes(['admin-addProperty']) }}"><a href="{{ route('admin-addProperty') }}"> Add Property </a></li>
                         @endif
-                            <li><a href="{{ route('admin-search-property') }}">Search Property</a></li>
-                            <li><a href="{{ route('admin-manage-states') }}">State Management</a></li>
-                            <li><a href="{{ route('admin-manage-city') }}">City Management</a></li>
+                            <li class="{{ isActiveRoutes(['admin-search-property']) }}"><a href="{{ route('admin-search-property') }}">Search Property</a></li>
+                            <li class="{{ isActiveRoutes(['admin-manage-states']) }}"><a href="{{ route('admin-manage-states') }}">State Management</a></li>
+                            <li class="{{ isActiveRoutes(['admin-manage-city']) }}"><a href="{{ route('admin-manage-city') }}">City Management</a></li>
                         @if (Auth::guard('admin')->user()->hasPermission('access_school_management'))
-                            <li><a href="{{ route('admin-school-management') }}">School Management</a></li>
+                            <li class="{{ isActiveRoutes(['admin-school-management']) }}"><a href="{{ route('admin-school-management') }}">School Management</a></li>
                         @endif
                     </ul>
                 </div>
@@ -184,9 +195,9 @@
                 </a>
                 <div class="sub-item">
                     <ul>
-                        <li><a href="{{ route('admin-add-manager') }}">Add Manager</a></li>
-                        <li><a href="{{ route('admin-search-manager') }}">Search Manager</a></li>
-                        <li><a href="{{ route('admin-list-manager') }}">List Manager</a></li>
+                        <li class="{{ isActiveRoutes(['admin-add-manager']) }}"><a href="{{ route('admin-add-manager') }}">Add Manager</a></li>
+                        <li class="{{ isActiveRoutes(['admin-search-manager']) }}"><a href="{{ route('admin-search-manager') }}">Search Manager</a></li>
+                        <li class="{{ isActiveRoutes(['admin-list-manager']) }}"><a href="{{ route('admin-list-manager') }}">List Manager</a></li>
                     </ul>
                 </div>
             </li>
@@ -206,9 +217,9 @@
                 </a>
                 <div class="sub-item">
                     <ul>
-                        <li><a href="{{ route('admin-my-office-report') }}"> My Office Report </a></li>
-                        <li><a href="{{ route('admin-manage-my-agents') }}"> Manage My Agent </a></li>
-                        <li><a href="{{ route('admin-manage-source') }}">Manage Source</a></li>
+                        <li class="{{ isActiveRoutes(['admin-my-office-report']) }}"><a href="{{ route('admin-my-office-report') }}"> My Office Report </a></li>
+                        <li class="{{ isActiveRoutes(['admin-manage-my-agents']) }}"><a href="{{ route('admin-manage-my-agents') }}"> Manage My Agent </a></li>
+                        <li class="{{ isActiveRoutes(['admin-manage-source']) }}"><a href="{{ route('admin-manage-source') }}">Manage Source</a></li>
                     </ul>
                 </div>
             </li>
@@ -233,12 +244,12 @@
                 </a>
                 <div class="sub-item">
                     <ul>
-                        <li><a href="{{ route('section-management') }}"> Sections Management </a></li>
-                        <li><a href="{{ route('pages-management') }}"> Pages Management </a></li>
-                        <li><a href="{{ route('admin-slider-management') }}"> Slider Management </a></li>
-                        <li><a href="{{ route('admin-footer-management') }}"> Footer Management</a></li>
-                        <li><a href="{{ route('admin-menu-management') }}"> Menu Management </a></li>
-                        <li><a href="{{ route('admin-general-settings') }}"> Settings Management </a></li>
+                        <li class="{{ isActiveRoutes(['section-management']) }}"><a href="{{ route('section-management') }}"> Sections Management </a></li>
+                        <li class="{{ isActiveRoutes(['pages-management']) }}"><a href="{{ route('pages-management') }}"> Pages Management </a></li>
+                        <li class="{{ isActiveRoutes(['admin-slider-management']) }}"><a href="{{ route('admin-slider-management') }}"> Slider Management </a></li>
+                        <li class="{{ isActiveRoutes(['admin-footer-management']) }}"><a href="{{ route('admin-footer-management') }}"> Footer Management</a></li>
+                        <li class="{{ isActiveRoutes(['admin-menu-management']) }}"><a href="{{ route('admin-menu-management') }}"> Menu Management </a></li>
+                        <li class="{{ isActiveRoutes(['admin-general-settings']) }}"><a href="{{ route('admin-general-settings') }}"> Settings Management </a></li>
                     </ul>
                 </div>
             </li>

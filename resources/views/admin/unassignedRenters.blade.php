@@ -34,13 +34,15 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $('#unassigned-renter').DataTable(DataTableHelpers.getConfig("{{ route('admin-unassigned-renters') }}", [
+        $('#unassigned-renter').DataTable($.extend(DataTableHelpers.getConfig("{{ route('admin-unassigned-renters') }}", [
             { data: "DT_RowIndex", orderable: false, searchable: false },
             { data: "fullname", name: "fullname" },
             { data: "probability", name: "probability" },
             { data: "area", name: "area" },
             { data: "actions", name: "actions", orderable: false, searchable: false }
-        ]));
+        ]), {
+            order: [[1, 'asc']]
+        }));
     });
 
     function claimrenter(renterId) {

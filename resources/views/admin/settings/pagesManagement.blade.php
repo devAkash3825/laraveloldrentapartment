@@ -134,28 +134,28 @@ $settings = DB::table('settings')->pluck('value', 'key');
         <div class="card card-table">
           <div class="card-body">
             
-            <div class="settings-tab-nav-horizontal">
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#aboutus_tab" role="tab">About Us</a>
+            <nav>
+                <ul class="tabs">
+                    <li class="tab-li">
+                        <a href="#aboutus_tab" class="tab-li__link active">About Us</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#contactus_tab" role="tab">Contact Us</a>
+                    <li class="tab-li">
+                        <a href="#contactus_tab" class="tab-li__link">Contact Us</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#equalhousing_tab" role="tab">Equal Housing</a>
+                    <li class="tab-li">
+                        <a href="#equalhousing_tab" class="tab-li__link">Equal Housing</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#terms_tab" role="tab">Terms & Conditions</a>
+                    <li class="tab-li">
+                        <a href="#terms_tab" class="tab-li__link">Terms & Conditions</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#manager_terms_tab" role="tab">Manager Terms</a>
+                    <li class="tab-li">
+                        <a href="#manager_terms_tab" class="tab-li__link">Manager Terms</a>
                     </li>
                 </ul>
-            </div>
+            </nav>
 
-            <div class="tab-content pd-20">
-                <div class="tab-pane fade show active" id="aboutus_tab" role="tabpanel">
+            <div class="mt-3">
+                <div id="aboutus_tab" class="tab-pane active" data-tab-content>
                         <form action="{{ route('admin-update-about-us') }}" method="POST" enctype="multipart/form-data" id="updateaboutus">
                             <div class="row">
                                 <div class="col-12 mt-3">
@@ -199,7 +199,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                         </form>
                 </div>
                 
-                <div class="tab-pane fade" id="contactus_tab" role="tabpanel">
+                <div id="contactus_tab" class="tab-pane" data-tab-content>
                     <div class="row">
                         <div class="col-12">
                             <div class="card border-0 shadow-sm">
@@ -248,7 +248,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="equalhousing_tab" role="tabpanel">
+                <div id="equalhousing_tab" class="tab-pane" data-tab-content>
                     <section id="equalhosuing" data-tab-content class="p-0">
                         <div class="container py-1">
                             <p class="mb-1 mt-1 float-right"> <a class="btn btn-primary" href="{{ route('admin-add-housing')}}"> Add Equal Housing </a></p>
@@ -282,8 +282,9 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                                 </textarea>
                                             </div>
 
-                                            <div class="form-group col-lg-12 col-md-12 col-12">
+                                            <div class="form-group col-lg-12 col-md-12 col-12 d-flex gap-2">
                                                 <button type="submit" class="btn btn-primary update-btn submit-spinner">Update</button>
+                                                <button type="button" class="btn btn-danger delete-cms-item" data-id="{{ $term->id }}" data-type="equal-housing">Delete</button>
                                             </div>
                                         </div>
                                     </form>
@@ -294,7 +295,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     </section>
                 </div>
 
-                <div class="tab-pane fade" id="terms_tab" role="tabpanel">
+                <div id="terms_tab" class="tab-pane" data-tab-content>
                      <section id="termsconditions" data-tab-content class="p-0">
                         <div class="container py-1">
                             <p class="mb-1 mt-1 float-right"> <a class="btn btn-primary" href="{{ route('admin-add-terms')}}"> Add Terms </a></p>
@@ -327,8 +328,9 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                                 </textarea>
                                             </div>
 
-                                            <div class="form-group col-lg-12 col-md-12 col-12">
+                                            <div class="form-group col-lg-12 col-md-12 col-12 d-flex gap-2">
                                                 <button type="submit" class="btn btn-primary update-btn submit-spinner">Update</button>
+                                                <button type="button" class="btn btn-danger delete-cms-item" data-id="{{ $term->id }}" data-type="terms">Delete</button>
                                             </div>
                                         </div>
                                     </form>
@@ -339,7 +341,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     </section>
                 </div>
 
-                <div class="tab-pane fade" id="manager_terms_tab" role="tabpanel">
+                <div id="manager_terms_tab" class="tab-pane" data-tab-content>
                     <section id="managerterms" data-tab-content class="p-0">
                         <div class="container py-1">
                             <p class="mb-1 mt-1 float-right"> <a class="btn btn-primary" href="{{ route('admin-add-manager-terms')}}"> Add Manager Terms </a></p>
@@ -372,8 +374,9 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                                 </textarea>
                                             </div>
 
-                                            <div class="form-group col-lg-12 col-md-12 col-12">
+                                            <div class="form-group col-lg-12 col-md-12 col-12 d-flex gap-2">
                                                 <button type="submit" class="btn btn-primary update-btn submit-spinner">Update</button>
+                                                <button type="button" class="btn btn-danger delete-cms-item" data-id="{{ $term->id }}" data-type="manager-terms">Delete</button>
                                             </div>
 
                                         </div>
@@ -460,11 +463,11 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     $('.submit-spinner').html(`<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`).prop('disabled', true);
                 },
                 success: function(response) {
-                    toastr.success(response.message || "Updated successfully");
+                    AdminToast.success(response.message || "Updated successfully");
                     $('.submit-spinner').html(`Update`).prop('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error("An error occurred. Please try again.");
+                    AdminToast.error("An error occurred. Please try again.");
                     $('.submit-spinner').html(`Update`).prop('disabled', false);
                 },
             });
@@ -488,11 +491,11 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     $('.submit-spinner').html(`<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Updating...`).prop('disabled', true);
                 },
                 success: function(response) {
-                    toastr.success(response.message || "Updated successfully");
+                    AdminToast.success(response.message || "Updated successfully");
                     $('.submit-spinner').html(`Update`).prop('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error("An error occurred. Please try again.");
+                    AdminToast.error("An error occurred. Please try again.");
                     $('.submit-spinner').html(`Update`).prop('disabled', false);
                 },
             });
@@ -513,10 +516,10 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 method: 'POST',
                 data: formData,
                 success: function(data) {
-                    toastr.success(data.message || 'Updated successfully!');
+                    AdminToast.success(data.message || 'Updated successfully!');
                 },
                 error: function(xhr) {
-                    toastr.error('An error occurred.');
+                    AdminToast.error('An error occurred.');
                 }
             });
         });
@@ -537,10 +540,10 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 method: 'POST',
                 data: formData,
                 success: function(data) {
-                    toastr.success(data.message || 'Updated successfully!');
+                    AdminToast.success(data.message || 'Updated successfully!');
                 },
                 error: function(xhr) {
-                    toastr.error('An error occurred.');
+                    AdminToast.error('An error occurred.');
                 }
             });
         });
@@ -560,10 +563,53 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 method: 'POST',
                 data: formData,
                 success: function(data) {
-                    toastr.success(data.message || 'Updated successfully!');
+                    AdminToast.success(data.message || 'Updated successfully!');
                 },
                 error: function(xhr) {
-                    toastr.error('An error occurred.');
+                    AdminToast.error('An error occurred.');
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-cms-item', function() {
+            const id = $(this).data('id');
+            const type = $(this).data('type');
+            let url = '';
+            
+            if (type === 'equal-housing') url = "{{ route('admin-delete-equal-housing', ['id' => ':id']) }}";
+            else if (type === 'terms') url = "{{ route('admin-delete-terms', ['id' => ':id']) }}";
+            else if (type === 'manager-terms') url = "{{ route('admin-delete-manager-terms', ['id' => ':id']) }}";
+            
+            url = url.replace(':id', id);
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--primary-color)',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(data) {
+                            if (data.success) {
+                                AdminToast.success(data.message);
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                AdminToast.error(data.message);
+                            }
+                        },
+                        error: function() {
+                            AdminToast.error('An error occurred.');
+                        }
+                    });
                 }
             });
         });

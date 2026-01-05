@@ -10,6 +10,7 @@ use App\Models\PropertyInfo;
 use App\Models\AdminDetail;
 use Carbon\Carbon;
 use App\Models\RenterInfo;
+use App\Services\DataTableService;
 
 
 class ResourceSectionController extends Controller

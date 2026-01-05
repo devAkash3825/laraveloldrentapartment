@@ -1,58 +1,62 @@
 @extends('admin.layouts.app')
 @section('content')
+@push('style')
+<link rel="stylesheet" href="{{ asset('admin_asset/css/tabview.css') }}">
 <style>
-    .invoice-info-row:hover {
-        background-color: #f3f3f3;
-        cursor: pointer;
-    }
-
-    .tabs {
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 10px;
-    }
-
-    .tab-button {
-        background-color: #f1f1f1;
+    .card-profile {
+        border-radius: 16px;
+        overflow: hidden;
         border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     }
-
-    .tab-button:hover {
-        background-color: #ddd;
+    .card-profile .card-body {
+        padding: 30px;
     }
-
-    .tab-button.active {
-        background-color: #ccc;
+    .card-profile img {
+        width: 120px;
+        height: 120px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-
-    .tab-content {
+    .card-profile-name {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 15px;
+    }
+    .invoice-info-row {
+        display: flex;
+        justify-content: flex-start;
+        gap: 15px;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f8f9fa;
+        font-size: 0.95rem;
+    }
+    .invoice-info-row span:first-child {
+        width: 140px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    .invoice-info-row span:last-child {
+        color: #2d3748;
+        font-weight: 600;
+    }
+    .tab-pane {
         display: none;
-        border: 1px solid #ddd;
-        border-top: none;
     }
-
-    .tab-content.active {
+    .tab-pane.active {
         display: block;
     }
-
-    .tab-button.active a {
-        background: #1b84e7;
-        color: white;
-    }
-
-    .remainder-box-container {
-        position: relative;
-        background: #f3f3f3;
-        z-index: 9999;
-    }
 </style>
+@endpush
 <div class="slim-mainpanel">
     <div class="container">
         <div class="slim-pageheader">
             <ol class="breadcrumb slim-breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin-dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin-activeRenter') }}">Renters</a></li>
                 <li class="breadcrumb-item active" aria-current="page">View Profile </li>
             </ol>
             <h6 class="slim-pagetitle">View Profile of {{ @$data->renterInfo->Firstname }}
@@ -97,13 +101,26 @@
                         </div>
                     </div>
 
-                    <div class="card-footer py-3">
+                    <div class="card-footer py-3 bg-light-soft border-top-0">
                         <div class="btn-group-wrapper">
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-outline-primary btn-sm btn-premium">Add Lease</a>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-outline-secondary btn-sm btn-premium">Change Inactive</a>
-                            <a href="javascript:void(0)" class="btn btn-outline-info btn-sm btn-premium set-remainder" data-id="{{ $data->Id }}">Set Reminder</a>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-primary btn-sm btn-premium">Edit Profile</a>
-                            <a href="{{ route('admin-map-view', ['id' => $data->Id]) }}" class="btn btn-outline-dark btn-sm btn-premium">Switch To Map View</a>
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary">
+                                <i class="fa-solid fa-file-signature"></i> Add Lease
+                            </a>
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-secondary">
+                                <i class="fa-solid fa-toggle-off"></i> Change Inactive
+                            </a>
+                            <a href="javascript:void(0)" class="btn btn-premium btn-premium-outline-info set-remainder" data-id="{{ $data->Id }}">
+                                <i class="fa-solid fa-bell"></i> Set Reminder
+                            </a>
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-primary">
+                                <i class="fa-solid fa-user-edit"></i> Edit Profile
+                            </a>
+                            <a href="{{ route('admin-map-view', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-dark">
+                                <i class="fa-solid fa-map-marked-alt"></i> View on Map
+                            </a>
+                            <a href="{{ route('admin-map-search', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-success">
+                                <i class="fa-solid fa-search-location"></i> Map Search
+                            </a>
                         </div>
                     </div>
 
@@ -135,11 +152,14 @@
                     </div>
                 </div>
 
-                <div class="card card-profile">
-                    <div class="media px-4 py-2 mt-1">
-                        <div class="media-body">
-                            <div class="row mx-auto">
-                                <div class="col-md-6">
+                <div class="card card-profile mg-t-20">
+                    <div class="card-header bg-white border-bottom-0 py-3">
+                        <h6 class="slim-card-title">Detailed Information</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="row no-gutters">
+                            <div class="col-md-6 border-right">
+                                <div class="px-3 py-2">
                                     @foreach ([
                                     'Created On' => $data->formatted_created_on ?? 'N/A',
                                     'Status' => $data->Status == '1' ? 'Active' : 'Inactive',
@@ -156,13 +176,15 @@
                                     'Tour Info' => $data->renterInfo->Tour_Info ?? 'N/A',
                                     'Time to Reach' => $data->renterInfo->Timetoreach ?? 'N/A',
                                     ] as $label => $value)
-                                    <p class="invoice-info-row">
+                                    <div class="invoice-info-row">
                                         <span class="font-weight-bold">{{ $label }}</span>
-                                        <span>{{ $value }}</span>
-                                    </p>
+                                        <span class="text-muted">{{ $value }}</span>
+                                    </div>
                                     @endforeach
                                 </div>
-                                <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="px-3 py-2">
                                     @foreach ([
                                     'Modified On' => $data->formatted_modified_on ?? 'N/A',
                                     'Floor Preference' => $data->renterInfo->Floor ?? 'N/A',
@@ -179,10 +201,10 @@
                                     'Probability (%)' => $data->renterInfo->probability ?? 'N/A',
                                     'Reminder Note' => $data->renterInfo->reminder_note ?? 'N/A',
                                     ] as $label => $value)
-                                    <p class="invoice-info-row">
+                                    <div class="invoice-info-row">
                                         <span class="font-weight-bold">{{ $label }}</span>
-                                        <span>{{ $value }}</span>
-                                    </p>
+                                        <span class="text-muted">{{ $value }}</span>
+                                    </div>
                                     @endforeach
                                 </div>
                             </div>
@@ -232,24 +254,30 @@
 
             <div class="col-lg-12 mg-t-20 mg-lg-t-0">
 
-                <ul class="nav nav-activity-profile nav-pills-a nav-pills mg-t-20" id="pills-tab" role="tablist">
-                    <li class="nav-item tab-button" data-tab="favoritetab">
-                        <a class="nav-link"><i class="icon ion-ios-redo tx-purple"></i> Favorite Listing</a>
-                    </li>
-                    <li class="nav-item tab-button" data-tab="inquirytab">
-                        <a class="nav-link"><i class="icon ion-ios-redo tx-purple"></i>Inquiry History </a>
-                    </li>
-                </ul>
+                <nav class="mg-t-20">
+                    <ul class="tabs">
+                        <li class="tab-li">
+                            <a href="#favoritetab" class="tab-li__link active">
+                                <i class="fa-solid fa-heart mr-2"></i> Favorite Listing
+                            </a>
+                        </li>
+                        <li class="tab-li">
+                            <a href="#inquirytab" class="tab-li__link">
+                                <i class="fa-solid fa-history mr-2"></i> Inquiry History
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
 
-                <div id="favoritetab" class="tab-content" data-id="{{ $data->Id }}">
-                    <div class="card card-latest-activity mg-t-20 active" role="tabpanel">
+                <div id="favoritetab" class="tab-pane active" data-tab-content>
+                    <div class="card card-latest-activity mg-t-20 shadow-sm">
                         <div class="card-body">
-                            <div class="table-wrapper mt-4 ">
+                            <div class="table-wrapper mt-4">
                                 <table class="table display responsive nowrap" id="favorite-listing" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>S.No</th>
-                                            <th>Property Name </th>
+                                            <th>Property Name</th>
                                             <th>City</th>
                                             <th>State</th>
                                             <th>Action</th>
@@ -265,10 +293,10 @@
                     </div>
                 </div>
 
-                <div id="inquirytab" class="tab-content" data-id="{{ $data->Id }}">
-                    <div class="card card-latest-activity mg-t-20 active" role="tabpanel">
+                <div id="inquirytab" class="tab-pane" data-tab-content>
+                    <div class="card card-latest-activity mg-t-20 shadow-sm">
                         <div class="card-body">
-                            <div class="slim-card-title">Property Inquiry History</div>
+                            <div class="slim-card-title mb-4">Property Inquiry History</div>
                             <div class="table-wrapper mt-4">
                                 <table class="table display responsive nowrap" id="inquiry-history" style="width: 100%;">
                                     <thead>
@@ -342,20 +370,14 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('.submit-spinner').html(`Set Remainder`);
-                        $('.submit-spinner').prop('disabled', false);
-                        toastr.success(" Created Successfully ");
-                        $("#addourfeatures")[0].reset();
+                        AdminToast.success("Reminder set successfully");
+                        $('#remainder-box-' + {{ $data->Id }}).fadeOut();
                     } else {
-                        if (response.errors) {
-                            toastr.error(" Not Created ");
-                        }
+                        AdminToast.error(response.message || "Failed to set reminder");
                     }
                 },
                 error: function(xhr) {
-                    toastr.error("An error occurred. Please try again.");
-                    $('.submit-spinner').html(`Set Remainder`);
-                    $('.submit-spinner').prop('disabled', false);
+                    AdminToast.error("An error occurred. Please try again.");
                 },
                 complete: function() {
                     $('.submit-spinner').html(`Set Remainder`);
@@ -367,32 +389,38 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        function openTab(tabName) {
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-            });
-            tabButtons.forEach(button => {
-                button.classList.remove('active');
-            });
-            document.getElementById(tabName).classList.add('active');
-            document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
-
-            // Adjust DataTables columns when tab becomes visible
-            setTimeout(function() {
-                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+    // Tab System JS
+    $(document).ready(function() {
+        function switchTab(target) {
+            // Links
+            $('.tabs a').removeClass('active');
+            $('.tabs a[href="' + target + '"]').addClass('active');
+            
+            // Panes
+            $('.tab-pane').removeClass('active');
+            $(target).addClass('active');
+            
+            // Recalculate DataTables
+            setTimeout(() => {
+                if ($.fn.DataTable.isDataTable('#favorite-listing')) {
+                    $('#favorite-listing').DataTable().columns.adjust().responsive.recalc();
+                }
+                if ($.fn.DataTable.isDataTable('#inquiry-history')) {
+                    $('#inquiry-history').DataTable().columns.adjust().responsive.recalc();
+                }
             }, 100);
         }
 
-        tabButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                openTab(this.getAttribute('data-tab'));
-            });
+        $('.tabs a').on('click', function(e) {
+            e.preventDefault();
+            const target = $(this).attr('href');
+            switchTab(target);
+            history.pushState(null, null, target);
         });
-        openTab('favoritetab');
+
+        // Initial tab from hash or first tab
+        const hash = window.location.hash || '#favoritetab';
+        switchTab(hash);
     });
 
     function notifyManager(e) {
@@ -412,11 +440,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (response.success) {
-                    console.log("lllll", response);
-                    toastr.success(response.message);
+                if (data.success) {
+                    AdminToast.success(data.message);
                 } else {
-                    toastr.danger(response.message);
+                    AdminToast.error(data.message);
                 }
             })
             .catch(error => {

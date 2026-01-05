@@ -37,7 +37,7 @@
 @push('adminscripts')
 <script>
     $(document).ready(function() {
-        $('#inactive-renter').DataTable(DataTableHelpers.getConfig("{{ route('admin-inactiveRenter') }}", [
+        $('#inactive-renter').DataTable($.extend(DataTableHelpers.getConfig("{{ route('admin-inactiveRenter') }}", [
             { data: "DT_RowIndex", orderable: false, searchable: false },
             { data: "firstname", name: "firstname" },
             { data: "lastname", name: "lastname" },
@@ -45,7 +45,9 @@
             { data: "status", name: "status", orderable: false, searchable: false },
             { data: "adminname", name: "adminname" },
             { data: "actions", name: "actions", orderable: false, searchable: false }
-        ]));
+        ]), {
+            order: [[1, 'asc']]
+        }));
     });
 </script>
 @endpush

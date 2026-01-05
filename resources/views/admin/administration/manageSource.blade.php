@@ -11,16 +11,15 @@
             </div>
 
             <div class="section-wrapper px-1 py-1">
-                <form action="">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="form-layout-footer p-2" style="float: right;">
-                                <a href="{{ route('admin-add-source') }}" class="btn btn-primary btn-block">
-                                    <i class="fa-solid fa-plus"></i> Add New Source </a>
-                            </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="p-2 text-right">
+                            <a href="{{ route('admin-add-source') }}" class="btn btn-premium btn-premium-primary">
+                                <i class="fa-solid fa-plus mr-2"></i> Add New Source
+                            </a>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
 
             <div class="section-wrapper mg-t-20">
@@ -28,21 +27,35 @@
                     <table class="table table-hover mg-b-0" id="manage-source">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>S.No</th>
                                 <th>Source Name</th>
-                                <th>Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
 @push('adminscripts')
     <script>
-        
+        $(document).ready(function() {
+            const columns = [
+                { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
+                { data: "sourcename", name: "sourcename" },
+                { data: "actions", name: "actions", orderable: false, searchable: false, className: "text-center" }
+            ];
+
+            const config = DataTableHelpers.getConfig(
+                "{{ route('admin-manage-source') }}",
+                columns
+            );
+
+            $("#manage-source").DataTable($.extend(config, {
+                order: [[1, 'asc']]
+            }));
+        });
     </script>
 @endpush

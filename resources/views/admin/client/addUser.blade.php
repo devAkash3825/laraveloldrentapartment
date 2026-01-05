@@ -5,9 +5,6 @@
         cursor: pointer;
     }
 
-    .form-group {
-        margin-bottom: 1rem !important;
-    }
 
     label.error {
         color: red;
@@ -45,7 +42,7 @@
         </div>
 
         <div class="section-wrapper">
-            <form id="rentersubmitform" novalidate="" action="{{ route('admin-create-renter') }}" method="POST">
+            <form id="rentersubmitform" novalidate="" action="{{ route('admin-create-renter') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-row">
                     <div class="form-group col-lg-12 col-md-12 col-12">
@@ -98,6 +95,11 @@
                             <i class="fa-regular fa-eye toggle-password show-confirm_password"
                                 id="toggleConfirmationPassword" style="position: absolute;top:14px;right:10px;"></i>
                         </div>
+                    </div>
+
+                    <div class="form-group col-lg-12 col-md-12 col-12">
+                        <label for="profile_pic" class="font-weight-bold"> Profile Picture </label>
+                        <input type="file" class="form-control" id="profile_pic" name="profile_pic" accept="image/*">
                     </div>
 
                     <div class="form-group col-lg-6 col-md-6 col-12">
@@ -302,8 +304,10 @@
                     </div>
 
                 </div>
-                <div class="form-row justify-content-end mg-t-20">
-                    <button type="submit" class="btn btn-primary btn-premium submit-spinner px-4">Add Renter</button>
+                <div class="form-row justify-content-center mg-t-30">
+                    <button type="submit" class="btn btn-premium btn-premium-primary submit-spinner">
+                        <i class="fa-solid fa-user-plus"></i> Create Renter Profile
+                    </button>
                 </div>
             </form>
         </div>
@@ -388,16 +392,8 @@
             unhighlight: function(element) {
                 $(element).addClass("is-valid").removeClass("is-invalid");
             },
-            submitHandler: function(form, event) {
-                event.preventDefault();
-                FormHelpers.submit($(form), {
-                    success: function(response) {
-                        AdminToast.success(response.message || "Renter created successfully!");
-                        setTimeout(() => {
-                            window.location.href = "{{ route('admin-activeRenter') }}";
-                        }, 1500);
-                    }
-                });
+            submitHandler: function(form) {
+                form.submit();
             }
         });
 

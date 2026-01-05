@@ -47,14 +47,14 @@
 }
 
 .nav-tabs-admin .nav-link:hover {
-    color: #fe5c24;
-    background: rgba(254, 92, 36, 0.05);
+    color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.05);
 }
 
 .nav-tabs-admin .nav-link.active {
-    color: #fe5c24;
+    color: var(--primary-color);
     background: #fff;
-    border-bottom: 3px solid #fe5c24;
+    border-bottom: 3px solid var(--primary-color);
     margin-bottom: -2px;
 }
 
@@ -109,8 +109,8 @@
 
 .nav-tabs-card .nav-link.active {
     color: #fff;
-    background: linear-gradient(135deg, #fe5c24 0%, #ff7d4d 100%);
-    box-shadow: 0 2px 8px rgba(254, 92, 36, 0.3);
+    background: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
 }
 
 /* Pill Style Tabs */
@@ -135,13 +135,14 @@
 }
 
 .nav-tabs-pills .nav-link:hover {
-    color: #fe5c24;
-    background: #ffe8de;
+    color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.1);
 }
 
 .nav-tabs-pills .nav-link.active {
     color: #fff;
-    background: linear-gradient(135deg, #fe5c24 0%, #ff7d4d 100%);
+    background: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
 }
 
 /* Legacy Tab Support */
@@ -169,12 +170,12 @@
 }
 
 .tab:hover {
-    color: #fe5c24;
+    color: var(--primary-color);
 }
 
 .tab.active {
-    color: #fe5c24;
-    border-bottom-color: #fe5c24;
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
 }
 
 /* Tab list item */
@@ -204,30 +205,32 @@
 
 .tab-li a:hover {
     background-color: #f8f9fa;
-    color: #fe5c24;
+    color: var(--primary-color);
 }
 
 .tab-li a.active {
-    background: linear-gradient(135deg, #fe5c24 0%, #ff7d4d 100%);
+    background: var(--primary-color);
     color: #fff;
-    border-color: #fe5c24;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
 }
 
 /* Responsive Media Queries */
 @media (max-width: 768px) {
+
     .tabs,
     .nav-tabs-admin,
     .nav-tabs-card {
         flex-direction: column;
     }
-    
+
     .tab,
     .nav-tabs-admin .nav-link,
     .nav-tabs-card .nav-link {
         font-size: 12px;
         padding: 10px 16px;
     }
-    
+
     .tab-li a {
         font-size: 11px;
         height: 45px;
@@ -239,13 +242,13 @@
     .page-content {
         padding: 16px;
     }
-    
+
     .tab,
     .nav-tabs-admin .nav-link {
         font-size: 11px;
         padding: 8px 12px;
     }
-    
+
     .tab-li a {
         font-size: 10px;
         height: 40px;

@@ -12,8 +12,8 @@
 
             <div class="report-summary-header">
                 <div>
-                    <a href="{{ route('admin-add-admin-users') }}" class="btn btn-primary"><i
-                            class="fa-solid fa-plus mr-2"></i> Add New Agent
+                    <a href="{{ route('admin-add-admin-users') }}" class="btn btn-premium btn-premium-primary">
+                        <i class="fa-solid fa-plus mr-2"></i> Add New Agent
                     </a>
                 </div>
             </div>
@@ -26,11 +26,9 @@
                                 <th>ID</th>
                                 <th>User Name</th>
                                 <th>User Login ID</th>
-                                <th>Edit </th>
+                                <th class="text-center">Edit</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        </tbody>
                     </table>
                 </div>
             </div>
@@ -40,39 +38,22 @@
 
 @push('adminscripts')
     <script>
-        // function deleteAgent(e) {
-        //     var id = e;
-        //     // let url = route('admin-delete-agent', id);
-        //     console.log("id",url);
-        //     //    console.log("dddd",id);
-        //     swal({
-        //         title: "Are you sure?",
-        //         text: "You will not be able to recover this record!",
-        //         icon: "warning",
-        //         buttons: true,
-        //         dangerMode: true,
-        //     }).then((willDelete) => {
-        //         if (willDelete) {
-        //             $.ajax({
-        //                 url: "",
-        //                 method: "DELETE",
-        //                 headers: {
-        //                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-        //                         "content"
-        //                     ),
-        //                 },
-        //                 success: function(response) {
-        //                     toastr.success(response.message);
-        //                     location.reload();
-        //                 },
-        //                 error: function() {
-        //                     toastr.error(
-        //                         "An error occurred while deleting the record."
-        //                     );
-        //                 },
-        //             });
-        //         }
-        //     });
-        // }
+        $(document).ready(function() {
+            const columns = [
+                { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
+                { data: "username", name: "username" },
+                { data: "userloginid", name: "userloginid" },
+                { data: "edit", name: "edit", orderable: false, searchable: false, className: "text-center" }
+            ];
+
+            const config = DataTableHelpers.getConfig(
+                "{{ route('admin-manage-my-agents') }}",
+                columns
+            );
+
+            $("#add-admin-agents").DataTable($.extend(config, {
+                order: [[1, 'asc']]
+            }));
+        });
     </script>
 @endpush

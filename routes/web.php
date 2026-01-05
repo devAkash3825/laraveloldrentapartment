@@ -387,6 +387,10 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('update-logo', [SettingsController::class, 'updateLogo'])->name('admin-update-logo');
             Route::post('update-contactus-cms', [SettingsController::class, 'updateContactUsCMS'])->name('admin-update-contactusCMS');
             Route::post('update-mail-settings', [SettingsController::class, 'updateMailSettings'])->name('admin-update-mail-settings');
+            
+            Route::post('delete-manager-terms/{id}', [SettingsController::class, 'deleteManagerTerms'])->name('admin-delete-manager-terms');
+            Route::post('delete-terms/{id}', [SettingsController::class, 'deleteTerms'])->name('admin-delete-terms');
+            Route::post('delete-equal-housing/{id}', [SettingsController::class, 'deleteEqualHousing'])->name('admin-delete-equal-housing');
         });
 
 

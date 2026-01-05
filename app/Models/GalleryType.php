@@ -10,6 +10,7 @@ class GalleryType extends Model
     use HasFactory;
     
     protected $table = 'gallerytype';
+    protected $primaryKey = 'Id';
     public $timestamps = false;
     
     protected $fillable = [

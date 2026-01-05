@@ -30,7 +30,15 @@
         </div>
     </div>
 </div>
+
+{{-- Hidden form for traditional deletion --}}
+<form id="deletePropertyForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
 @endsection
+
 @push('adminscripts')
 <script>
     $(document).ready(function() {
@@ -52,10 +60,32 @@
         );
 
         $("#listProperty").DataTable(config);
-    });
 
-    function changeStatus(id) {
-        // ... existing changeStatus code if needed, but DataTableService uses standard pills now
-    }
+        // Handle delete button click for properties
+        $(document).on('click', '.delete-btn', function(e) {
+            const $this = $(this);
+            // Only handle if it's marked as traditional
+            if (!$this.attr('data-traditional')) return;
+
+            e.preventDefault();
+            const url = $this.data('url');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to delete this property? This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#fe5c24',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = $('#deletePropertyForm');
+                    form.attr('action', url);
+                    form.submit();
+                }
+            });
+        });
+    });
 </script>
 @endpush

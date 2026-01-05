@@ -10,6 +10,7 @@ class PropertyFloorPlanDetail extends Model
     use HasFactory;
     
     protected $table = 'propertyfloorplandetails';
+    protected $primaryKey = 'Id';
     public $timestamps = false;
 
     protected $fillable = [

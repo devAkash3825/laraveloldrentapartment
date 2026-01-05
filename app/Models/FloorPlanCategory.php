@@ -9,6 +9,7 @@ class FloorPlanCategory extends Model
 {
     use HasFactory;
     protected $table = 'propertyfloorplancategory';
+    protected $primaryKey = 'Id';
     public $timestamps = false;
     protected $guarded = [];
 

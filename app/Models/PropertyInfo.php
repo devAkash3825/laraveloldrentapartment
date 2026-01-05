@@ -12,6 +12,7 @@ class PropertyInfo extends Model
     
     use HasFactory;
     protected $table = 'propertyinfo';
+    protected $primaryKey = 'Id';
     public $timestamps = false;
     protected $guarded = [];
     

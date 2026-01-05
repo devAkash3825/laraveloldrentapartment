@@ -9,7 +9,7 @@ class ApartmentFeature extends Model
 {
     use HasFactory;
     protected $table = 'propertyfeaturetype';
-
+    public $timestamps = false;
     protected $guarded = [];
 
     public function propertyinfo(){

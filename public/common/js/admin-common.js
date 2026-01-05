@@ -206,8 +206,8 @@
                 cancelButtonText: 'Cancel'
             }, options);
 
-            if (typeof swal !== 'undefined') {
-                swal(options).then((result) => {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire(options).then((result) => {
                     if (result.isConfirmed && typeof options.onConfirm === 'function') {
                         options.onConfirm();
                     }
@@ -289,15 +289,16 @@
 
     // Delete handler with confirmation
     $(document).on('click', '.deleteRenter, .delete-btn, .propertyDlt, .deleterecords', function (e) {
-        e.preventDefault();
         const $this = $(this);
-        const url = $this.data('url');
-        const id = $this.data('id');
 
-        if (!url) {
-            console.error('Delete URL not found on element');
+        // Skip if this button is marked for traditional form submission (non-AJAX)
+        if ($this.data('traditional') === true || $this.attr('data-traditional') === 'true') {
             return;
         }
+
+        e.preventDefault();
+        const url = $this.data('url');
+        const id = $this.data('id');
 
         ConfirmDialog.delete(function () {
             AdminAjax.request(url, 'POST', { id: id, _method: 'DELETE' }, {

@@ -22,6 +22,8 @@ use App\Repositories\RenterInfoRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class AdminDashboardController extends Controller
@@ -440,38 +442,104 @@ class AdminDashboardController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $admin = Auth::guard('admin')->user();
+        $request->validate([
+            'admin_name' => 'required|string|max:255',
+            'admin_login_id' => 'required|string|max:100',
+            'email' => 'required|email|max:255',
+            'admin_headshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-        $uploadPath = public_path('/uploads/profile_pics');
-        $imageName  = $admin->admin_headshot;
-
-        if ($request->hasFile('admin_headshot')) {
-            $image     = $request->file('admin_headshot');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-
-            if (! $image->move($uploadPath, $imageName)) {
-                return response()->json(['error' => true, 'message' => 'Failed to upload image.'], 500);
+        try {
+            $admin = Auth::guard('admin')->user();
+            if (!$admin) {
+                if ($request->ajax()) {
+                    return response()->json(['error' => true, 'message' => 'User not found.'], 404);
+                }
+                return redirect()->back()->with('error', 'User not found.');
             }
-        }
-        $updateData = [
-            'admin_name'     => $request->admin_name,
-            'admin_login_id' => $request->admin_login_id,
-            'admin_email'    => $request->email,
-            'admin_headshot' => $imageName,
-        ];
 
-        $update = AdminDetail::where('id', $admin->id)->update($updateData);
+            $uploadPath = public_path('/uploads/profile_pics');
+            $imageName = $admin->admin_headshot;
 
-        if ($update) {
-            return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
-        } else {
-            return response()->json(['error' => true, 'message' => 'Failed to update profile.'], 500);
+            if ($request->hasFile('admin_headshot')) {
+                $image = $request->file('admin_headshot');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+                // Create directory if it doesn't exist
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                if (!$image->move($uploadPath, $imageName)) {
+                    if ($request->ajax()) {
+                        return response()->json(['error' => true, 'message' => 'Failed to upload image.'], 500);
+                    }
+                    return redirect()->back()->withInput()->with('error', 'Failed to upload image.');
+                }
+            }
+
+            $updateData = [
+                'admin_name' => $request->admin_name,
+                'admin_login_id' => $request->admin_login_id,
+                'admin_email' => $request->email,
+                'admin_headshot' => $imageName,
+            ];
+
+            AdminDetail::where('id', $admin->id)->update($updateData);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Profile updated successfully.',
+                    'data' => ['admin_headshot' => $imageName]
+                ]);
+            }
+
+            return redirect()->route('admin-manage-profile')->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Profile update error: ' . $e->getMessage());
+            
+            if ($request->ajax()) {
+                return response()->json(['error' => true, 'message' => 'Failed to update profile.'], 500);
+            }
+            return redirect()->back()->withInput()->with('error', 'Failed to update profile.');
         }
     }
 
     public function changePassword()
     {
         return view('admin.changePassword');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        try {
+            $admin = Auth::guard('admin')->user();
+            
+            if (!$admin) {
+                return redirect()->back()->with('error', 'User not found.');
+            }
+
+            // Verify current password
+            if (!Hash::check($request->current_password, $admin->password)) {
+                return redirect()->back()->with('error', 'Current password is incorrect.');
+            }
+
+            // Update password
+            AdminDetail::where('id', $admin->id)->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            return redirect()->route('admin-manage-profile')->with('success', 'Password updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Password update error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update password.');
+        }
     }
 
     public function revertContactUs(Request $request)

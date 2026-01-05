@@ -353,15 +353,41 @@ class ClientController extends Controller
         }
     }
     
-    public function deleteRenters($id)
+    public function deleteRenters(Request $request, $id)
     {
-        $deleteRenter = Login::where('Id', $id)->first();
-        if ($deleteRenter) {
-            $deleteRenter->renterinfo()->delete();
-            Login::where('Id', $id)->delete();
-            return response()->json(['message' => 'Renter Deleted Successfully ']);
-        } else {
-            return response()->json(['error' => 'Failed To Delete the Renter Please Try Again !']);
+        try {
+            $deleteRenter = Login::where('Id', $id)->first();
+            
+            if (!$deleteRenter) {
+                if ($request->ajax()) {
+                    return response()->json(['error' => 'Renter not found.'], 404);
+                }
+                return redirect()->back()->with('error', 'Renter not found.');
+            }
+
+            // Delete related renter info first
+            if ($deleteRenter->renterinfo) {
+                $deleteRenter->renterinfo()->delete();
+            }
+            
+            // Delete favorites
+            Favorite::where('UserId', $id)->delete();
+            
+            // Delete the login
+            $deleteRenter->delete();
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Renter deleted successfully.']);
+            }
+            
+            return redirect()->route('admin-activeRenter')->with('success', 'Renter deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting renter: ' . $e->getMessage());
+            
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Failed to delete renter.'], 500);
+            }
+            return redirect()->back()->with('error', 'Failed to delete renter. Please try again.');
         }
     }
     
@@ -394,33 +420,33 @@ class ClientController extends Controller
 
     public function editRenterUpdate(Request $request)
     {
+        $validatedData = $request->validate([
+            'editassignAgent' => 'required',
+            'edituserName'    => 'required|string|max:255',
+            'editemailId'     => 'required|email|max:255',
+            'editcell'        => 'required|string|max:20',
+            'editfirstName'   => 'required|string|max:255',
+            'editlastName'    => 'required|string|max:255',
+        ]);
+
+        $loginid = $request->userId;
+
+        if (!$loginid) {
+            return redirect()->back()->withInput()->with('error', 'User ID is required.');
+        }
+
         try {
-            $validatedData = $request->validate([
-                'editassignAgent' => 'required',
-                'edituserName'    => 'required',
-                'editemailId'     => 'required|email',
-                'editcell'        => 'required',
-                'editfirstName'   => 'required',
-                'editlastName'    => 'required',
-            ]);
-
-            $loginid = $request->userId;
-
-            if (! $loginid) {
-                \Log::error('User ID is missing from the request.', ['requestData' => $request->all()]);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User ID is required.',
-                ], 400);
+            // Handle reminder date/time
+            $remainderdatetime = null;
+            if ($request->filled('editsetremainderdate') && $request->filled('editsetremaindertime')) {
+                $remainderdatetime = Carbon::createFromFormat(
+                    'Y-m-d H:i',
+                    $request->editsetremainderdate . ' ' . $request->editsetremaindertime
+                )->format('Y-m-d H:i:s');
             }
 
-            $editstate         = $request->editstate;
-            $editcity          = $request->editcity;
-            $remainderdatetime = $request->editsetremainderdate . ' ' . $request->editsetremaindertime;
-            $remainderdatetime = Carbon::createFromFormat('Y-m-d H:i', $remainderdatetime)->format('Y-m-d H:i:s');
-
-            // Always update login details
-            $editrenterlogin = Login::where('Id', $loginid)->update([
+            // Update login details
+            Login::where('Id', $loginid)->update([
                 'UserName' => $request->edituserName,
                 'Email'    => $request->editemailId,
             ]);
@@ -428,7 +454,7 @@ class ClientController extends Controller
             $checkRenterAvailability = RenterInfo::where('Login_ID', $loginid)->first();
 
             $renterData = [
-                'added_by'            => $checkRenterAvailability ? $request->editassignAgent : $loginid,
+                'added_by'            => $request->editassignAgent,
                 'Firstname'           => $request->editfirstName,
                 'Lastname'            => $request->editlastName,
                 'phone'               => $request->editcell,
@@ -462,55 +488,20 @@ class ClientController extends Controller
                 'Additional_info'     => $request->editadditionalinfo,
             ];
 
-            if (! $checkRenterAvailability) {
+            if (!$checkRenterAvailability) {
                 $renterData['Login_ID'] = $loginid;
-                $editrenterinfo         = RenterInfo::create($renterData);
+                RenterInfo::create($renterData);
             } else {
-                $editrenterinfo = RenterInfo::where('Login_ID', $loginid)->update($renterData);
+                RenterInfo::where('Login_ID', $loginid)->update($renterData);
             }
 
-            if ($editrenterlogin !== false && $editrenterinfo !== false) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Renter details updated successfully!',
-                ]);
-            } else {
-                \Log::error('Failed to update renter details.', [
-                    'loginId'     => $loginid,
-                    'requestData' => $request->all(),
-                ]);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to update renter details.',
-                ], 500);
-            }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::warning('Validation error while updating renter details.', ['errors' => $e->errors()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed.',
-                'errors'  => $e->errors(),
-            ], 422);
-        } catch (\Illuminate\Database\QueryException $e) {
-            \Log::error('Database error while updating renter details.', [
-                'error'   => $e->getMessage(),
-                'loginId' => $request->userId,
-            ]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Database error occurred.',
-                'error'   => $e->getMessage(),
-            ], 500);
+            return redirect()->route('admin-view-profile', ['id' => $loginid])
+                ->with('success', 'Renter details updated successfully!');
+                
         } catch (\Exception $e) {
-            \Log::critical('Unexpected error while updating renter details.', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json([
-                'success' => false,
-                'message' => 'An unexpected error occurred.',
-                'error'   => $e->getMessage(),
-            ], 500);
+            \Log::error('Error updating renter: ' . $e->getMessage());
+            return redirect()->back()->withInput()
+                ->with('error', 'Failed to update renter details. Please try again.');
         }
     }
 

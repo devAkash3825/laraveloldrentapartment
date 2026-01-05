@@ -482,9 +482,14 @@ class SettingsController extends Controller
         $btnColor = Setting::where('key', 'site_btn_color')->update([
             'value' => $request->site_btn_color,
         ]);
+        $gradientColor = Setting::updateOrCreate(
+            ['key' => 'site_gradient_color'],
+            ['value' => $request->site_gradient_color]
+        );
+
         if ($sitecolor && $btnColor) {
             (new SettingsService())->clearCachedSettings();
-            return response()->json(['message' => 'Site Color Updated Successfully']);
+            return response()->json(['message' => 'Site Colors and Appearance Updated Successfully']);
         } else {
             return response()->json(['error' => 'Not Updated Please Try Again Later']);
         }

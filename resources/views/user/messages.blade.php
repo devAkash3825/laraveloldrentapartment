@@ -53,17 +53,17 @@
                                                 @php
                                                     $isMe = $conversation->renterId == Auth::guard('renter')->user()->Id;
                                                     $role = 'Renter';
-                                                    $roleColor = 'bg-primary';
-                                                    $roleIcon = 'bi-person';
+                                                    $roleColor = 'bg-primary-gradient';
+                                                    $roleIcon = 'fa-solid fa-user';
                                                     
                                                     if ($conversation->adminId) {
                                                         $role = 'Admin';
                                                         $roleColor = 'bg-warning text-dark';
-                                                        $roleIcon = 'bi-shield-check';
+                                                        $roleIcon = 'fa-solid fa-shield-halved';
                                                     } elseif ($conversation->managerId) {
                                                         $role = 'Manager';
-                                                        $roleColor = 'bg-info text-white';
-                                                        $roleIcon = 'bi-building';
+                                                        $roleColor = 'bg-info-gradient text-white';
+                                                        $roleIcon = 'fa-solid fa-building-user';
                                                     }
                                                 @endphp
                                                 
@@ -81,7 +81,7 @@
                                                                 <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="me" class="img-fluid rounded-circle">
                                                             @else
                                                                 <div class="avatar-replacement bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-                                                                    <i class="bi bi-person-fill"></i>
+                                                                    <i class="fa-solid fa-user"></i>
                                                                 </div>
                                                             @endif
                                                         </div>
@@ -90,7 +90,7 @@
                                                     <div class="tf__chating tf_chat_left">
                                                         <div class="tf__chating_img">
                                                             <div class="avatar-replacement {{ $roleColor }} rounded-circle d-flex align-items-center justify-content-center shadow-sm" title="{{ $role }}">
-                                                                <i class="bi {{ $roleIcon }}"></i>
+                                                                <i class="{{ $roleIcon }}"></i>
                                                             </div>
                                                         </div>
                                                         <div class="tf__chating_text">
@@ -169,7 +169,7 @@
                                             <img src="{{ asset('uploads/profile_pics/' . Auth::guard('renter')->user()->profile_pic) }}" alt="me" class="img-fluid rounded-circle">
                                         @else
                                             <div class="avatar-replacement bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-person-fill"></i>
+                                                <i class="fa-solid fa-user"></i>
                                             </div>
                                         @endif
                                     </div>
@@ -218,7 +218,7 @@
                         <div class="tf__chating tf_chat_left">
                             <div class="tf__chating_img">
                                 <div class="avatar-replacement ${colorClass} rounded-circle d-flex align-items-center justify-content-center shadow-sm">
-                                    <i class="bi ${iconClass}"></i>
+                                    <i class="${iconClass}"></i>
                                 </div>
                             </div>
                             <div class="tf__chating_text">

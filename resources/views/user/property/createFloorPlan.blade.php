@@ -101,7 +101,7 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Square Footage</label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="square_footage" placeholder="e.g. 850">
+                                            <input type="number" class="form-control" name="square_footage" placeholder="e.g. 850">
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Deposit ($)</label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="deposit" placeholder="Deposit amount">
+                                            <input type="number" class="form-control" name="deposit" placeholder="Deposit amount">
                                         </div>
                                     </div>
                                 </div>

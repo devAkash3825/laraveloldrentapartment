@@ -20,10 +20,10 @@ $settings = DB::table('settings')->pluck('value', 'key');
         <div class="row">
             <div class="col-xl-6 col-md-7 d-none d-md-block">
                 <ul class="wsus__topbar_left">
-                    <li><a href="mailto:{{ config('settings.site_email') }}"><i class="fal fa-envelope"></i>
+                    <li><a href="mailto:{{ config('settings.site_email') }}"><i class="fa-solid fa-envelope"></i>
                             {{ @$settings['site_email'] }}</a></li>
                     <li><a href="callto:{{ config('settings.site_phone') }}"><i
-                                class="fal fa-phone-alt"></i>{{ @$settings['site_phone'] }}</a></li>
+                                class="fa-solid fa-phone"></i>{{ @$settings['site_phone'] }}</a></li>
                 </ul>
             </div>
             <div class="col-xl-6 col-md-5">
@@ -59,7 +59,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="far fa-bars" aria-hidden="true"></i>
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
         </button>
         <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
             <ul class="navbar-nav">
@@ -112,7 +112,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                             elseif ($row->form_user_type == 'M') { $icon = 'bi-building'; $bg = 'bg-info'; }
                                             elseif ($row->form_user_type == 'R') { $icon = 'bi-person'; $bg = 'bg-primary'; }
                                         @endphp
-                                        <div class="avatar-circle {{ $bg }} d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; border-radius: 50%;">
+                                        <div class="avatar-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; border-radius: 50%;">
                                             <i class="bi {{ $icon }}"></i>
                                         </div>
                                     </div>

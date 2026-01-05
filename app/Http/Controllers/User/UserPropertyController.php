@@ -131,10 +131,12 @@ class UserPropertyController extends Controller
                 $query->whereNotNull('Id');
             });
 
-        if ($request->last_month == 'last_month') {
-            $query->where('CreatedOn', '>=', now()->subMonth());
-        } elseif ($request->last_month == 'last_week') {
-            $query->where('CreatedOn', '>=', now()->subWeek());
+        if ($request->has('date_filter')) {
+            if ($request->date_filter == 'last_month') {
+                $query->where('CreatedOn', '>=', now()->subMonth());
+            } elseif ($request->date_filter == 'custom_range' && $request->filled('start_date') && $request->filled('end_date')) {
+                $query->whereBetween('CreatedOn', [$request->start_date, $request->end_date]);
+            }
         }
 
         if ($request->filled('quicksearch')) {
@@ -429,6 +431,8 @@ class UserPropertyController extends Controller
             'category' => 'required',
             'plan_name' => 'required|string|max:255',
             'starting_at' => 'nullable|numeric',
+            'square_footage' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
         ]);
 
         try {
@@ -477,6 +481,8 @@ class UserPropertyController extends Controller
             'category' => 'required',
             'plan_name' => 'required|string|max:255',
             'starting_at' => 'nullable|numeric',
+            'square_footage' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
         ]);
 
         try {

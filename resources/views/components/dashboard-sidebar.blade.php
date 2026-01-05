@@ -31,9 +31,10 @@
             
             @endif
         @endif
+        <li><a class="{{ isActiveRoute('messages-tab') }}" href="{{ route('messages-tab') }}"><i class="far fa-envelope" aria-hidden="true"></i> Messages</a></li>
         <li> <a class="nav-link {{ isActiveRoute('list-view') || isActiveRoute('thumbnail-view') || isActiveRoute('map-view') || isActiveRoute('street-view') ? 'active' : '' }}"
                 href="{{ route('list-view') }}"><i class="far fa-heart" aria-hidden="true"></i> My Favorites</a></li>
         <li> <a class="{{ isActiveRoute('recently-visited') }}" href="{{ route('recently-visited') }}"><i
-                    class="far fa-comments-alt" aria-hidden="true"></i> Recently Visited </a></li>
+                    class="far fa-history" aria-hidden="true"></i> Recently Visited </a></li>
     </ul>
 </div>

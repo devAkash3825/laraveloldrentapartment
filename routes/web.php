@@ -180,7 +180,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/view-profile/{id}', [AdminDashboardController::class, 'viewProfile'])->name('admin-view-profile');
         Route::post('/set-remainder/{id}', [AdminDashboardController::class, 'setRemainder'])->name('admin-set-remainder');
         Route::post('/notify-manager', [AdminNotesController::class, 'notifyManager'])->name('notify-manager');
-        Route::post('/mark-as-read', [AdminNotesController::class, 'markAsRead'])->name('mark-as-read');
+        Route::post('/mark-all-as-read', [AdminDashboardController::class, 'markAllAsRead'])->name('admin-mark-all-as-read');
+        Route::post('/mark-as-seen', [AdminDashboardController::class, 'markAsSeen'])->name('admin-mark-as-seen');
 
         Route::post('change-status/{id}', [AdminDashboardController::class, 'changeStatus'])->name('admin-change-status');
         Route::get('add-lease', [AdminDashboardController::class, 'addLease'])->name('admin-add-lease');
@@ -380,4 +381,3 @@ Route::group(['prefix' => 'admin'], function () {
 
     });
 });
-

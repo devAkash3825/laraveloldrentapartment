@@ -55,26 +55,29 @@ $(function () {
         var propertyId = $btn.attr('value') || $btn.val();
         if (!propertyId) return;
 
+        // Directly call toggleFavorite without a modal
+        toggleFavorite(propertyId, $btn, '');
+    });
+
+    function toggleFavorite(propertyId, $btn, note) {
         $.ajax({
             url: "/add-to-favorite",
             method: "POST",
-            data: { propertyId: propertyId },
+            data: {
+                propertyId: propertyId,
+                notes: note
+            },
             beforeSend: function () {
                 $btn.css('pointer-events', 'none').css('opacity', '0.7');
             },
             success: function (response) {
                 if (response.success) {
-                    // Premium Toaster messages
                     if (response.action === 'added') {
                         toastr.success('<i class="bi bi-heart-fill me-2"></i>' + response.message);
                     } else {
-                        // This is the "awesome" toast style for removals
                         toastr.info('<i class="bi bi-heart me-2"></i>' + response.message);
                     }
-
                     checkIsFav(); // Refresh state
-
-                    // Reload DataTables if they exist
                     if ($.fn.DataTable.isDataTable('#fav-listview')) {
                         $('#fav-listview').DataTable().ajax.reload(null, false);
                     }
@@ -87,7 +90,7 @@ $(function () {
                 $btn.css('pointer-events', 'auto').css('opacity', '1');
             }
         });
-    });
+    }
 
     // 3. DATATABLES INITIALIZATION
     const dtConfigs = [

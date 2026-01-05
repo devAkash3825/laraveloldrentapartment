@@ -162,6 +162,7 @@ class UserFavoriteController extends Controller
     {
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
+        $noteMessage = $request->input('notes');
 
         // Check if the favorite already exists
         $favorite = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->first();
@@ -178,8 +179,58 @@ class UserFavoriteController extends Controller
             $favorite->UserId = $userid;
             $favorite->AddedOn = now();
             $favorite->Status = true;
-            $favorite->Notes = $request->input('notes', null);
+            $favorite->Notes = $noteMessage; // Keep this for now as it's in the table
             $favorite->save();
+
+            // If there's a note, save it to notedetails
+            if ($noteMessage) {
+                NoteDetail::create([
+                    'user_id' => $userid,
+                    'property_id' => $propertyId,
+                    'message' => $noteMessage,
+                    'send_time' => now(),
+                    'renter_id' => $userid,
+                ]);
+            }
+
+            // Create notification for Admin & Property Manager
+            $property = PropertyInfo::where('Id', $propertyId)->first();
+            if ($property) {
+                $renter = Auth::guard('renter')->user();
+                $message = "<strong>{$renter->UserName}</strong> added <strong>{$property->PropertyName}</strong> to their favorites.";
+                
+                // Notify Manager
+                if ($property->UserId) {
+                    Notification::create([
+                        'from_id' => $userid,
+                        'form_user_type' => 'R',
+                        'to_id' => $property->UserId,
+                        'to_user_type' => 'M',
+                        'property_id' => $propertyId,
+                        'message' => $message,
+                        'seen' => 0,
+                        'CreatedOn' => now(),
+                    ]);
+                }
+
+                // Notify Admin (Assuming there's an admin who added this renter, or just notify superadmin)
+                // In your existing code, you seem to use added_by for adminId
+                $renterInfo = Login::where('Id', $userid)->with('renterinfo')->first();
+                $adminId = $renterInfo->renterinfo->added_by ?? null;
+                if ($adminId) {
+                    Notification::create([
+                        'from_id' => $userid,
+                        'form_user_type' => 'R',
+                        'to_id' => $adminId,
+                        'to_user_type' => 'A',
+                        'property_id' => $propertyId,
+                        'message' => $message,
+                        'seen' => 0,
+                        'CreatedOn' => now(),
+                    ]);
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'action' => 'added',

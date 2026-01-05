@@ -36,6 +36,7 @@ use App\Models\ContactUsHanlding;
 use App\Models\PropertyInquiry;
 use App\Models\EqualHousingCMS;
 use App\Models\termsCMS;
+use App\Models\Notification;
 
 
 
@@ -169,6 +170,18 @@ class HomeController extends Controller
                 'message' => $request->message,
                 'subject' => $request->subject,
             ]);
+
+            // Notify Admin about new contact inquiry
+            Notification::create([
+                'from_id' => 0, // Guest
+                'form_user_type' => 'G',
+                'to_id' => 1, // Super Admin
+                'to_user_type' => 'A',
+                'message' => "New Contact Us inquiry from <strong>{$request->name}</strong> subject: <strong>{$request->subject}</strong>",
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
             return response()->json(['message' => 'Form Submitted Successfully']);
         } else {
             return response()->json(['error' => 'There is Some error Please Try Again']);
@@ -345,12 +358,43 @@ class HomeController extends Controller
         if ($validated) {
             PropertyInquiry::create([
                 'PropertyId' => $request->propertyId,
-                'UserId' => $request->authuserId,
-                'UserName' => $request->$username,
+                'UserId' => $authuserId,
+                'UserName' => $username,
                 'Email' => $request->email,
                 'MoveDate' => $request->movedate,
                 'Message' => $request->comments,
             ]);
+
+            // Notify Manager and Admin
+            $property = PropertyInfo::where('Id', $request->propertyId)->first();
+            $notifMsg = "New Property Inquiry from <strong>{$request->firstname} {$request->lastname}</strong> for <strong>" . ($property->PropertyName ?? 'Property') . "</strong>";
+            
+            // Notify Manager
+            if ($property && $property->UserId) {
+                Notification::create([
+                    'from_id' => $authuserId,
+                    'form_user_type' => 'R',
+                    'to_id' => $property->UserId,
+                    'to_user_type' => 'M',
+                    'property_id' => $request->propertyId,
+                    'message' => $notifMsg,
+                    'seen' => 0,
+                    'CreatedOn' => now(),
+                ]);
+            }
+
+            // Notify Admin
+            Notification::create([
+                'from_id' => $authuserId,
+                'form_user_type' => 'R',
+                'to_id' => 1, // Super Admin
+                'to_user_type' => 'A',
+                'property_id' => $request->propertyId,
+                'message' => $notifMsg,
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
             return response()->json(['message' => 'Form Submitted Successfully']);
         } else {
             return response()->json(['error' => 'There is Some error Please Try Again']);

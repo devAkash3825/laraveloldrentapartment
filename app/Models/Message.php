@@ -33,6 +33,19 @@ class Message extends Model
         'updated_at' => 'datetime',
     ];
 
+    public function unreadCount($userId, $userType)
+    {
+        $query = $this->conversation()->where('is_read', false);
+        if ($userType == 'R') {
+            $query->whereNull('renterId');
+        } elseif ($userType == 'M') {
+            $query->whereNull('managerId');
+        } elseif ($userType == 'A') {
+            $query->whereNull('adminId');
+        }
+        return $query->count();
+    }
+
     protected $dates = ['created_at', 'updated_at'];
 
     

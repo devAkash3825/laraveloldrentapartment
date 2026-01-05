@@ -92,17 +92,37 @@ $settings = DB::table('settings')->pluck('value', 'key');
                         <div class="dropdown-body" id="notification-list">
                             @if (count($notifications) > 0)
                                 @foreach ($notifications as $row)
-                                <a href="javascript:void(0)" class="notification-item {{ $row->seen == 1 ? 'read' : 'unread' }}">
+                                @php
+                                    $notifLink = $row->notification_link;
+                                    if (!$notifLink && $row->property_id) {
+                                        if (Auth::guard('renter')->user()->user_type == 'M') {
+                                            $notifLink = route('manager-message', ['p_id' => $row->property_id, 'r_id' => $row->from_id]);
+                                        } else {
+                                            $notifLink = route('send-messages', ['id' => $row->property_id]);
+                                        }
+                                    }
+                                    $notifLink = $notifLink ?? 'javascript:void(0)';
+                                @endphp
+                                <a href="{{ $notifLink }}" class="notification-item {{ $row->seen == 1 ? 'read' : 'unread' }}">
                                     <div class="notification-avatar">
-                                        <img src="{{ asset('uploads/profile_pics/manager_29253_1729580644.png') }}" alt="Avatar">
+                                        @php
+                                            $icon = 'bi-bell';
+                                            $bg = 'bg-primary';
+                                            if ($row->form_user_type == 'A') { $icon = 'bi-shield-check'; $bg = 'bg-warning'; }
+                                            elseif ($row->form_user_type == 'M') { $icon = 'bi-building'; $bg = 'bg-info'; }
+                                            elseif ($row->form_user_type == 'R') { $icon = 'bi-person'; $bg = 'bg-primary'; }
+                                        @endphp
+                                        <div class="avatar-circle {{ $bg }} d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; border-radius: 50%;">
+                                            <i class="bi {{ $icon }}"></i>
+                                        </div>
                                     </div>
                                     <div class="notification-content">
                                         <p class="notification-text">{!! $row->message !!}</p>
                                         <div class="notification-meta">
-                                            <span class="notification-time">{{ $row->CreatedOn->format('h:i A') }}</span>
+                                            <span class="notification-time">{{ $row->CreatedOn ? $row->CreatedOn->diffForHumans() : '' }}</span>
                                             @if ($row->seen != '1')
                                             <button class="mark-read-btn" data-user-id="{{ $row->Id }}"
-                                                onclick="markVisibleNotificationsAsSeen(this)">
+                                                onclick="event.preventDefault(); markVisibleNotificationsAsSeen(this)">
                                                 <i class="bi bi-check2"></i>
                                             </button>
                                             @endif

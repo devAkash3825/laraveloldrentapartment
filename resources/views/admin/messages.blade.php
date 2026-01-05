@@ -191,22 +191,48 @@
             <div id="chat" class="chat">
                 @foreach ($messages as $message)
                     @foreach ($message->conversation as $conversation)
-                        @if ($conversation->adminId == Auth::guard('admin')->user()->Id)
-                            <div class="display-flex">
-                                <img src="https://cdn-icons-png.flaticon.com/512/2233/2233922.png" alt=""
-                                    class="avatar">
-                                <div class="message response">{{ $conversation->message }}</div>
-                            </div>
-                            <span class="time"> {{ $conversation->created_at->format('d M, h:i A') }} </span>
-                        @else
-                            <div class="mt-4">
-                                <div class="display-flex-right">
-                                    <div class="message fromuser">{{ $conversation->message }} </div>
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2233/2233922.png" alt=""
-                                        class="avatar">
+                        @php
+                            $isMe = $conversation->adminId == Auth::guard('admin')->user()->id;
+                            $role = 'Admin';
+                            $roleColor = 'bg-warning text-dark';
+                            $roleIcon = 'fa-shield-halved';
+                            
+                            if ($conversation->managerId) {
+                                $role = 'Manager';
+                                $roleColor = 'bg-info text-white';
+                                $roleIcon = 'fa-building';
+                            } elseif ($conversation->renterId) {
+                                $role = 'Renter';
+                                $roleColor = 'bg-primary text-white';
+                                $roleIcon = 'fa-user';
+                            }
+                        @endphp
+                        
+                        @if ($isMe)
+                            <div class="display-flex-right mt-3">
+                                <div style="text-align: right;">
+                                    <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+                                        <small class="fw-bold">You (Admin)</small>
+                                    </div>
+                                    <div class="message fromuser" style="background-color: #1b84e7; border-radius: 15px 15px 0 15px; margin: 0;">{{ $conversation->message }}</div>
+                                    <span class="time"> {{ $conversation->created_at->format('h:i A') }} </span>
                                 </div>
-                                <span class="time" style="float: right;">
-                                    {{ $conversation->created_at->format('d M, h:i A') }} </span>
+                                <div class="avatar" style="background: #1b84e7; color: white; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; margin-left: 10px;">
+                                    <i class="fa fa-shield-halved"></i>
+                                </div>
+                            </div>
+                        @else
+                            <div class="display-flex mt-3">
+                                <div class="avatar" style="background: {{ $conversation->managerId ? '#17a2b8' : '#007bff' }}; color: white; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                    <i class="fa {{ $roleIcon }}"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <small class="fw-bold">{{ $role }}</small>
+                                    </div>
+                                    <div class="message response" style="background-color: #f1f1f1; border-radius: 15px 15px 15px 0; margin: 0;">{{ $conversation->message }}</div>
+                                    <span class="time"> {{ $conversation->created_at->format('h:i A') }} </span>
+                                </div>
                             </div>
                         @endif
                     @endforeach
@@ -265,24 +291,43 @@
 
         const userid = {{ @Auth::guard('admin')->user()->id }}
         const propertyId = "{{ $getPropertyInfo->Id }}";
-        if (userid) {
+        if (userid && window.Echo) {
             document.addEventListener('DOMContentLoaded', function() {
-                if (window.Echo) {
-                    window.Echo.private(`message-from-renter.${userid}`)
-                        .listen('.RenterMessageSent', (e) => {
-                            console.log("==>", e);
-                            if (e.propertyId === propertyId) {
-                                $("#chat").append(`
-                                <div class="display-flex">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2233/2233922.png" alt="" class="avatar">
-                                        <div class="message response">${e.notification.message}</div>
-                                </div>
-                                <span class="time">Just Now</span>
-                            `);
-                            }
-                        });
-                }
+                // Listen for Renter messages
+                window.Echo.private(`message-from-renter.${userid}`)
+                    .listen('.RenterMessageSent', (e) => {
+                        if (e.propertyId == propertyId) {
+                            appendReceivedMessage(e.notification.message, 'Renter', '#007bff', 'fa-user');
+                        }
+                    });
+
+                // Listen for Manager messages
+                window.Echo.private(`message-from-manager.${userid}`)
+                    .listen('.ManagerMessageSent', (e) => {
+                        if (e.propertyId == propertyId) {
+                            appendReceivedMessage(e.message.message, 'Manager', '#17a2b8', 'fa-building');
+                        }
+                    });
             });
+        }
+
+        function appendReceivedMessage(msg, role, color, icon) {
+            $("#chat").append(`
+                <div class="display-flex mt-3">
+                    <div class="avatar" style="background: ${color}; color: white; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                        <i class="fa ${icon}"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <small class="fw-bold">${role}</small>
+                        </div>
+                        <div class="message response" style="background-color: #f1f1f1; border-radius: 15px 15px 15px 0; margin: 0;">${msg}</div>
+                        <span class="time">Just Now</span>
+                    </div>
+                </div>
+            `);
+            var chat = document.getElementById("chat");
+            chat.scrollTop = chat.scrollHeight;
         }
     </script>
 @endpush

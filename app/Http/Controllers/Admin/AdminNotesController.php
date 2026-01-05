@@ -58,8 +58,23 @@ class AdminNotesController extends Controller
         $notificationToManager = [
             'title' => 'Referred Renter',
             'image' => $adminProfile,
-            'message' => '<strong>'.$adminName.'</strong> has Referred <strong>'.$renterName.'</strong> to You ',
+            'message' => '<strong>'.$adminName.'</strong> has referred <strong>'.$renterName.'</strong> to you for <strong>'.$propertyname.'</strong>',
+            'link' => route('manager-message', ['p_id' => $p_id, 'r_id' => $r_id])
         ];
+        
+        // Store in database for persistence
+        Notification::create([
+            'from_id' => $adminId,
+            'form_user_type' => 'A',
+            'to_id' => $managerId,
+            'to_user_type' => 'M',
+            'property_id' => $p_id,
+            'message' => $notificationToManager['message'],
+            'notification_link' => $notificationToManager['link'],
+            'seen' => 0,
+            'CreatedOn' => now(),
+        ]);
+
         event(new NotificationEvent($notificationToManager, $managerId));
         
         return response()->json([

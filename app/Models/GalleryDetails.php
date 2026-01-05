@@ -10,6 +10,7 @@ class GalleryDetails extends Model
     use HasFactory;
     
     protected $table = 'gallerydetails';
+    protected $primaryKey = 'Id';
     public $timestamps = false;
     
     protected $fillable = [

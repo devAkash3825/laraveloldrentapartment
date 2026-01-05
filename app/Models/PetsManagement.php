@@ -9,4 +9,5 @@ class PetsManagement extends Model
 {
     use HasFactory;
     protected $table = 'Pets';
+    public $timestamps = false;
 }

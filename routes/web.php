@@ -269,10 +269,18 @@ Route::group(['prefix' => 'admin'], function () {
             });
             
             Route::post('/upload-gallery-image', [PropertyController::class, 'uploadGalleryImages'])->name('upload-gallery-image');
+            Route::post('/update-gallery-details', [PropertyController::class, 'updateGalleryDetails'])->name('admin-update-gallery-details');
+            Route::delete('/delete-gallery-image/{id}', [PropertyController::class, 'deleteGalleryImage'])->name('admin-delete-gallery-image');
             Route::post('/edit-general-details', [PropertyController::class, 'editGeneralDetails'])->name('admin-edit-general-details');
 
             Route::post('/submit-property', [PropertyController::class, 'submitProperty'])->name('admin-submit-property');
             Route::post('/edit-property-details', [PropertyController::class, 'editPropertyDetails'])->name('admin-edit-property-details');
+            Route::post('/edit-additional-details', [PropertyController::class, 'editAdditionalDetails'])->name('admin-edit-additional-details');
+            Route::get('/add-floor-plan/{id}', [PropertyController::class, 'addFloorPlan'])->name('admin-add-floor-plan');
+            Route::post('/store-floor-plan', [PropertyController::class, 'storeFloorPlan'])->name('admin-store-floor-plan');
+            Route::get('/edit-floor-plan/{id}', [PropertyController::class, 'editFloorPlan'])->name('admin-edit-floor-plan');
+            Route::post('/update-floor-plan/{id}', [PropertyController::class, 'updateFloorPlan'])->name('admin-update-floor-plan');
+            Route::delete('/delete-floor-plan/{id}', [PropertyController::class, 'deleteFloorPlan'])->name('admin-delete-floor-plan');
             Route::get('/search-property', [PropertyController::class, 'searchProperty'])->name('admin-search-property');
             Route::get('/fee-management', [PropertyController::class, 'feeManagement'])->name('admin-fee-management');
             Route::get('/get-cities-by-state-id/{id}', [PropertyController::class, 'getCitybyStateId'])->name('admin-getCitybyStateId');

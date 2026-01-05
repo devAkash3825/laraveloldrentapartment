@@ -82,12 +82,14 @@ class DataTableService
                 };
 
                 if (isset($config['delete']) && $config['delete'] === true) {
+                    $traditional = isset($config['traditional']) && $config['traditional'] === true ? 'data-traditional="true"' : '';
                     $html .= sprintf(
-                        '<a href="javascript:void(0)" class="%s action-icon delete-btn %s" data-url="%s" data-id="%s" title="Delete" %s><i class="fa-solid %s"></i></a>',
+                        '<a href="javascript:void(0)" class="%s action-icon delete-btn %s" data-url="%s" data-id="%s" %s title="Delete" %s><i class="fa-solid %s"></i></a>',
                         $class,
                         $premiumClass,
                         $url,
                         data_get($row, 'Id') ?? data_get($row, 'id'),
+                        $traditional,
                         $onclickHtml,
                         $icon ?? 'fa-trash'
                     );

@@ -180,7 +180,9 @@
         <div class="tab-content mt-3" id="ex2-content">
             <section id="maindetails" data-tab-content class="p-0">
                 <div class="section-wrapper mt-3">
-                    <form id="editdetails" novalidate class="needs-validation">
+                    <form id="editdetails" action="{{ route('admin-edit-property-details') }}" method="POST" class="needs-validation">
+                        @csrf
+                        <input type="hidden" name="propertyId" value="{{ $propertyId }}">
 
                         <input type="hidden" name="yearbuildvalue" id="yearbuildvalue"
                             value="{{ $propertyinfo->Year }}">
@@ -369,7 +371,7 @@
                         <div class="form-row">
                             <div class="form-group col-md-12">
                                 <label for="officeHours">Office Hours </label>
-                                <textarea rows="3" class="form-control" placeholder="Textarea" name="" value="">{{ $propertyinfo->officehour ?? '' }}</textarea>
+                                <textarea rows="3" class="form-control" name="officeHours" id="officeHours">{{ $propertyinfo->officehour ?? '' }}</textarea>
                             </div>
                         </div>
 
@@ -385,22 +387,22 @@
 
             <section id="generaldetails" data-tab-content class="">
                 <div class="section-wrapper mt-3">
-                    <form id="generaldetailsform" novalidate class="needs-validation">
+                    <form id="generaldetailsform" action="{{ route('admin-edit-general-details') }}" method="POST" class="needs-validation">
+                        @csrf
                         <div class="form-row">
                             <input type="hidden" name="property_id" id=""
                                 value="{{ $propertyinfo->Id }}">
 
                             <div class="form-group col-md-12">
-                                editcommunitydescription
                                 <h4 class="p-2">:: Community Descriptions ::</h4>
-                                <textarea id="editcommunitydescription" name="editcommunitydescription" class="form-control">
+                                <textarea id="editcommunitydescription" name="editcommunitydescription" class="form-control summernote">
                                 {{ @$propertyinfo->communitydescription->Description ? @$propertyinfo->communitydescription->Description : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Agent Comments ::</h4>
-                                <textarea id="editagentcomments" name="editagentcomments" class="form-control">
+                                <textarea id="editagentcomments" name="editagentcomments" class="form-control summernote">
                                 {{ @$propertyinfo->communitydescription->Agent_comments ? @$propertyinfo->communitydescription->Agent_comments : '' }}
                                 </textarea>
                             </div>
@@ -466,8 +468,8 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Keywords ::</h4>
-                                <textarea id="editkeyword" name="editkeyword" class="form-control">
-                                {{ @$propertyinfo->communitydescription->Agent_comments ? @$propertyinfo->communitydescription->Agent_comments : '' }}
+                                <textarea id="editkeyword" name="editkeyword" class="form-control summernote">
+                                {{ $propertyinfo->Keyword ?? '' }}
                                 </textarea>
                             </div>
                         </div>
@@ -486,14 +488,15 @@
 
             <section id="additionaldetails" data-tab-content class="">
                 <div class="section-wrapper mt-3">
-                    <form id="additionaldetailsform" novalidate class="needs-validation">
+                    <form id="additionaldetailsform" action="{{ route('admin-edit-additional-details') }}" method="POST" class="needs-validation">
+                        @csrf
                         <div class="form-row">
                             <input type="hidden" name="property_id" id=""
                                 value="{{ $propertyinfo->Id }}">
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Leasing Terms ::</h4>
-                                <textarea id="editleasingterm" name="editleasingterm" class="form-control">
+                                <textarea id="editleasingterm" name="editleasingterm" class="form-control summernote">
                                 {{ @$propertyinfo->propertyAdditionalInfo->LeasingTerms ? @$propertyinfo->propertyAdditionalInfo->LeasingTerms : '' }}
                                 </textarea>
 
@@ -501,14 +504,14 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Qualifiying Criteria ::</h4>
-                                <textarea id="editqualifyingcriteria" name="editqualifyingcriteria" class="form-control">
+                                <textarea id="editqualifyingcriteria" name="editqualifyingcriteria" class="form-control summernote">
                                 {{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria ? @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Parking ::</h4>
-                                <textarea id="editparking" name="editparking" class="form-control">
+                                <textarea id="editparking" name="editparking" class="form-control summernote">
                                 {{ @$propertyinfo->propertyAdditionalInfo->Parking ? @$propertyinfo->propertyAdditionalInfo->Parking : '' }}
                                 </textarea>
                             </div>
@@ -516,18 +519,36 @@
                             <div class="form-group col-md-12">
                                 <h4 class="p-2"> :: Pet Policy :: </h4>
                                 <p> Please check boxes for breeds you DO ACCEPT </p>
+                                @php
+                                    $selectedPets = explode(',', @$propertyinfo->propertyAdditionalInfo->Pets ?? '');
+                                @endphp
+                                <div class="row mt-1">
+                                    @foreach ($petList as $pet)
+                                        <div class="col-xl-4 col-md-6 mt-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                    name="pets[]" value="{{ $pet->id }}" 
+                                                    id="petCheck{{ $pet->id }}"
+                                                    {{ in_array($pet->id, $selectedPets) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="petCheck{{ $pet->id }}">
+                                                    {{ $pet->Pets }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Neighborhood ::</h4>
-                                <textarea id="editneighbourhood" name="editneighbourhood" class="form-control">
+                                <textarea id="editneighbourhood" name="editneighbourhood" class="form-control summernote">
                                 {{ @$propertyinfo->propertyAdditionalInfo->Neighborhood ? @$propertyinfo->propertyAdditionalInfo->Neighborhood : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Driving Directions ::</h4>
-                                <textarea id="editdrivingdirection" name="editdrivingdirection" class="form-control">
+                                <textarea id="editdrivingdirection" name="editdrivingdirection" class="form-control summernote">
                                 {{ @$propertyinfo->propertyAdditionalInfo->drivedirection ? @$propertyinfo->propertyAdditionalInfo->drivedirection : '' }}
                                 </textarea>
                             </div>
@@ -547,223 +568,57 @@
 
 
             <section id="rentandspecial" data-tab-content class="">
-                <div class="section-wrapper mt-3">
-                    <div class="card card-quick-post">
-                        <div class="list-group">
-                            <a href="#" class="btn btn-primary">
-                                <span class="font-weight-bold"> Create New Unit </span>
-                            </a>
-                        </div>
-
-                        <div class="form-group mt-3">
-                            @foreach ($categories as $category)
-                            <h4 class="m-3 border p-2">{{ $category->Name }}</h4>
-                            <div class="primary-table table-flex">
-                                <?php
-                                $propertyId = $propertyinfo->Id;
-                                $categoryId = $category['Id'];
-                                $floorDetails = $category->getFloorPlanDetails($propertyId, $categoryId);
-                                $count = count($floorDetails);
-                                ?>
-                                @if ($count > 0)
-                                <div class="row">
-                                    @foreach ($floorDetails as $floorDetail)
-                                    <div class="col-md-6">
-                                        <div class="row">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700"> Delete </label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="checkbox" id="deletefloorPlan" name="deletefloorPlan" value="">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700"> Category </label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <select class="form-control form-select form-control-a state-select-box" name="editpropertystate"
-                                                        id="editpropertystate" required>
-                                                        @foreach ($categories as $cat)
-                                                        <option value="{{ $cat->Id }}"
-                                                            {{ $category->Id == $cat->Id ? 'selected' : '' }}>
-                                                            {{ $cat->Name }}
-                                                        </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Plan Type</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="deletefloorPlan"
-                                                        name="deletefloorPlan"
-                                                        value="{{ $floorDetail->PlanType }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Floor
-                                                    Plan</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="floorPlan"
-                                                        name="floorPlan"
-                                                        value="{{ $floorDetail->PlanName }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Square
-                                                    Footage</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="floorPlan"
-                                                        name="floorPlan"
-                                                        value="{{ $floorDetail->Footage }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Starting
-                                                    at</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="Price"
-                                                        name="Price"
-                                                        value="{{ $floorDetail->Price }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Deposit</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="Price"
-                                                        name="Price"
-                                                        value="{{ $floorDetail->deposit }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Link</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="Price"
-                                                        name="Price"
-                                                        value="{{ $floorDetail->floorplan_link }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Available
-                                                    Url</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="Price"
-                                                        name="Price"
-                                                        value="{{ $floorDetail->Available_Url }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Deposit</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="text" id="Price"
-                                                        name="Price"
-                                                        value="{{ $floorDetail->deposit }}">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Unit Description
-                                                    Specials
-                                                    Available Dates</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <textarea type="text" id="Price" name="Price" value="">{{ $floorDetail->Comments }}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Special</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <textarea type="text" id="Price" name="Price" value=""> {{ @$floorDetail->special }} </textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-5">
-                                                <label for="" class="fw-700">Available
-                                                    Date</label>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="input_area">
-                                                    <input type="date" name=""
-                                                        id=""
-                                                        value="{{ $floorDetail->avail_date }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @else
-                                <div class="table-flex">
-                                    <div class="table-tbody mt-2 border">
-                                        <h6> No Record Found </h6>
-                                    </div>
-                                </div>
+                <div class="p-3 bg-white border border-top-0">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="slim-card-title">Rent & Specials</h6>
+                        <a href="{{ route('admin-add-floor-plan', ['id' => $propertyId]) }}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-plus ms-1"></i> Create New Unit
+                        </a>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Plan Name</th>
+                                    <th>Plan Type</th>
+                                    <th>Price</th>
+                                    <th>Footage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($selectFloorPlan as $floorDetail)
+                                    <tr>
+                                        <td>{{ $floorDetail->propertyfloorplancategory->Name ?? 'N/A' }}</td>
+                                        <td>{{ $floorDetail->PlanName }}</td>
+                                        <td>{{ $floorDetail->PlanType }}</td>
+                                        <td>${{ number_format($floorDetail->Price, 0) }}</td>
+                                        <td>{{ $floorDetail->Footage }} sq ft</td>
+                                        <td>
+                                            <a href="{{ route('admin-edit-floor-plan', ['id' => $floorDetail->Id]) }}" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm delete-floor-plan" data-id="{{ $floorDetail->Id }}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                @if($selectFloorPlan->isEmpty())
+                                    <tr>
+                                        <td colspan="6" class="text-center p-4">
+                                            <div class="text-muted">No floor plans found for this property.</div>
+                                        </td>
+                                    </tr>
                                 @endif
-                            </div>
-                            <hr>
-                            @endforeach
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-primary">Add Special </button>
-                        </div>
-                        <hr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
+
 
 
             <section id="photo" data-tab-content class="">
@@ -786,81 +641,56 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if ($galleryDetails != '')
-                                    @foreach ($galleryDetails->gallerydetail as $imagerec)
-                                    <tr>
-                                        <td
-                                            class="px-3 py-3 border-b border-slate-200 last:border-none first:pl-3 last:pr-3 last:bg-gradient-to-r last:from-transparent last:to-white last:to-[12px] last:pl-5 last:sticky last:right-0">
-                                            <div class="text-slate-500">{{ $loop->iteration }}</div>
-                                        </td>
-                                        <td
-                                            class="px-3 py-3 border-b border-slate-200 last:border-none first:pl-3 last:pr-3 last:bg-gradient-to-r last:from-transparent last:to-white last:to-[12px] last:pl-5 last:sticky last:right-0">
-                                            <div class="flex items-center">
+                                    @if ($galleryDetails != '' && $galleryDetails->gallerydetail->isNotEmpty())
+                                        @foreach ($galleryDetails->gallerydetail as $imagerec)
+                                        <tr data-id="{{ $imagerec->Id }}">
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
                                                 @php
-                                                $imageName = $imagerec->ImageName ?? null;
+                                                    $imageName = $imagerec->ImageName ?? null;
                                                 @endphp
-
                                                 @if ($imageName)
-                                                <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}"
-                                                    alt="Property Image"
-                                                    style="width:70px !important;height:70px !important;">
+                                                    <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}"
+                                                        alt="Property Image"
+                                                        style="width:70px; height:70px; object-fit: cover;">
                                                 @else
-                                                <img class="img-fluid"
-                                                    src="{{ asset('img/no-img.jpg') }}"
-                                                    alt="Default Image">
+                                                    <img class="img-fluid" src="{{ asset('img/no-img.jpg') }}" alt="Default Image" style="width:70px;">
                                                 @endif
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="px-3 py-3 border-b border-slate-200 last:border-none first:pl-3 last:pr-3 last:bg-gradient-to-r last:from-transparent last:to-white last:to-[12px] last:pl-5 last:sticky last:right-0">
-                                            <div class="text-slate-500">
-                                                <input type="checkbox" id="vehicle1"
-                                                    name="propertylogo"
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="radio" name="is_default_radio" class="set-default-img" 
                                                     {{ $imagerec->DefaultImage ? 'checked' : '' }}>
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="px-3 py-3 border-b border-slate-200 last:border-none first:pl-3 last:pr-3 last:bg-gradient-to-r last:from-transparent last:to-white last:to-[12px] last:pl-5 last:sticky last:right-0">
-                                            <div class="text-slate-900">
-                                                <input type="checkbox" id="vehicle1"
-                                                    name="propertyfloorplanimage"
-                                                    {{ $imagerec->floorplan_id ? 'checked' : '' }}>
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="px-3 py-3 border-b border-slate-200 last:border-none first:pl-3 last:pr-3 last:bg-gradient-to-r last:from-transparent last:to-white last:to-[12px] last:pl-5 last:sticky last:right-0">
-                                            <div class="text-slate-900">
-                                                <select
-                                                    class="form-control form-select form-control-a state-select-box"
-                                                    name="editpropertystate" id="editpropertystate"
-                                                    required style="width:70%;">
-                                                    <option value="">Select Floor Plan</option>
-                                                    @foreach ($selectFloorPlan as $row)
-                                                    <option value="{{ $row->Id }}">
-                                                        {{ $row->PlanName }}
-                                                    </option>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm gallery-title" value="{{ $imagerec->ImageTitle }}" placeholder="Title">
+                                                <textarea class="form-control form-control-sm mt-1 gallery-desc" placeholder="Description">{{ $imagerec->Description }}</textarea>
+                                            </td>
+                                            <td>
+                                                <select class="form-control form-control-sm gallery-floorplan">
+                                                    <option value="">None</option>
+                                                    @foreach ($selectFloorPlan as $fp)
+                                                        <option value="{{ $fp->Id }}" {{ $imagerec->floorplan_id == $fp->Id ? 'selected' : '' }}>
+                                                            {{ $fp->PlanName }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="px-3 py-3 border-b border-slate-200 last:border-none first:pl-3 last:pr-3 last:bg-gradient-to-r last:from-transparent last:to-white last:to-[12px] last:pl-5 last:sticky last:right-0">
-                                            <div class="table-actions-icons justify-content-start">
-                                                <a href="" class="edit-btn"><i
-                                                        class="fa-regular fa-pen-to-square border px-2 py-2 edit-icon"></i></a>
-                                                <a href="javascript:void(0)" id="delete-property"
-                                                    class="propertyDlt" data-id="" data-url="">
-                                                    <i
-                                                        class="fa-solid fa-trash px-2 py-2 delete-icon border"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" class="btn btn-primary btn-sm update-gallery-item" title="Update">
+                                                        <i class="fa fa-save"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-sm delete-gallery-item" title="Delete">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
                                     @else
-                                    <tr>
-                                        <td colspan="6" class="text-center">No gallery images found.</td>
-                                    </tr>
+                                        <tr>
+                                            <td colspan="6" class="text-center p-4 text-muted">No gallery images found.</td>
+                                        </tr>
                                     @endif
 
                                 </tbody>
@@ -870,7 +700,8 @@
                     </div>
                 </div>
                 <div class="section-wrapper mt-4">
-                    <form action="" id="upload-image-gallery">
+                    <form action="{{ route('upload-gallery-image') }}" method="POST" id="upload-image-gallery" enctype="multipart/form-data">
+                        @csrf
                         <input type="hidden" name="property_id" id=""
                             value="{{ $propertyinfo->Id }}">
                         <label class="section-title">Add Gallery Images </label>
@@ -909,6 +740,26 @@
 
     </div>
 </div>
+
+{{-- Hidden support forms for traditional submits --}}
+<form id="deleteFloorPlanForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<form id="deleteGalleryImageForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<form id="updateGalleryDetailsForm" action="{{ route('admin-update-gallery-details') }}" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="id" id="upd_gallery_id">
+    <input type="hidden" name="image_title" id="upd_gallery_title">
+    <input type="hidden" name="description" id="upd_gallery_desc">
+    <input type="hidden" name="floorplan_id" id="upd_gallery_floorplan">
+    <input type="hidden" name="is_default" id="upd_gallery_default">
+</form>
 @endsection
 
 @push('adminscripts')
@@ -1070,43 +921,6 @@
         }
 
 
-        $("#editstate").on("change", function() {
-            let stateId = $(this).val();
-            let citySelect = $("#editcity");
-
-            citySelect.empty();
-            citySelect.append('<option value="">Select City</option>');
-
-            if (stateId) {
-                $.ajax({
-                    url: "/cities/" + stateId,
-                    type: "GET",
-                    success: function(data) {
-                        $.each(data, function(key, city) {
-                            citySelect.append(
-                                '<option value="' +
-                                city.Id +
-                                '">' +
-                                city.CityName +
-                                "</option>"
-                            );
-                        });
-
-                        // Get the selected city from the hidden input
-                        let selectedCity = $("#selectedCity").val();
-                        if (selectedCity) {
-                            citySelect.val(selectedCity); // Preselect the city
-                        }
-                    },
-                    error: function() {
-                        // Handle error
-                    },
-                });
-            }
-        });
-
-        $("#editstate").trigger("change");
-
         $("#editpropertystate").on("change", function() {
             let stateId = $(this).val();
             let citySelect = $("#editpropertycity");
@@ -1140,124 +954,12 @@
         });
         $("#editpropertystate").trigger("change");
 
-        // $("#editdetails").submit(function(event) {
-        //     event.preventDefault();
-        //     if (this.checkValidity() === false) {
-        //         event.stopPropagation();
-        //         return;
-        //     }
-        //     var formData = $(this).serialize();
-
-        //     $.ajax({
-        //         url: "{{ route('admin-edit-property-details') }}",
-        //         method: "POST",
-        //         data: formData,
-        //         headers: {
-        //             "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-        //         },
-        //         success: function(response) {
-        //             toastr.success(response.message);
-        //             location.reload();
-        //         },
-        //         error: function(response) {
-        //             toastr.error(response.responseJSON.error);
-        //         },
-        //     });
-        // });
-
-        $('#upload-image-gallery').on('submit', function(e) {
-            e.preventDefault();
-
-            let formData = new FormData(this);
-
-            $.ajax({
-                url: "{{ route('upload-gallery-image') }}",
-                method: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-                },
-                beforeSend: function() {
-                    $('.submit-spinner').html(
-                        `<span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-                            <span role="status">Creating...</span>`
-                    );
-                    $('.submit-spinner').prop('disabled', true);
-                },
-                success: function(response) {
-                    $('#upload-image-gallery')[0].reset();
-                    toastr.success(response.message);
-                    $('.submit-spinner').html(`Create`);
-                    $('.submit-spinner').prop('disabled', false);
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        let errorMessage = "";
-                        for (let field in errors) {
-                            toastr.error(errors[field][0])
-                        }
-                    } else {
-                        toastr.error("Something went wrong. Please try again later.")
-                    }
-                },
-                complete: function() {
-                    $('.submit-spinner').html(`Create`);
-                    $('.submit-spinner').prop('disabled', false);
-                },
-            });
-        });
-
-        $('#generaldetailsform').on('submit', function(e) {
-            e.preventDefault();
-            var c_description = $('#community-description').html()
-            var a_comments = $('#agent-comments').html()
-            var keywords = $('#keywords').html()
-
-            let formData = new FormData(this);
-            formData.append('community_description', c_description);
-            formData.append('agent_comments', a_comments);
-            formData.append('keywords', keywords);
-
-            $.ajax({
-                url: "{{ route('admin-edit-general-details') }}",
-                method: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-                },
-                beforeSend: function() {
-                    $('.submit-spinner').html(
-                        `<span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-                            <span role="status">Creating...</span>`
-                    );
-                    $('.submit-spinner').prop('disabled', true);
-                },
-                success: function(response) {
-                    $('#upload-image-gallery')[0].reset();
-                    toastr.success(response.message);
-                    $('.submit-spinner').html(`Create`);
-                    $('.submit-spinner').prop('disabled', false);
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        let errorMessage = "";
-                        for (let field in errors) {
-                            toastr.error(errors[field][0])
-                        }
-                    } else {
-                        toastr.error(response.message)
-                    }
-                },
-                complete: function() {
-                    $('.submit-spinner').html(`Create`);
-                    $('.submit-spinner').prop('disabled', false);
-                },
+        // Initialize Summernote sync for all forms
+        $('form').on('submit', function() {
+            var $form = $(this);
+            $form.find('.summernote').each(function() {
+                var contents = $(this).summernote('code');
+                $(this).val(contents);
             });
         });
 
@@ -1268,75 +970,36 @@
             errorClass: "error",
             validClass: "is-valid",
             rules: {
-                editassignAgent: {
+                managername: {
                     required: true
                 },
-                edituserName: {
+                propertyName: {
                     required: true
                 },
-                editemailId: {
+                propertyContact: {
+                    required: true
+                },
+                managementCompany: {
+                    required: true
+                },
+                numberOfUnits: {
+                    required: true
+                },
+                leasingEmail: {
                     required: true,
                     email: true
                 },
-                editfirstName: {
-                    required: true,
-                    maxlength: 255
-                },
-                editlastName: {
-                    required: true,
-                    maxlength: 255
-                },
-                editcell: {
-                    required: true,
-                    maxlength: 15,
-                    digits: true
-                },
-                editcurrentAddress: {
-                    required: true,
-                    maxlength: 255
-                },
-                editstate: {
+                yearBuilt: {
                     required: true
                 },
-                editcity: {
+                editpropertystate: {
                     required: true
                 },
-                editzipCode: {
+                editpropertycity: {
                     required: true
-                }
-            },
-            messages: {
-                editassignAgent: {
-                    required: "Assign Agent is required."
                 },
-                edituserName: {
-                    required: "User Name is required."
-                },
-                editemailId: {
-                    required: "Valid email is required.",
-                    email: "Please enter a valid email address."
-                },
-                editfirstName: {
-                    required: "First Name is required."
-                },
-                editlastName: {
-                    required: "Last Name is required."
-                },
-                editcell: {
-                    required: "Cell Number is required.",
-                    digits: "Cell number must contain only numeric digits."
-                },
-                editcurrentAddress: {
-                    required: "Current Address is required."
-                },
-                editstate: {
-                    required: "State is required."
-                },
-                editcity: {
-                    required: "City is required."
-                },
-                editzipCode: {
-                    required: "Zip Code is required."
+                zipCode: {
+                    required: true
                 }
             },
             errorPlacement: function(error, element) {
@@ -1346,48 +1009,66 @@
             highlight: function(element) {
                 $(element).addClass("is-invalid").removeClass("is-valid");
             },
-            unhighlight: function(element) {
-                $(element).addClass("is-valid").removeClass("is-invalid");
-            },
             submitHandler: function(form) {
-                event.preventDefault();
-                const formData = $(form).serialize();
-                console.log("formData", formData);
-                const url = `{{ route('admin-edit-renter-update') }}`;
-                $.ajax({
-                    url: url,
-                    method: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function() {
-                        $(".submit-spinner").prop("disabled", true).text("Editing...");
-                    },
-                    success: function(response) {
-                        $(".submit-spinner").prop("disabled", false).text(
-                            "Edit Renter");
-                        if (response.success) {
-                            toastr.success(response.message);
-                        } else {
-                            toastr.error(response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        $(".submit-spinner").prop("disabled", false).text(
-                            "Edit Renter");
-                        if (xhr.responseJSON.errors) {
-                            $.each(xhr.responseJSON.errors, function(key, value) {
-                                toastr.error(value[0]);
-                            });
-                        } else {
-                            toastr.error("An error occurred while saving.");
-                        }
-                    }
-                });
+                form.submit();
             }
         });
 
+        $(document).on('click', '.delete-floor-plan', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to delete this floor plan?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var form = $('#deleteFloorPlanForm');
+                    form.attr('action', "{{ url('/admin/property/delete-floor-plan') }}/" + id);
+                    form.submit();
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-gallery-item', function(e) {
+            e.preventDefault();
+            var row = $(this).closest('tr');
+            var id = row.data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to delete this image?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var form = $('#deleteGalleryImageForm');
+                    form.attr('action', "{{ url('/admin/property/delete-gallery-image') }}/" + id);
+                    form.submit();
+                }
+            });
+        });
+
+        $(document).on('click', '.update-gallery-item', function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var row = btn.closest('tr');
+            var id = row.data('id');
+            
+            $('#upd_gallery_id').val(id);
+            $('#upd_gallery_title').val(row.find('.gallery-title').val());
+            $('#upd_gallery_desc').val(row.find('.gallery-desc').val());
+            $('#upd_gallery_floorplan').val(row.find('.gallery-floorplan').val());
+            $('#upd_gallery_default').val(row.find('.set-default-img').is(':checked') ? 1 : 0);
+            
+            $('#updateGalleryDetailsForm').submit();
+        });
     });
 </script>
 @endpush

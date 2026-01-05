@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+    @extends('admin.layouts.app')
 @section('content')
 @section('title', 'RentApartments Admin | Dashboard')
 <div class="slim-mainpanel">
@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-6 mg-t-20 mg-lg-t-0">
+            <div class="col-lg-6 mg-lg-t-0">
                 <div class="card card-table">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h6 class="slim-card-title mb-0">My Recent Renters</h6>

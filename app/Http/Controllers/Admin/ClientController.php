@@ -90,7 +90,6 @@ class ClientController extends Controller
                 'UserIp'           => $request->ip(),
                 'user_type'        => 'C',
                 'acc_to_craiglist' => 'No',
-                'profile_pic'      => $profilePicName,
             ]);
 
             if (! $login) {
@@ -161,7 +160,7 @@ class ClientController extends Controller
                 'type' => 'success',
                 'message' => 'Renter created successfully!'
             ]);
-            return redirect()->route('admin-view-profile', ['id' => $login->Id])->with('success', 'Renter created successfully!');
+            return redirect()->route('admin-view-profile', ['id' => $login->Id]);
         } catch (\Exception $e) {
             DB::rollBack();
 

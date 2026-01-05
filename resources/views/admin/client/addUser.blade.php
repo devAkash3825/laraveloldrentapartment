@@ -97,10 +97,10 @@
                         </div>
                     </div>
 
-                    <div class="form-group col-lg-12 col-md-12 col-12">
+                    <!-- <div class="form-group col-lg-12 col-md-12 col-12">
                         <label for="profile_pic" class="font-weight-bold"> Profile Picture </label>
                         <input type="file" class="form-control" id="profile_pic" name="profile_pic" accept="image/*">
-                    </div>
+                    </div> -->
 
                     <div class="form-group col-lg-6 col-md-6 col-12">
                         <label for="cell" class="font-weight-bold"> Cell <span class="text-danger">*</span> </label>
@@ -304,8 +304,8 @@
                     </div>
 
                 </div>
-                <div class="form-row justify-content-center mg-t-30">
-                    <button type="submit" class="btn btn-premium btn-premium-primary submit-spinner">
+                <div class="form-row justify-content-end mg-t-30">
+                    <button type="submit" class="btn btn-primary btn-primary submit-spinner">
                         <i class="fa-solid fa-user-plus"></i> Create Renter Profile
                     </button>
                 </div>

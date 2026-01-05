@@ -49,6 +49,10 @@
     .tab-pane.active {
         display: block;
     }
+    .view-profile-btns {
+        font-size: 8px !important;
+        padding: 10px 12px !important;
+    }
 </style>
 @endpush
 <div class="slim-mainpanel">
@@ -101,24 +105,24 @@
                         </div>
                     </div>
 
-                    <div class="card-footer py-3 bg-light-soft border-top-0">
+                    <div class="card-footer py-2 px-2 bg-light-soft border-top-0 mx-auto">
                         <div class="btn-group-wrapper">
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary">
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
                                 <i class="fa-solid fa-file-signature"></i> Add Lease
                             </a>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-secondary">
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
                                 <i class="fa-solid fa-toggle-off"></i> Change Inactive
                             </a>
-                            <a href="javascript:void(0)" class="btn btn-premium btn-premium-outline-info set-remainder" data-id="{{ $data->Id }}">
+                            <a href="javascript:void(0)" class="btn btn-premium btn-premium-outline-primary view-profile-btns" data-id="{{ $data->Id }}">
                                 <i class="fa-solid fa-bell"></i> Set Reminder
                             </a>
-                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-primary">
+                            <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
                                 <i class="fa-solid fa-user-edit"></i> Edit Profile
                             </a>
-                            <a href="{{ route('admin-map-view', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-dark">
+                            <a href="{{ route('admin-map-view', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
                                 <i class="fa-solid fa-map-marked-alt"></i> View on Map
                             </a>
-                            <a href="{{ route('admin-map-search', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-success">
+                            <a href="{{ route('admin-map-search', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
                                 <i class="fa-solid fa-search-location"></i> Map Search
                             </a>
                         </div>

@@ -200,7 +200,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/inactive-renters', [ClientController::class, 'inactiveRenter'])->name('admin-inactiveRenter');
             Route::get('/leased-renters', [ClientController::class, 'leasedRenter'])->name('admin-leasedRenter');
             Route::get('/unassigned-renters', [ClientController::class, 'unassignedRenters'])->name('admin-unassigned-renters');
-            Route::post('/delete-renters/{id}', [ClientController::class, 'deleteRenters'])->name('admin-deleteRenter');
+            Route::delete('/delete-renters/{id}', [ClientController::class, 'deleteRenters'])->name('admin-deleteRenter');
 
             Route::get('/edit-renter/{id}', [ClientController::class, 'editRenter'])->name('admin-edit-renter');
             Route::post('/edit-renter-update', [ClientController::class, 'editRenterUpdate'])->name('admin-edit-renter-update');

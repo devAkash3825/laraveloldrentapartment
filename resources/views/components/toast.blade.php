@@ -1,5 +1,5 @@
 @push('toast_html')
-<div class="minimal-toast-container position-fixed top-0 end-0 mt-4 me-4" style="z-index: 99999;">
+<div class="minimal-toast-container position-fixed bottom-0 end-0 mt-4 me-4" style="z-index: 99999;">
 </div>
 @endpush
 
@@ -221,7 +221,7 @@
                 const progress = toast.querySelector('.m-toast-progress');
                 if (progress) {
                     progress.style.transform = 'scaleX(0)';
-                    progress.style.transition = 'transform 4s linear';
+                    progress.style.transition = 'transform 10s linear';
                 }
             }, 50);
 

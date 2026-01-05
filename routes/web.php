@@ -170,6 +170,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/manage-profile', [AdminDashboardController::class, 'manageProfile'])->name('admin-manage-profile');
         Route::get('/change-password', [AdminDashboardController::class, 'changePassword'])->name('admin-change-password');
         Route::post('/update-profile', [AdminDashboardController::class, 'updateProfile'])->name('admin-update-profile');
+        Route::post('/update-password', [AdminDashboardController::class, 'updatePassword'])->name('admin-update-password');
         
         Route::post('/claim-renter', [AdminDashboardController::class, 'claimRenter'])->name('admin-claim-renter');
         Route::post('/change-property-status', [AdminDashboardController::class, 'changePropertyStatus'])->name('admin-change-property-status');

@@ -27,7 +27,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                 </ul>
             </div>
             <div class="col-xl-6 col-md-5">
-                <ul class="wsus__topbar_left justify-content-end">
+                <ul class="wsus__topbar_left justify-content-end mt-1">
                     @guest('renter')
                     <li>
                         <a href="{{ route('login') }}" class="topbar-btn" title="Login">
@@ -91,50 +91,50 @@ $settings = DB::table('settings')->pluck('value', 'key');
                         </div>
                         <div class="dropdown-body" id="notification-list">
                             @if (count($notifications) > 0)
-                                @foreach ($notifications as $row)
-                                @php
-                                    $notifLink = $row->notification_link;
-                                    if (!$notifLink && $row->property_id) {
-                                        if (Auth::guard('renter')->user()->user_type == 'M') {
-                                            $notifLink = route('manager-message', ['p_id' => $row->property_id, 'r_id' => $row->from_id]);
-                                        } else {
-                                            $notifLink = route('send-messages', ['id' => $row->property_id]);
-                                        }
-                                    }
-                                    $notifLink = $notifLink ?? 'javascript:void(0)';
-                                @endphp
-                                <a href="{{ $notifLink }}" class="notification-item {{ $row->seen == 1 ? 'read' : 'unread' }}">
-                                    <div class="notification-avatar">
-                                        @php
-                                            $icon = 'bi-bell';
-                                            $bg = 'bg-primary';
-                                            if ($row->form_user_type == 'A') { $icon = 'bi-shield-check'; $bg = 'bg-warning'; }
-                                            elseif ($row->form_user_type == 'M') { $icon = 'bi-building'; $bg = 'bg-info'; }
-                                            elseif ($row->form_user_type == 'R') { $icon = 'bi-person'; $bg = 'bg-primary'; }
-                                        @endphp
-                                        <div class="avatar-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; border-radius: 50%;">
-                                            <i class="bi {{ $icon }}"></i>
-                                        </div>
+                            @foreach ($notifications as $row)
+                            @php
+                            $notifLink = $row->notification_link;
+                            if (!$notifLink && $row->property_id) {
+                            if (Auth::guard('renter')->user()->user_type == 'M') {
+                            $notifLink = route('manager-message', ['p_id' => $row->property_id, 'r_id' => $row->from_id]);
+                            } else {
+                            $notifLink = route('send-messages', ['id' => $row->property_id]);
+                            }
+                            }
+                            $notifLink = $notifLink ?? 'javascript:void(0)';
+                            @endphp
+                            <a href="{{ $notifLink }}" class="notification-item {{ $row->seen == 1 ? 'read' : 'unread' }}">
+                                <div class="notification-avatar">
+                                    @php
+                                    $icon = 'bi-bell';
+                                    $bg = 'bg-primary';
+                                    if ($row->form_user_type == 'A') { $icon = 'bi-shield-check'; $bg = 'bg-warning'; }
+                                    elseif ($row->form_user_type == 'M') { $icon = 'bi-building'; $bg = 'bg-info'; }
+                                    elseif ($row->form_user_type == 'R') { $icon = 'bi-person'; $bg = 'bg-primary'; }
+                                    @endphp
+                                    <div class="avatar-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; border-radius: 50%;">
+                                        <i class="bi {{ $icon }}"></i>
                                     </div>
-                                    <div class="notification-content">
-                                        <p class="notification-text">{!! $row->message !!}</p>
-                                        <div class="notification-meta">
-                                            <span class="notification-time">{{ $row->CreatedOn ? $row->CreatedOn->diffForHumans() : '' }}</span>
-                                            @if ($row->seen != '1')
-                                            <button class="mark-read-btn" data-user-id="{{ $row->Id }}"
-                                                onclick="event.preventDefault(); markVisibleNotificationsAsSeen(this)">
-                                                <i class="bi bi-check2"></i>
-                                            </button>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </a>
-                                @endforeach
-                            @else
-                                <div class="empty-state">
-                                    <i class="bi bi-bell-slash"></i>
-                                    <p>No notifications yet</p>
                                 </div>
+                                <div class="notification-content">
+                                    <p class="notification-text">{!! $row->message !!}</p>
+                                    <div class="notification-meta">
+                                        <span class="notification-time">{{ $row->CreatedOn ? $row->CreatedOn->diffForHumans() : '' }}</span>
+                                        @if ($row->seen != '1')
+                                        <button class="mark-read-btn" data-user-id="{{ $row->Id }}"
+                                            onclick="event.preventDefault(); markVisibleNotificationsAsSeen(this)">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </a>
+                            @endforeach
+                            @else
+                            <div class="empty-state">
+                                <i class="bi bi-bell-slash"></i>
+                                <p>No notifications yet</p>
+                            </div>
                             @endif
                         </div>
                         @if (count($notifications) > 5)
@@ -211,7 +211,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
     }
 
     .wsus__topbar_left {
-        margin: 0 !important;
+        margin: 0;
         padding: 0 !important;
         list-style: none;
         display: flex;
@@ -255,14 +255,14 @@ $settings = DB::table('settings')->pluck('value', 'key');
         text-decoration: none;
         position: relative;
     }
-    
+
     .topbar-btn i {
         font-size: 1rem;
         transition: transform 0.3s;
         color: white !important;
         margin: 0 !important;
     }
-    
+
     .topbar-btn:hover {
         background: rgba(255, 255, 255, 0.2);
         color: white !important;
@@ -274,12 +274,12 @@ $settings = DB::table('settings')->pluck('value', 'key');
     .topbar-btn:hover i {
         transform: scale(1.1);
     }
-    
+
     .search-btn {
         background: rgba(255, 255, 255, 0.2) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
     }
-    
+
     .search-btn i {
         color: white !important;
     }
@@ -313,7 +313,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
         color: white !important;
         filter: brightness(1.1);
     }
-    
+
     .main-btn:active {
         transform: translateY(-1px);
     }
@@ -716,21 +716,22 @@ $settings = DB::table('settings')->pluck('value', 'key');
         .profile-info {
             display: none !important;
         }
-        
+
         .profile-button {
             padding: 6px;
         }
-        
+
         .notification-dropdown {
             width: 320px;
         }
-        
+
         .profile-dropdown {
             width: 260px;
         }
     }
 
     @media (max-width: 576px) {
+
         .notification-dropdown,
         .profile-dropdown {
             width: calc(100vw - 32px);
@@ -745,7 +746,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
         const dropdown = document.getElementById('notification-dropdown');
         const profileDropdown = document.getElementById('profile-dropdown');
         const profileButton = document.getElementById('profile-button');
-        
+
         dropdown.classList.toggle('show');
         profileDropdown.classList.remove('show');
         profileButton.classList.remove('active');
@@ -755,7 +756,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
     document.getElementById('profile-button')?.addEventListener('click', function() {
         const dropdown = document.getElementById('profile-dropdown');
         const notificationDropdown = document.getElementById('notification-dropdown');
-        
+
         dropdown.classList.toggle('show');
         this.classList.toggle('active');
         notificationDropdown.classList.remove('show');
@@ -765,11 +766,11 @@ $settings = DB::table('settings')->pluck('value', 'key');
     document.addEventListener('click', function(event) {
         const notificationWrapper = document.querySelector('.notification-wrapper');
         const profileWrapper = document.querySelector('.profile-wrapper');
-        
+
         if (!notificationWrapper?.contains(event.target)) {
             document.getElementById('notification-dropdown')?.classList.remove('show');
         }
-        
+
         if (!profileWrapper?.contains(event.target)) {
             document.getElementById('profile-dropdown')?.classList.remove('show');
             document.getElementById('profile-button')?.classList.remove('active');
@@ -794,7 +795,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                     e.closest('.notification-item').classList.remove('unread');
                     e.closest('.notification-item').classList.add('read');
                     e.remove();
-                    
+
                     // Update badge count
                     const badge = document.querySelector('.badge-count');
                     if (badge) {
@@ -825,14 +826,14 @@ $settings = DB::table('settings')->pluck('value', 'key');
             success: function(response) {
                 if (response.message) {
                     toastr.success(response.message);
-                    
+
                     // Update all notification items
                     document.querySelectorAll('.notification-item.unread').forEach(item => {
                         item.classList.remove('unread');
                         item.classList.add('read');
                         item.querySelector('.mark-read-btn')?.remove();
                     });
-                    
+
                     // Remove badge
                     document.querySelector('.badge-count')?.remove();
                 }

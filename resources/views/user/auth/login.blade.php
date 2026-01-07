@@ -2,7 +2,7 @@
 @section('authcontent')
 <section id="login-section" class="login-viewport">
     <div class="row g-0 h-100 w-100">
-        <div class="col-lg-5 d-none d-lg-block">
+        <div class="col-lg-5 d-none d-lg-block p-0">
             <div class="hero-side h-100">
                 <div class="hero-content">
                     <a href="{{ route('home') }}" class="back-link mb-5 d-inline-block">
@@ -55,13 +55,13 @@
                                 <i class="bi bi-lock"></i>
                                 <input type="password" class="form-control" name="password" id="login_password" placeholder="••••••••" required>
                                 <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('login_password', event)">
-                                    <i class="bi bi-eye"></i>
+                                    <span><i class="bi bi-eye" id="passeye"></i></span>
                                 </button>
                             </div>
                         </div>
 
                         <div class="mb-4 pt-2">
-                            <button type="submit" class="btn btn-primary-custom w-100 py-2.5 shadow-sm rounded-4">
+                            <button type="submit" class="btn btn-primary-custom w-25 p-3 shadow-sm rounded-4">
                                 <i class="bi bi-box-arrow-in-right me-2"></i> Log In
                             </button>
                         </div>
@@ -77,6 +77,9 @@
 </section>
 
 <style>
+    #passeye{
+        left: -4px !important;
+    }
     .login-viewport {
         height: 100vh;
         width: 100vw;

@@ -63,6 +63,37 @@
         </div>
     </div>
 </section>
+
+<!-- Notes Modal -->
+<div class="modal fade" id="notesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-clipboard-list me-2"></i>Property Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="notes-container" class="p-4" style="height: 350px; overflow-y: auto; background: #f8f9fa;">
+                    <!-- Notes will be loaded here -->
+                    <div class="text-center text-muted mt-5">Loading notes...</div>
+                </div>
+                <div class="p-3 border-top bg-white">
+                    <form id="add-note-form">
+                        <input type="hidden" id="note-property-id">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="note-message" placeholder="Type a note here... (e.g. 'Unit 4B available?')" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Add Note
+                            </button>
+                        </div>
+                        <small class="text-muted mt-1 d-block ">Tip: Your notes are visible to the Property Manager and Admin.</small>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -96,7 +127,8 @@ $(document).ready(function() {
                 previous: '<i class="fa-solid fa-chevron-left"></i>',
                 next: '<i class="fa-solid fa-chevron-right"></i>'
             },
-            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>'
+            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>',
+            emptyTable: '<div class="text-center p-5"><i class="fa-solid fa-heart-circle-xmark fa-3x mb-3 text-muted"></i><h5 class="fw-bold">No saved properties</h5><p class="text-muted mb-0">Browse our listings and save your favorite apartments.</p></div>'
         },
         pageLength: 10,
         drawCallback: function() {
@@ -210,7 +242,86 @@ $(document).ready(function() {
                 }
             });
         });
+    
+    // Open Notes Modal
+    $(document).on('click', '.btn-notes', function() {
+         var id = $(this).data('id');
+         $('#note-property-id').val(id);
+         $('#notesModal').modal('show');
+         loadNotes(id);
+    });
+
+    // Load Notes Function
+    function loadNotes(propertyId) {
+        $('#notes-container').html('<div class="text-center text-muted mt-5"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br>Loading conversation...</div>');
+        
+        $.ajax({
+            url: "{{ route('get-notes-detail') }}",
+            method: "POST",
+            data: { 
+                propertyId: propertyId,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                var html = '';
+                if(response.notedetails && response.notedetails.length > 0) {
+                    html += '<ul class="list-unstyled">';
+                    $.each(response.notedetails, function(index, note) {
+                        // User Type Logic: Blue(Admin), Black(Manager), Red(Renter)
+                        var userClass = note.color_class; // calculated in controller
+                        var date = new Date(note.send_time).toLocaleString();
+                        
+                        html += '<li class="mb-3 bg-white p-3 rounded shadow-sm border-start border-4 ' + (userClass == "text-primary" ? "border-primary" : (userClass == "text-dark" ? "border-dark" : "border-danger")) + '">';
+                        html += '<div class="d-flex justify-content-between mb-1">';
+                        html += '<strong class="' + userClass + '"><i class="fa-solid fa-user-circle me-1"></i> ' + note.sender_name + '</strong>';
+                        html += '<small class="text-muted">' + date + '</small>';
+                        html += '</div>';
+                        html += '<p class="mb-0 text-secondary">' + note.message + '</p>';
+                        html += '</li>';
+                    });
+                    html += '</ul>';
+                } else {
+                    html = '<div class="text-center text-muted mt-5"><i class="fa-regular fa-comment-dots fa-3x mb-3 opacity-50"></i><br>No notes yet. Start the conversation!</div>';
+                }
+                $('#notes-container').html(html);
+                var d = $('#notes-container');
+                d.scrollTop(d.prop("scrollHeight"));
+            },
+            error: function() {
+                $('#notes-container').html('<div class="text-center text-danger mt-5">Failed to load notes. Use functionality is currently in beta.</div>');
+            }
+        });
+    }
+
+    // Add Note Form Submit
+    $('#add-note-form').on('submit', function(e) {
+        e.preventDefault();
+        var msg = $('#note-message').val();
+        var pid = $('#note-property-id').val();
+        
+        if(!msg.trim()) return;
+
+        $.ajax({
+            url: "{{ route('add-notes') }}",
+            method: "POST",
+            data: {
+                propertyId: pid,
+                message: msg,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                if(response.success) {
+                    $('#note-message').val('');
+                    loadNotes(pid); // Reload to show new note
+                }
+            },
+            error: function() {
+                Swal.fire('Error', 'Could not save note.', 'error');
+            }
+        });
+    });
 });
+
 </script>
 <style>
     /* Premium List View Styles */

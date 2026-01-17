@@ -31,20 +31,37 @@
                 </div>
 
                 <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label>Reminder From</label>
+                            <input type="date" id="reminderfrom" class="form-control" placeholder="Start Date">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Reminder To</label>
+                            <input type="date" id="reminderto" class="form-control" placeholder="End Date">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button id="search-btn" class="btn btn-primary btn-block">Search</button>
+                        </div>
+                    </div>
+
                     <table id="agentRemainderTable" class="table display responsive">
                         <thead>
                             <tr>
                                 <th>Id</th>
                                 <th>Renter Name</th>
+                                <th>Probability</th>
                                 <th>Bedroom</th>
-                                <th>Remainder Time</th>
-                                <th>Remainder Note</th>
+                                <th>Rent Range</th>
+                                <th>Move Date</th>
+                                <th>Area</th>
+                                <th>Reminder Time</th>
+                                <th>Note</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
@@ -53,23 +70,33 @@
     <script>
         $(document).ready(function() {  
             $(function() {
-                try {
-                    $("#agentRemainderTable").DataTable({
-                        processing: true,
-                        serverSide: true,
-                        ajax: "{{ route('admin-agent-remainder') }}",
-                        columns:[
-                            { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
-                            { data: "name", name: "name" },
-                            { data: "bedroom", name: "bedroom" },
-                            { data: "Reminder_date", name: "Reminder_date" },
-                            { data: "reminder_note", name: "reminder_note" },
-                            { data: "action", name: "action" },
-                        ],
-                    });
-                } catch (err) {
-                    console.log("Err in datatables", err);
-                }
+                var table = $("#agentRemainderTable").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('admin-agent-remainder') }}",
+                        data: function (d) {
+                            d.reminderfrom = $('#reminderfrom').val();
+                            d.reminderto = $('#reminderto').val();
+                        }
+                    },
+                    columns:[
+                        { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
+                        { data: "name", name: "name" },
+                        { data: "probability", name: "probability" },
+                        { data: "bedroom", name: "bedroom" },
+                        { data: "rent_range", name: "rent_range" },
+                        { data: "move_date", name: "move_date" },
+                        { data: "area", name: "area" },
+                        { data: "Reminder_date", name: "Reminder_date" },
+                        { data: "reminder_note", name: "reminder_note" },
+                        { data: "action", name: "action" },
+                    ],
+                });
+
+                $('#search-btn').click(function(){
+                    table.draw();
+                });
             });
         });
     </script>

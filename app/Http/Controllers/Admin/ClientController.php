@@ -504,12 +504,33 @@ class ClientController extends Controller
                 'Locator_Comments'    => $request->editlocatorcomments,
                 'Tour_Info'           => $request->edittourinfo,
                 'Additional_info'     => $request->editadditionalinfo,
+                // New lease fields
+                'new_rental_adddress' => $request->new_rental_adddress,
+                'unit'                => $request->unit,
+                'rent_amount'         => $request->rent_amount,
+                'landloard'           => $request->landloard,
+                'ready_to_invoice'    => $request->has('ready_to_invoice') ? 1 : 0,
+                'LeaseEndDate'        => $request->LeaseEndDate,
             ];
 
             if (!$checkRenterAvailability) {
                 $renterData['Login_ID'] = $loginid;
-                RenterInfo::create($renterData);
+                $newRenter = RenterInfo::create($renterData);
+                
+                // Create history for creation
+                \App\Models\RenterInfoHistory::create([
+                    'renter_info_id' => $newRenter->Id,
+                    'admin_id' => Auth::guard('admin')->id(),
+                    'snapshot' => $newRenter->toArray(),
+                ]);
             } else {
+                // Snapshot before update
+                \App\Models\RenterInfoHistory::create([
+                    'renter_info_id' => $checkRenterAvailability->Id,
+                    'admin_id' => Auth::guard('admin')->id(),
+                    'snapshot' => $checkRenterAvailability->toArray(),
+                ]);
+                
                 RenterInfo::where('Login_ID', $loginid)->update($renterData);
             }
 
@@ -732,7 +753,7 @@ class ClientController extends Controller
                         ]
                     ]))
                     ->addColumn('note', function ($row) use ($id) {
-                        $url = route('admin-get-messages', ['rid' => $id, 'pid' => $row['id']]);
+                        $url = route('admin-view-notes', ['renterId' => $id, 'propertyId' => $row['id']]);
                         return "<div class='text-center'>
                                     <a href='{$url}' class='btn btn-primary btn-sm text-white'>Notes</a>
                                 </div>";

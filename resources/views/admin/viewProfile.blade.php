@@ -164,22 +164,32 @@
                         <div class="row no-gutters">
                             <div class="col-md-6 border-right">
                                 <div class="px-3 py-2">
-                                    @foreach ([
-                                    'Created On' => $data->formatted_created_on ?? 'N/A',
-                                    'Status' => $data->Status == '1' ? 'Active' : 'Inactive',
-                                    'User Type' => $data->user_type == 'C' ? 'Renter' : 'Manager',
-                                    'User IP' => $data->UserIp ?? 'N/A',
-                                    'Garage Preference' => $data->renterInfo->Garage ?? 'N/A',
-                                    'Specific Cross Street' => $data->renterInfo->Cross_street ?? 'N/A',
-                                    'Credit History' => $data->renterInfo->Credit_history ?? 'N/A',
-                                    'Criminal History' => $data->renterInfo->Criminal_history ?? 'N/A',
-                                    'Rental History' => $data->renterInfo->Rental_history ?? 'N/A',
-                                    'Locator Comments' => $data->renterInfo->Locator_Comments ?? 'N/A',
-                                    'Laundry Preference' => $data->renterInfo->Laundry ?? 'N/A',
-                                    'Communities Visited' => $data->renterInfo->Communities_visited ?? 'N/A',
-                                    'Tour Info' => $data->renterInfo->Tour_Info ?? 'N/A',
-                                    'Time to Reach' => $data->renterInfo->Timetoreach ?? 'N/A',
-                                    ] as $label => $value)
+                                    @php
+                                        $mainDetails = [
+                                            'Created On' => $data->formatted_created_on ?? 'N/A',
+                                            'Status' => $data->Status == '1' ? 'Active' : ($data->Status == '2' ? 'Leased' : 'Inactive'),
+                                            'User Type' => $data->user_type == 'C' ? 'Renter' : 'Manager',
+                                            'User IP' => $data->UserIp ?? 'N/A',
+                                            'Garage Preference' => $data->renterInfo->Garage ?? 'N/A',
+                                            'Specific Cross Street' => $data->renterInfo->Cross_street ?? 'N/A',
+                                            'Credit History' => $data->renterInfo->Credit_history ?? 'N/A',
+                                            'Criminal History' => $data->renterInfo->Criminal_history ?? 'N/A',
+                                            'Rental History' => $data->renterInfo->Rental_history ?? 'N/A',
+                                            'Locator Comments' => $data->renterInfo->Locator_Comments ?? 'N/A',
+                                            'Laundry Preference' => $data->renterInfo->Laundry ?? 'N/A',
+                                            'Communities Visited' => $data->renterInfo->Communities_visited ?? 'N/A',
+                                            'Tour Info' => $data->renterInfo->Tour_Info ?? 'N/A',
+                                            'Time to Reach' => $data->renterInfo->Timetoreach ?? 'N/A',
+                                        ];
+
+                                        // Add Lease specifics if available
+                                        if ($data->Status == '2') {
+                                            $mainDetails['New Rental Address'] = $data->renterInfo->new_rental_adddress ?? 'N/A';
+                                            $mainDetails['Unit'] = $data->renterInfo->unit ?? 'N/A';
+                                            $mainDetails['Landlord'] = $data->renterInfo->landloard ?? 'N/A';
+                                        }
+                                    @endphp
+                                    @foreach ($mainDetails as $label => $value)
                                     <div class="invoice-info-row">
                                         <span class="font-weight-bold">{{ $label }}</span>
                                         <span class="text-muted">{{ $value }}</span>
@@ -189,25 +199,34 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="px-3 py-2">
-                                    @foreach ([
-                                    'Modified On' => $data->formatted_modified_on ?? 'N/A',
-                                    'Floor Preference' => $data->renterInfo->Floor ?? 'N/A',
-                                    'Lease Term' => $data->renterInfo->Lease_Term ?? 'N/A',
-                                    'Rent Range' => 'From ' . ($data->renterInfo->Rent_start_range ?? 'N/A') . ' to ' . ($data->renterInfo->Rent_end_range ?? 'N/A'),
-                                    'No. of Bedrooms' => $data->renterInfo->bedroom ?? 'N/A',
-                                    'Pet Info' => $data->renterInfo->Pet_weight ?? 'N/A',
-                                    'Additional Information' => $data->renterInfo->Additional_info ?? 'N/A',
-                                    'Earliest Move In Date' => $data->renterInfo->formatted_emove_date ?? 'N/A',
-                                    'Latest Move In Date' => $data->renterInfo->formatted_lmove_date ?? 'N/A',
-                                    'Reminder Date' => $data->renterInfo->Reminder_date ?? 'N/A',
-                                    'Area to Move' => $data->renterInfo->Area_move ?? 'N/A',
-                                    'Reminder Time' => $data->renterInfo->Reminder_time ?? 'N/A',
-                                    'Probability (%)' => $data->renterInfo->probability ?? 'N/A',
-                                    'Reminder Note' => $data->renterInfo->reminder_note ?? 'N/A',
-                                    ] as $label => $value)
+                                    @php
+                                        $secondaryDetails = [
+                                            'Modified On' => $data->formatted_modified_on ?? 'N/A',
+                                            'Floor Preference' => $data->renterInfo->Floor ?? 'N/A',
+                                            'Lease Term' => $data->renterInfo->Lease_Term ?? 'N/A',
+                                            'Rent Range' => 'From ' . ($data->renterInfo->Rent_start_range ?? 'N/A') . ' to ' . ($data->renterInfo->Rent_end_range ?? 'N/A'),
+                                            'No. of Bedrooms' => $data->renterInfo->bedroom ?? 'N/A',
+                                            'Pet Info' => $data->renterInfo->Pet_weight ?? 'N/A',
+                                            'Additional Information' => $data->renterInfo->Additional_info ?? 'N/A',
+                                            'Earliest Move In Date' => $data->renterInfo->formatted_emove_date ?? 'N/A',
+                                            'Latest Move In Date' => $data->renterInfo->formatted_lmove_date ?? 'N/A',
+                                            'Reminder Date' => $data->renterInfo->Reminder_date ?? 'N/A',
+                                            'Area to Move' => $data->renterInfo->Area_move ?? 'N/A',
+                                            'Reminder Time' => $data->renterInfo->Reminder_time ?? 'N/A',
+                                            'Probability (%)' => $data->renterInfo->probability ?? 'N/A',
+                                            'Reminder Note' => $data->renterInfo->reminder_note ?? 'N/A',
+                                        ];
+
+                                        if ($data->Status == '2') {
+                                            $secondaryDetails['Rent Amount'] = '$' . ($data->renterInfo->rent_amount ?? 'N/A');
+                                            $secondaryDetails['Lease End Date'] = $data->renterInfo->LeaseEndDate ?? 'N/A';
+                                            $secondaryDetails['Ready to Invoice'] = $data->renterInfo->ready_to_invoice ? 'YES' : 'NO';
+                                        }
+                                    @endphp
+                                    @foreach ($secondaryDetails as $label => $value)
                                     <div class="invoice-info-row">
                                         <span class="font-weight-bold">{{ $label }}</span>
-                                        <span class="text-muted">{{ $value }}</span>
+                                        <span class="text-muted">@if($label == 'Additional Information') {!! nl2br(e($value)) !!} @else {{ $value }} @endif</span>
                                     </div>
                                     @endforeach
                                 </div>

@@ -11,33 +11,46 @@
         </div>
 
         <div class="form-layout section-wrapper">
-            <form action="" data-parsley-validate method="Post">
+            <form action="{{ route('admin-store-lease') }}" data-parsley-validate method="Post">
+                @csrf
                 <div class="row mg-b-25">
                     <div class="col-lg-12">
                         <div class="form-group mg-b-10-force">
                             <label class="form-control-label">Assign Agent:</label>
-                            <select class="form-control select2" data-placeholder="Choose country">
+                            <select class="form-control select2" data-placeholder="Choose Agent" name="editassignAgent">
                                 <option label="Choose Agent"></option>
-                                
+                                @foreach($admins as $agent)
+                                <option value="{{$agent->id}}">{{$agent->admin_name}}</option>
+                                @endforeach
                             </select>
-                         
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">First Name: <span class="tx-danger">*</span></label>
+                            <input class="form-control" type="text" name="firstname" value="" placeholder="Enter First Name" required>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Last Name: <span class="tx-danger">*</span></label>
+                            <input class="form-control" type="text" name="lastname" value="" placeholder="Enter Last Name" required>
                         </div>
                     </div>
 
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">New Rental Address: <span class="tx-danger">*</span></label>
-                            <input class="form-control" type="text" name="address"
-                                value="" placeholder="Enter firstname" required>
-                                <div class="invalid-feedback" id="error-address"></div>
+                            <input class="form-control" type="text" name="new_rental_adddress"
+                                value="" placeholder="Enter Address" required>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Apt. #(Required if Applicable): <span class="tx-danger">*</span></label>
-                            <input class="form-control" type="text" name="apt"
-                                value="" placeholder="Enter lastname" required>
-                                <div class="invalid-feedback" id="error-lastname"></div>
+                            <label class="form-control-label">Unit / Apt. #: <span class="tx-danger">*</span></label>
+                            <input class="form-control" type="text" name="unit"
+                                value="" placeholder="Enter Unit" required>
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -66,7 +79,7 @@
                         <div class="form-group mg-b-10-force">
                             <label class="form-control-label">City: <span class="tx-danger">*</span></label>
                             <select class="form-control select2" data-placeholder="Choose City" name="editcity"
-                                name="editcity">
+                                id="editcity">
                                 <option label="Choose City"></option>
                                 <option value="USA">United States of America</option>
                             </select>
@@ -137,16 +150,40 @@
                             </select>
                         </div>
                     </div>
-                    <!-- Source -->
-                    <div class="col-lg-6">
-                        <div class="form-group mg-b-10-force">
-                            <label class="form-control-label">Source: <span class="tx-danger">*</span></label>
-                            <select class="form-control select2" data-placeholder="Source">
-                                <option label="Choose country"></option>
-                             
-                            </select>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Landlord / Community: <span class="tx-danger">*</span></label>
+                            <input class="form-control" type="text" name="landloard" value="" placeholder="Enter Landlord">
                         </div>
                     </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Rent Amount: <span class="tx-danger">*</span></label>
+                            <input class="form-control" type="text" name="rent_amount" value="" placeholder="Enter Rent Amount">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Move-in Date: <span class="tx-danger">*</span></label>
+                            <input class="form-control" type="date" name="Emove_date" value="">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Lease End Date:</label>
+                            <input class="form-control" type="date" name="LeaseEndDate" value="">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="ready_to_invoice" id="ready_to_invoice" value="1">
+                            <label class="form-check-label" for="ready_to_invoice" style="font-weight: 600; color: #1b84ff;">
+                                Ready to Invoice (Check to start billing process)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Beds -->
 
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -364,4 +401,36 @@
 
     </div>
 </div>   
+@push('adminscripts')
+<script>
+$(document).ready(function() {
+    // Load cities when state changes
+    $("#editstate").on("change", function() {
+        let stateId = $(this).val();
+        let citySelect = $("#editcity");
+        citySelect.empty().append('<option value="">Select City</option>');
+        
+        if (stateId) {
+            let url = "{{ route('admin-get-cities', ['state_id' => ':state_id']) }}".replace(':state_id', stateId);
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function(data) {
+                    if (Array.isArray(data) && data.length > 0) {
+                        $.each(data, function(key, city) {
+                            citySelect.append('<option value="' + city.Id + '">' + city.CityName + '</option>');
+                        });
+                    } else {
+                        citySelect.append('<option value="">No cities available</option>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching cities:", error);
+                }
+            });
+        }
+    });
+});
+</script>
+@endpush
 @endsection

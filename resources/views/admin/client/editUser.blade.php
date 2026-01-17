@@ -262,6 +262,59 @@
                         </div>
                     </div>
 
+                    {{-- Section: Lease Information --}}
+                    <div class="section-title mb-3 mt-4">
+                        <h6 class="text-primary"><i class="fa-solid fa-file-contract me-2"></i>Lease Information</h6>
+                        <hr>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">New Rental Address</label>
+                                <input type="text" class="form-control" name="new_rental_adddress" id="new_rental_adddress"
+                                       value="{{ old('new_rental_adddress', $data->renterinfo->new_rental_adddress ?? '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Unit</label>
+                                <input type="text" class="form-control" name="unit" id="unit"
+                                       value="{{ old('unit', $data->renterinfo->unit ?? '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Landlord / Community</label>
+                                <input type="text" class="form-control" name="landloard" id="landloard"
+                                       value="{{ old('landloard', $data->renterinfo->landloard ?? '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Rent Amount ($)</label>
+                                <input type="text" class="form-control" name="rent_amount" id="rent_amount"
+                                       value="{{ old('rent_amount', $data->renterinfo->rent_amount ?? '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Lease End Date</label>
+                                <input type="date" class="form-control" name="LeaseEndDate" id="LeaseEndDate"
+                                       value="{{ old('LeaseEndDate', $data->renterinfo->LeaseEndDate ? date('Y-m-d', strtotime($data->renterinfo->LeaseEndDate)) : '') }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="form-group mb-3 d-flex align-items-center" style="height: 100%; pt-20">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" name="ready_to_invoice" id="ready_to_invoice" value="1"
+                                        {{ old('ready_to_invoice', $data->renterinfo->ready_to_invoice ?? 0) == 1 ? 'checked' : '' }}>
+                                    <label class="form-check-label text-primary fw-bold" for="ready_to_invoice">Ready to Invoice</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Section: Move Dates --}}
                     <div class="section-title mb-3 mt-4">
                         <h6 class="text-primary"><i class="fa-solid fa-calendar me-2"></i>Move Dates</h6>

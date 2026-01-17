@@ -92,16 +92,36 @@ class UserNotesController extends Controller
     {
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
+        
         $getdetails = NoteDetail::where('property_id', $propertyId)
             ->where(function($query) use ($userid) {
+                // Fetch notes where the user is either the sender OR the renter associated with the note context
                 $query->where('user_id', $userid)
                       ->orWhere('renter_id', $userid);
             })
+            ->with('user') // Eager load the user who created the note
             ->orderBy('send_time', 'asc')
             ->get();
             
+        // Transform the data to include the specific color class
+        $formattedDetails = $getdetails->map(function ($note) {
+            $userType = $note->user->user_type ?? '';
+            $colorClass = 'text-danger'; // Default to Red (Renter)
+            
+            if ($userType === 'A') {
+                $colorClass = 'text-primary'; // Blue for Admin
+            } elseif ($userType === 'M') {
+                $colorClass = 'text-dark'; // Black for Manager
+            }
+            // 'C' or 'R' stays Red
+
+            $note->color_class = $colorClass;
+            $note->sender_name = $note->user->UserName ?? 'Unknown';
+            return $note;
+        });
+
         return response()->json([
-            'notedetails' => $getdetails
+            'notedetails' => $formattedDetails
         ]);
     }
 

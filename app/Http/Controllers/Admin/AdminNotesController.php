@@ -84,4 +84,61 @@ class AdminNotesController extends Controller
 
     }
     
+    public function viewNotes($renterId, $propertyId)
+    {
+        $renter = Login::where('Id', $renterId)->with('renterinfo')->first();
+        $property = PropertyInfo::where('Id', $propertyId)->first();
+        
+        // 1. Get Sticky Note from Favorite Table
+        $favorite = \App\Models\Favorite::where('UserId', $renterId)->where('PropertyId', $propertyId)->first();
+        $stickyNote = $favorite ? $favorite->Notes : '';
+
+        // 2. Get History from NoteDetails Table
+        $history = \App\Models\NoteDetail::where('property_id', $propertyId)
+            ->where(function($q) use ($renterId) {
+                $q->where('user_id', $renterId)
+                  ->orWhere('renter_id', $renterId);
+            })
+            ->orderBy('send_time', 'desc')
+            ->get();
+
+        return view('admin.notes', compact('renter', 'property', 'stickyNote', 'history', 'renterId', 'propertyId'));
+    }
+
+    public function saveNote(Request $request)
+    {
+        $renterId = $request->renterId;
+        $propertyId = $request->propertyId;
+        $message = $request->note;
+        $adminId = Auth::guard('admin')->user()->id;
+
+        // 1. Update Sticky Note (Favorite Table)
+        $favorite = \App\Models\Favorite::where('UserId', $renterId)->where('PropertyId', $propertyId)->first();
+        if ($favorite) {
+            $favorite->Notes = $message;
+            $favorite->save();
+        } else {
+            // Optional: Create favorite entry if it doesn't exist? 
+            // Usually notes are attached to favorites, but the user might be adding a note to a property not favorited?
+            // For now, let's assume it only works if favorited, or we create a new favorite record.
+            // Based on user description "The 'Sticky' Note (Favorite Table)... There is only one entry per User+Property."
+            // If it doesn't exist, we probably shouldn't force it to be a favorite unless specific business rule says so.
+            // But to store the "Sticky Note", we need the record.
+            // Let's create it if it doesn't exist, but maybe keep Status=0 if it wasn't a favorite?
+            // The user didn't specify. I'll just skip updating if not found to avoid side effects, 
+            // OR checks if I should create it. Given "Dual Storage", likely we expect it to exist.
+        }
+
+        // 2. Insert into NoteDetails (History)
+        \App\Models\NoteDetail::create([
+            'user_id' => $adminId, // Admin is the user adding the note
+            'user_type' => 'A', // Assuming we track type, though the table schema might just leverage user_id mapping
+            'property_id' => $propertyId,
+            'message' => $message,
+            'send_time' => now(),
+            'renter_id' => $renterId, // Context is this renter
+        ]);
+
+        return redirect()->back()->with('success', 'Note updated successfully!');
+    }
 }

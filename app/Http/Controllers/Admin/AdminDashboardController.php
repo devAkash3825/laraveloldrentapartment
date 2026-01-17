@@ -24,6 +24,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class AdminDashboardController extends Controller
@@ -169,7 +171,11 @@ class AdminDashboardController extends Controller
             ->whereNotNull('special')
             ->where('special', '!=', '')
             ->whereHas('propertyInfo', function ($query) use ($adminCities) {
-                $query->whereIn('CityId', $adminCities);
+                // If admin has specific cities, filter properties too? 
+                // Usually specials are relevant to the user's scope.
+                if (!empty($adminCities)) {
+                    $query->whereIn('CityId', $adminCities);
+                }
             })
             ->orderByDesc('addeddate')
             ->get();
@@ -180,30 +186,55 @@ class AdminDashboardController extends Controller
             $renterQuery = RenterInfo::where('added_by', $loginUser->id);
         }
 
-        if ($request->filled('reminderfrom') && $request->filled('reminderto')) {
-            $renterQuery->whereBetween('Reminder_date', [$request->reminderfrom, $request->reminderto]);
-        } else {
-            $renterQuery->whereBetween('Reminder_date', [
-                now()->startOfYear()->toDateString(),
-                now()->endOfYear()->toDateString(),
-            ]);
+        // City Filtering
+        // "It further filters renters based on the Cities the admin is assigned to"
+        if (!empty($adminCities)) {
+            $renterQuery->whereIn('Cityid', $adminCities);
         }
 
-        if (! empty($adminCities)) {
-            $renterQuery->whereIn('CityId', $adminCities);
+        // Date Filtering Logic
+        if ($request->filled('reminderfrom') && $request->filled('reminderto')) {
+            // Specific Date Range (can be future)
+            $from = Carbon::parse($request->reminderfrom)->startOfDay();
+            $to = Carbon::parse($request->reminderto)->endOfDay();
+            $renterQuery->whereBetween('Reminder_date', [$from, $to]);
+        } else {
+            // Default: "Today or in the Past"
+            // datediff(Reminder_date,now()) <= 0  => Reminder_date <= Now
+            $renterQuery->whereDate('Reminder_date', '<=', Carbon::now());
         }
+
+        // Ensure we only get those with meaningful reminder dates? 
+        // The legacy code implies selecting ALL where date rule applies.
+        $renterQuery->whereNotNull('Reminder_date');
+
 
         if ($request->ajax()) {
             return DataTables::eloquent($renterQuery)
                 ->addIndexColumn()
                 ->addColumn('name', function ($row) {
-                    return $row->Firstname . ' ' . $row->Lastname;
+                    $url = route('admin-view-profile', ['id' => $row->Login_ID]);
+                    return '<a href="'.$url.'">' . $row->Firstname . ' ' . $row->Lastname . '</a>';
+                })
+                ->addColumn('probability', function($row){
+                    return $row->probability ? $row->probability.'%' : '-';
+                })
+                ->addColumn('rent_range', function($row){
+                    return '$'.$row->Rent_start_range.' - $'.$row->Rent_end_range;
+                })
+                ->addColumn('move_date', function($row){
+                     // EMove_date is "Early Move Date"? LMove_date? 
+                     // Usually display Earliest or Latest.
+                     return $row->Emove_date ? Carbon::parse($row->Emove_date)->format('m/d/Y') : '-';
+                })
+                ->addColumn('area', function($row){
+                    return $row->Area_move ?? '-';
                 })
                 ->addColumn('bedroom', fn($row) => $row->bedroom ?? '')
-                ->addColumn('Reminder_date', fn($row) => $row->Reminder_date ? \Carbon\Carbon::parse($row->Reminder_date)->format('d M Y, h:i A') : '')
+                ->addColumn('Reminder_date', fn($row) => $row->Reminder_date ? \Carbon\Carbon::parse($row->Reminder_date)->format('m/d/Y h:i A') : '')
                 ->addColumn('reminder_note', fn($row) => $row->reminder_note ?? '')
                 ->addColumn('action', function ($row) {
-                    $editUrl = route('admin-edit-renter', ['id' => $row->Id]);
+                    $editUrl = route('admin-edit-renter', ['id' => $row->Login_ID]);
                     $actionButtons = '<div class="table-actionss-icon table-actions-icons float-none">';
                     $actionButtons .= '<a href="' . $editUrl . '" class="edit-btn">
                                         <i class="fa-solid fa-pen px-2 py-2 edit-icon border px-2 py-2 edit-icon"></i>
@@ -212,7 +243,7 @@ class AdminDashboardController extends Controller
                     $actionButtons .= '</div>';
                     return $actionButtons;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['name', 'action'])
                 ->make(true);
         }
 
@@ -259,7 +290,72 @@ class AdminDashboardController extends Controller
 
     public function addLease()
     {
-        return view('admin.addLease');
+        $state = \App\Models\State::all();
+        $admins = AdminDetail::all();
+        return view('admin.addLease', compact('state', 'admins'));
+    }
+
+    public function storeLease(Request $request)
+    {
+        $request->validate([
+            'editusername' => 'required',
+            'new_rental_adddress' => 'required',
+            'editemail' => 'required|email',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Create Login record
+            $login = new Login();
+            $login->UserName = $request->editusername;
+            $login->Email = $request->editemail;
+            $login->Status = '2'; // Leased as per flow
+            $login->user_type = 'C';
+            $login->password = Hash::make(Str::random(10)); // Default random password
+            $login->save();
+
+            // 2. Create RenterInfo record
+            $renterInfo = new RenterInfo();
+            $renterInfo->Login_ID = $login->Id;
+            $renterInfo->Firstname = $request->firstname; // assuming fields from form
+            $renterInfo->Lastname = $request->lastname;
+            $renterInfo->phone = $request->editcell;
+            $renterInfo->added_by = $request->editassignAgent;
+            
+            // New specified lease columns
+            $renterInfo->new_rental_adddress = $request->new_rental_adddress;
+            $renterInfo->unit = $request->unit;
+            $renterInfo->rent_amount = $request->rent_amount;
+            $renterInfo->landloard = $request->landloard;
+            $renterInfo->Emove_date = $request->Emove_date;
+            $renterInfo->LeaseEndDate = $request->LeaseEndDate;
+            $renterInfo->ready_to_invoice = $request->has('ready_to_invoice') ? 1 : 0;
+            
+            // Other fields from form
+            $renterInfo->Cityid = $request->editcity;
+            $renterInfo->zipcode = $request->editzip;
+            $renterInfo->Additional_info = $request->editadditionalinfo;
+            
+            $renterInfo->save();
+
+            // 3. Create Audit Trail (Snapshot)
+            // Point 3: Each time an Admin updates a lease record, the system takes a "snapshot"
+            // Since this is "Creation", we store the initial version.
+            \App\Models\RenterInfoHistory::create([
+                'renter_info_id' => $renterInfo->Id,
+                'admin_id' => Auth::guard('admin')->id(),
+                'snapshot' => $renterInfo->toArray(),
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin-leasedRenter')->with('success', 'Lease officially recorded successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Store Lease Error: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error recording lease: ' . $e->getMessage());
+        }
     }
 
 

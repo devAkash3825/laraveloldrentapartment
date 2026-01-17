@@ -68,6 +68,9 @@ class UserFavoriteController extends Controller
                            <a href="'.$mapUrl.'" class="btn-icon btn-map" data-bs-toggle="tooltip" title="Interactive Map">
                                <i class="fa-solid fa-map-location-dot"></i>
                            </a>
+                           <a href="javascript:void(0)" class="btn-icon btn-notes" data-id="'.$row['id'].'" data-bs-toggle="tooltip" title="View/Add Notes">
+                               <i class="fa-solid fa-clipboard-list"></i>
+                           </a>
                            <a href="javascript:void(0)" class="btn-icon btn-delete remove-single-fav" data-id="'.$row['id'].'" data-bs-toggle="tooltip" title="Remove from Favorites">
                                <i class="fa-solid fa-trash-can"></i>
                            </a>

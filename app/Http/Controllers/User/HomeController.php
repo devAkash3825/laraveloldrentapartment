@@ -408,6 +408,56 @@ class HomeController extends Controller
         ]);
     }
 
+    public function submitReportLease(Request $request)
+    {
+        $validated = $request->validate([
+            'username' => 'required', // Name on lease
+            'email' => 'required|email',
+            'movedate' => 'required|date',
+            'rentamount' => 'required',
+            'zipcode' => 'required',
+            'address' => 'required',
+            'state' => 'required',
+            'city' => 'required',
+            'assisted_by' => 'required',
+        ]);
 
+        try {
+            $user = Auth::guard('renter')->user();
+            $renterId = $user->Id;
+            
+            // In accordance with the system flow:
+            // 1. The data is NOT immediately stored in the database.
+            // 2. The "Request" effectively lives in the Admin's Email Inbox.
+
+            // Create In-App Notification for Admin (to track that a request was sent)
+            Notification::create([
+                'from_id' => $renterId,
+                'form_user_type' => 'R',
+                'to_id' => 1, // Super Admin
+                'to_user_type' => 'A',
+                'property_id' => null,
+                'message' => "Renter <strong>{$user->UserName}</strong> has submitted a Lease Report request.",
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
+            // Send Email to Admin (The primary "Request" storage)
+            try {
+                $settings = \App\Models\Setting::pluck('value', 'key');
+                $adminEmail = $settings['site_email'] ?? 'admin@crmrent.com';
+                \Illuminate\Support\Facades\Mail::to($adminEmail)->send(new \App\Mail\LeaseReportMail($request->all(), $user));
+            } catch (\Exception $e) {
+                Log::error('Lease Report Email Error: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Failed to send email report. Please try again.']);
+            }
+            
+            return response()->json(['success' => true, 'message' => 'Lease report submitted successfully! Our team will review it and update your records.']);
+
+        } catch (\Exception $e) {
+            Log::error('Lease Report Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred.']);
+        }
+    }
 
 }

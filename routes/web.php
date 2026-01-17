@@ -52,6 +52,7 @@ Route::get('/privacy-promise', [HomeController::class, 'privacyPromise'])->name(
 Route::get('/manager-terms', [HomeController::class, 'managerTerms'])->name('manager-terms');
 Route::get('/equal-opportunity', [HomeController::class, 'equalOpportunity'])->name('equal-opportunity');
 Route::get('/report-lease', [HomeController::class, 'reportLease'])->name('report-lease');
+Route::post('/report-lease', [HomeController::class, 'submitReportLease'])->name('submit-report-lease');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('advance-search', [HomeController::class, 'advanceSearchPage'])->name('advance-search');
 
@@ -76,6 +77,7 @@ Route::middleware(['authenticated'])->group(function () {
 
 
     Route::group(['prefix' => 'favorite'], function () {
+        Route::get('/', function() { return redirect()->route('list-view'); });
         Route::get('/list-view', [UserFavoriteController::class, 'listview'])->name('list-view');
         Route::get('/thumbnail-view', [UserFavoriteController::class, 'thumbnailView'])->name('thumbnail-view');
         Route::get('/map-view', [UserFavoriteController::class, 'mapView'])->name('map-view');
@@ -183,9 +185,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/notify-manager', [AdminNotesController::class, 'notifyManager'])->name('notify-manager');
         Route::post('/mark-all-as-read', [AdminDashboardController::class, 'markAllAsRead'])->name('admin-mark-all-as-read');
         Route::post('/mark-as-seen', [AdminDashboardController::class, 'markAsSeen'])->name('admin-mark-as-seen');
+        Route::get('/notes/view/renter_{renterId}/property_{propertyId}', [AdminNotesController::class, 'viewNotes'])->name('admin-view-notes');
+        Route::post('/notes/save', [AdminNotesController::class, 'saveNote'])->name('admin-save-note');
 
         Route::post('change-status/{id}', [AdminDashboardController::class, 'changeStatus'])->name('admin-change-status');
         Route::get('add-lease', [AdminDashboardController::class, 'addLease'])->name('admin-add-lease');
+        Route::post('add-lease', [AdminDashboardController::class, 'storeLease'])->name('admin-store-lease');
         Route::get('specials', [AdminDashboardController::class, 'specials'])->name('admin-specials');
         Route::get('show-all', [AdminDashboardController::class, 'showAll'])->name('admin-showall');
         Route::get('admin-messages', [AdminDashboardController::class, 'adminMessages'])->name('admin-messages');

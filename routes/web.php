@@ -106,6 +106,7 @@ Route::middleware(['authenticated'])->group(function () {
     Route::post('/update-floor-plan/{id}', [UserPropertyController::class, 'updateFloorPlan'])->name('update-floor-plan');
     Route::post('/delete-floor-plan/{id}', [UserPropertyController::class, 'deleteFloorPlan'])->name('delete-floor-plan');
     Route::post('/upload-image', [UserPropertyController::class, 'uploadImage'])->name('upload-image');
+    Route::post('/update-gallery-image', [UserPropertyController::class, 'updateGalleryImage'])->name('update-gallery-image');
 
     Route::post('/add-to-favorite', [UserFavoriteController::class, 'addToFavoriteByUser'])->name('add-to-favorite');
     Route::post('/is-favorite', [UserFavoriteController::class, 'checkIsFavorite'])->name('check-is-favorite');
@@ -397,6 +398,12 @@ Route::group(['prefix' => 'admin'], function () {
             
             Route::post('delete-manager-terms/{id}', [SettingsController::class, 'deleteManagerTerms'])->name('admin-delete-manager-terms');
             Route::post('delete-terms/{id}', [SettingsController::class, 'deleteTerms'])->name('admin-delete-terms');
+            Route::post('delete-equal-housing/{id}', [SettingsController::class, 'deleteEqualHousing'])->name('admin-delete-equal-housing');
+
+            Route::post('update-privacy-promise', [SettingsController::class, 'updatePrivacyPromise'])->name('admin-update-privacy-promise');
+            Route::get('add-privacy-promise', [SettingsController::class, 'addPrivacyPromise'])->name('admin-add-privacy-promise');
+            Route::post('create-privacy-promise', [SettingsController::class, 'createPrivacyPromise'])->name('admin-create-privacy-promise');
+            Route::post('delete-privacy-promise/{id}', [SettingsController::class, 'deletePrivacyPromise'])->name('admin-delete-privacy-promise');
             Route::post('delete-equal-housing/{id}', [SettingsController::class, 'deleteEqualHousing'])->name('admin-delete-equal-housing');
         });
 

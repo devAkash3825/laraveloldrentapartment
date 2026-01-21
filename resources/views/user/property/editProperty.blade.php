@@ -676,23 +676,26 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="form-check d-flex justify-content-center">
-                                                        <input class="form-check-input" type="checkbox" name="propertylogo" {{ $imagerec->DefaultImage ? 'checked' : '' }} disabled>
+                                                        <input class="form-check-input gallery-logo-check" type="radio" name="default_logo" value="{{ $imagerec->Id }}" {{ $imagerec->DefaultImage ? 'checked' : '' }}>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <select class="form-select form-select-sm" disabled>
+                                                    <select class="form-select form-select-sm gallery-floorplan-select">
                                                         <option value="">None</option>
                                                         @foreach ($selectFloorPlan as $row)
-                                                            <option value="{{ $row->Id }}">{{ $row->PlanName }}</option>
+                                                            <option value="{{ $row->Id }}" {{ $imagerec->FloorPlanId == $row->Id ? 'selected' : '' }}>{{ $row->PlanName }}</option>
                                                         @endforeach
                                                     </select>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center gap-1">
-                                                        <a href="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                                        <a href="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; line-height: 32px;" data-bs-toggle="tooltip" title="View">
                                                             <i class="bi bi-eye"></i>
                                                         </a>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle delete-gllry-img" data-id="{{ $imagerec->Id }}" data-value="{{ $propertyId }}" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                                        <button type="button" class="btn btn-sm btn-outline-success rounded-circle save-gallery-item" data-id="{{ $imagerec->Id }}" style="width: 32px; height: 32px; padding: 0; line-height: 32px;" data-bs-toggle="tooltip" title="Save Changes">
+                                                            <i class="bi bi-save"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle delete-gllry-img" data-id="{{ $imagerec->Id }}" data-value="{{ $propertyId }}" style="width: 32px; height: 32px; padding: 0; line-height: 32px;" data-bs-toggle="tooltip" title="Delete">
                                                             <i class="bi bi-trash"></i>
                                                         </button>
                                                     </div>
@@ -777,35 +780,81 @@
         // Additional Details Form Sync
 
 
-        // Gallery Image Deletion
+        // Update Gallery Image Details
+        $('.save-gallery-item').on('click', function() {
+            const btn = $(this);
+            const row = btn.closest('tr');
+            const id = btn.data('id');
+            const isLogo = row.find('.gallery-logo-check').is(':checked') ? 1 : 0;
+            const floorPlanId = row.find('.gallery-floorplan-select').val();
+
+            $.ajax({
+                url: "{{ route('update-gallery-image') }}",
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    is_logo: isLogo,
+                    floor_plan_id: floorPlanId
+                },
+                beforeSend: function() {
+                    btn.attr('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error('Error updating image details.');
+                },
+                complete: function() {
+                    btn.attr('disabled', false).html('<i class="bi bi-save"></i>');
+                }
+            });
+        });
+
+        // Gallery Image Deletion with Swal
         $('.delete-gllry-img').on('click', function() {
             const id = $(this).data('id');
             const propertyId = $(this).data('value');
             const row = $(this).closest('tr');
 
-            if (confirm('Are you sure you want to delete this image?')) {
-                $.ajax({
-                    url: "{{ url('/delete-gallery-image') }}/" + id,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        propertyId: propertyId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            row.fadeOut(300, function() {
-                                $(this).remove();
-                            });
-                            toastr.success(response.message);
-                        } else {
-                            toastr.error(response.message);
+            Swal.fire({
+                title: 'Delete Image?',
+                text: "Are you sure you want to delete this image permanently?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('/delete-gallery-image') }}/" + id,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            propertyId: propertyId
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                row.fadeOut(300, function() {
+                                    $(this).remove();
+                                });
+                                Swal.fire('Deleted!', response.message, 'success');
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', 'Failed to delete image.', 'error');
                         }
-                    },
-                    error: function(xhr) {
-                        toastr.error('Error deleting image. Please try again.');
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
 
         // Year select population

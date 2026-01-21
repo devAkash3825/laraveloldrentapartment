@@ -206,8 +206,8 @@ class HomeController extends Controller
 
     public function privacyPromise()
     {
-        $data = termsCMS::all();
-        $pagetitle = "Terms & Condition";
+        $data = \App\Models\PrivacyPromiseCMS::all(); // Updated to correct model
+        $pagetitle = "Privacy Promise";
         return view('user.pages.privacyPromise',['data' => $data, 'pagetitle' => $pagetitle]);
     }
 
@@ -263,7 +263,7 @@ class HomeController extends Controller
                 ]);
                 return response()->json(['success' => 'Property added to recent successfully.']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Addtorecent error: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while trying to log in. Please try again later.']);
         }
@@ -357,7 +357,8 @@ class HomeController extends Controller
 
     public function managerTerms()
     {
-        return view('user.pages.managerTerms');
+        $terms = \App\Models\ManagerTermsCMS::all();
+        return view('user.pages.managerTerms', ['terms' => $terms]);
     }
 
     public function requestQuote(Request $request)

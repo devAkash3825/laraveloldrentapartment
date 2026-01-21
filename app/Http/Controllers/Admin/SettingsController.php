@@ -368,18 +368,16 @@ class SettingsController extends Controller
 
     public function pagesManagement()
     {
-        $contact = ContactUs::first();
         $managerterms = ManagerTermsCMS::where('status', 1)->get();
-        $aboutus = AboutUsCMS::where('status', 1)->first();
         $equalhousing = EqualHousingCMS::where('status', 1)->get();
         $terms = termsCMS::where('status', 1)->get();
+        $privacypromise = \App\Models\PrivacyPromiseCMS::all();
 
         return view('admin.settings.pagesManagement', [
-            'contact' => $contact,
             'managerterms' => $managerterms,
-            'aboutus' => $aboutus,
             'equalhousing' => $equalhousing,
-            'terms' => $terms
+            'terms' => $terms,
+            'privacypromise' => $privacypromise
         ]);
     }
 
@@ -720,5 +718,59 @@ class SettingsController extends Controller
             return response()->json(['success' => true, 'message' => 'Equal housing deleted successfully']);
         }
         return response()->json(['success' => false, 'message' => 'Failed to delete equal housing']);
+    }
+
+    // Privacy Promise Methods
+    public function addPrivacyPromise(Request $request)
+    {
+        return view('admin.settings.addPrivacyPromiseCMS');
+    }
+
+    public function createPrivacyPromise(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required',
+        ]);
+
+        \App\Models\PrivacyPromiseCMS::create([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
+        (new SettingsService())->clearCachedSettings();
+        return response()->json([
+            'success' => true,
+            'message' => 'Privacy Promise added successfully.'
+        ]);
+    }
+
+    public function updatePrivacyPromise(Request $request)
+    {
+        $update = \App\Models\PrivacyPromiseCMS::where('id', $request->id)->update([
+            'title' => $request->title,
+            'description' => $request->description
+        ]);
+        if ($update) {
+            (new SettingsService())->clearCachedSettings();
+            return response()->json([
+                'success' => true,
+                'message' => 'Privacy Promise Update Successfully'
+            ]);
+        } else {
+            return response()->json([
+                'error' => true,
+                'message' => 'Privacy Promise Not Update'
+            ]);
+        }
+    }
+
+    public function deletePrivacyPromise($id)
+    {
+        $delete = \App\Models\PrivacyPromiseCMS::findOrFail($id)->delete();
+        if ($delete) {
+            (new SettingsService())->clearCachedSettings();
+            return response()->json(['success' => true, 'message' => 'Privacy Promise deleted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'Failed to delete Privacy Promise']);
     }
 }

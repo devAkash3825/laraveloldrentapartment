@@ -648,6 +648,36 @@ class UserPropertyController extends Controller
         }
     }
 
+    public function updateGalleryImage(Request $request)
+    {
+        try {
+            $id = $request->id;
+            $isLogo = (string)$request->is_logo; // Cast to string
+            $floorPlanId = $request->floor_plan_id;
+
+            $galleryDetail = GalleryDetails::where('Id', $id)->first();
+            
+            if (!$galleryDetail) {
+                return response()->json(['success' => false, 'message' => 'Image not found.']);
+            }
+
+            // If setting as logo, unset others for this property's gallery
+            if ($isLogo === '1') {
+                // Find all siblings in the same gallery
+                GalleryDetails::where('GalleryId', $galleryDetail->GalleryId)->update(['DefaultImage' => '0']);
+            }
+
+            $galleryDetail->update([
+                'DefaultImage' => $isLogo,
+                'FloorPlanId' => $floorPlanId ?: null // Handle empty string as null
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Gallery details updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating details: ' . $e->getMessage()]);
+        }
+    }
+
     public function editAdditionalDetail(Request $request, $id)
     {
         $propertyId = $id;

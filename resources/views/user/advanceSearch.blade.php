@@ -77,7 +77,7 @@
 
                                 <div class="col-md-4">
                                     <label for="advsearchstate" class="form-label f-w700">State</label>
-                                    <select id="advsearchstate" class="form-select" name="advsearchstate">
+                                    <select id="advsearchstate" class="form-select state-dropdown" name="advsearchstate" data-city-target="#advsearchcity">
                                         <option value="">All States</option>
                                         @foreach ($state as $row)
                                             <option value="{{ $row->Id }}">{{ $row->StateName }}</option>

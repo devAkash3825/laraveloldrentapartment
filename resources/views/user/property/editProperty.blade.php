@@ -305,8 +305,8 @@
                                     <div class="my_listing_single">
                                         <label for="state">State</label>
                                         <div class="input_area">
-                                            <select class="form-control form-select form-control-a state-select-box"
-                                                name="editpropertystate" id="editpropertystate" required>
+                                            <select class="form-control form-select form-control-a state-dropdown"
+                                                name="editpropertystate" id="editpropertystate" data-city-target="#editpropertycity" required>
                                                 @foreach ($state as $row)
                                                 <option value="{{ $row->Id }}"
                                                     {{ (isset($propertyinfo->city->state) && $propertyinfo->city->state->Id == $row->Id) ? 'selected' : '' }}>
@@ -467,7 +467,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="qualifying_criteria">:: Qualifying Criteria ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="qualifying_criteria" name="qualifying_criteria">{{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria }}</textarea>
+                                        <textarea class="form-control mt-1" id="qualifying_criteria" name="qualifying_criteria" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -475,7 +475,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="parking">:: Parking ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="parking" name="parking">{{ @$propertyinfo->propertyAdditionalInfo->Parking }}</textarea>
+                                        <textarea class="form-control mt-1" id="parking" name="parking" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->Parking }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -483,7 +483,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="pet_policy">:: Pet Policy ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="pet_policy" name="pet_policy">{{ @$propertyinfo->propertyAdditionalInfo->PetPolicy }}</textarea>
+                                        <textarea class="form-control mt-1" id="pet_policy" name="pet_policy" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->PetPolicy }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -491,7 +491,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="neighborhood">:: Neighborhood ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="neighborhood" name="neighborhood">{{ @$propertyinfo->propertyAdditionalInfo->Neighborhood }}</textarea>
+                                        <textarea class="form-control mt-1" id="neighborhood" name="neighborhood" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->Neighborhood }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -499,7 +499,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="schools">:: Schools ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="schools" name="schools">{{ @$propertyinfo->propertyAdditionalInfo->Schools }}</textarea>
+                                        <textarea class="form-control mt-1" id="schools" name="schools" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->Schools }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -507,7 +507,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="driving_directions">:: Driving Directions ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="driving_directions" name="driving_directions">{{ @$propertyinfo->propertyAdditionalInfo->drivedirection }}</textarea>
+                                        <textarea class="form-control mt-1" id="driving_directions" name="driving_directions" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->drivedirection }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -775,11 +775,7 @@
 <script>
     $(document).ready(function() {
         // Additional Details Form Sync
-        $('#additionalDetailsForm').on('submit', function() {
-            $('.summer_note').each(function() {
-                $(this).val($(this).summernote('code'));
-            });
-        });
+
 
         // Gallery Image Deletion
         $('.delete-gllry-img').on('click', function() {
@@ -824,6 +820,23 @@
         // Set selected years if available
         $('#year-select').val("{{ $propertyinfo->Year }}");
         $('#year-remodeled').val("{{ $propertyinfo->YearRemodel }}");
+
+        // Trigger initial city load for edit mode
+        const editPropertyState = document.getElementById('editpropertystate');
+        if (editPropertyState && editPropertyState.value) {
+            const editPropertyCity = document.getElementById('editpropertycity');
+            const selectedCityId = document.getElementById('editselectedCity').value;
+            if (editPropertyCity) {
+                window.CityStateHandler.loadCities(editPropertyState.value, editPropertyCity, false).then(() => {
+                    if (selectedCityId) {
+                        editPropertyCity.value = selectedCityId;
+                        if (typeof jQuery !== 'undefined' && jQuery.fn.select_2) {
+                            jQuery(editPropertyCity).trigger('change');
+                        }
+                    }
+                });
+            }
+        }
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -164,10 +164,9 @@
                                 </a>
                             </p>
                             <ul class="mt-3">
-                                <li id="addtofavorite" value="{{ $propertyDetails['id'] }}" class="addtofavorite">
-                                    <a href="javascript:void(0)">
-                                        <i class="bi bi-heart-fill" style="display: none;"></i>
-                                        <i class="bi bi-heart"></i>
+                                <li id="addtofavorite" data-value="{{ $propertyDetails['id'] }}" class="addtofavorite" style="cursor: pointer;">
+                                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2">
+                                        <i class="fa-regular fa-heart"></i>
                                         Add to Favorite
                                     </a>
                                 </li>

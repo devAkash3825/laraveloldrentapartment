@@ -235,6 +235,12 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
     @if(session('info'))
         toastr.info("<i class='fa-solid fa-circle-info me-2'></i> {{ session('info') }}");
     @endif
+
+    @if($errors->any())
+        $(document).ready(function() {
+            window.ValidationHandler.showErrors($('form'), @json($errors->toArray()));
+        });
+    @endif
 </script>
 </body>
 

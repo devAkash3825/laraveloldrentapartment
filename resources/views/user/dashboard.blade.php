@@ -197,8 +197,8 @@
                                                 <label for="state">Destination State</label>
                                                 <div class="input_area">
                                                     <select
-                                                        class="form-control form-select form-control-a state-select-box"
-                                                        name="editstate" id="editstate" required>
+                                                        class="form-control form-select form-control-a state-dropdown"
+                                                        name="editstate" id="editstate" data-city-target="#editcity" required>
                                                         @foreach ($state as $row)
                                                         <option value="{{ $row->Id }}"
                                                             {{ $renterInfo->renterinfo->state == $row->Id ? 'selected' : '' }}>
@@ -349,6 +349,21 @@
 
 @push('scripts')
 <script>
+    $(document).ready(function() {
+        // Trigger initial city load for dashboard if state is pre-selected
+        const editState = document.getElementById('editstate');
+        const editCity = document.getElementById('editcity');
+        const selectedCityId = document.getElementById('selectedCity')?.value;
+
+        if (editState && editState.value && editCity) {
+            window.CityStateHandler.loadCities(editState.value, editCity, false).then(() => {
+                if (selectedCityId) {
+                    $(editCity).val(selectedCityId).trigger('change');
+                }
+            });
+        }
+    });
+
     $("#renterEdit").on("click", function() {
         var formData = new FormData($("#editUserForm")[0]);
         $.ajax({
@@ -371,10 +386,11 @@
                 toastr.success(response.success);
             },
             error: function(xhr, status, error) {
-                let errors = xhr.responseJSON.errors;
-                $.each(errors, function(key, value) {
-                    toastr.error(value[0]);
-                });
+                if (xhr.status === 422) {
+                    window.ValidationHandler.showErrors($("#editUserForm"), xhr.responseJSON.errors);
+                } else {
+                    toastr.error(xhr.responseJSON?.message || "Something went wrong. Please try again.");
+                }
                 $("#submitBtn").prop("disabled", false);
             },
             complete: function() {
@@ -408,10 +424,11 @@
                 toastr.success(response.success);
             },
             error: function(xhr, status, error) {
-                let errors = xhr.responseJSON.errors;
-                $.each(errors, function(key, value) {
-                    toastr.error(value[0]);
-                });
+                if (xhr.status === 422) {
+                    window.ValidationHandler.showErrors($("#editmanagerForm"), xhr.responseJSON.errors);
+                } else {
+                    toastr.error(xhr.responseJSON?.message || "Something went wrong. Please try again.");
+                }
                 $("#submitBtn").prop("disabled", false);
             },
             complete: function() {

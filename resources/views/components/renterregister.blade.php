@@ -377,57 +377,7 @@
     }
 
     /* Buttons - Standardized Premium */
-    .btn-primary-custom, .btn-secondary-custom, .btn-success-custom {
-        padding: 10px 24px;
-        border-radius: 12px;
-        font-size: 0.92rem;
-        font-weight: 700;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
 
-    .btn-primary-custom {
-        background: var(--colorPrimary);
-        border: 2px solid var(--colorPrimary);
-        color: white;
-        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
-    }
-
-    .btn-primary-custom:hover {
-        background: transparent !important;
-        color: var(--colorPrimary) !important;
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
-    }
-
-    .btn-secondary-custom {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-    }
-
-    .btn-secondary-custom:hover {
-        background: #e2e8f0;
-        color: #1e293b;
-        transform: translateY(-2px);
-    }
-
-    .btn-success-custom {
-        background: #10b981;
-        border: 2px solid #10b981;
-        color: white;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
-    }
-
-    .btn-success-custom:hover {
-        background: transparent !important;
-        color: #10b981 !important;
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
-    }
 
     /* Bedroom Selector */
     .bedroom-selector {
@@ -660,9 +610,7 @@
                     }, 1500);
                 } else {
                     if (data.errors) {
-                        Object.keys(data.errors).forEach(key => {
-                            toastr.error(data.errors[key][0]);
-                        });
+                        window.ValidationHandler.showErrors($(this), data.errors);
                     } else if (data.message) {
                         toastr.error(data.message);
                     } else {

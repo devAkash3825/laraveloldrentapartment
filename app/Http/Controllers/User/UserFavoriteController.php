@@ -18,6 +18,7 @@ use App\Repositories\PropertyDetailsRepository;
 use App\Http\Resources\PropertyCollection;
 use App\Models\Login;
 use App\Models\ApartmentFeature;
+use App\Models\Notification;
 
 
 class UserFavoriteController extends Controller
@@ -162,21 +163,26 @@ class UserFavoriteController extends Controller
 
     public function addToFavoriteByUser(Request $request)
     {
+        if (!Auth::guard('renter')->check()) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
         $noteMessage = $request->input('notes');
 
         // Check if the favorite already exists
-        $favorite = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->first();
-        if ($favorite) {
-            $favorite->delete();
+        // Use exists() then mass delete to ensure duplicates are cleaned up
+        $exists = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->exists();
+        
+        if ($exists) {
+            Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->delete();
             return response()->json([
                 'success' => true,
                 'action' => 'removed',
                 'message' => 'Property removed from your favorites.'
             ]);
         } else {
-            $favorite = new Favorite();
+             $favorite = new Favorite();
             $favorite->PropertyId = $propertyId;
             $favorite->UserId = $userid;
             $favorite->AddedOn = now();
@@ -244,7 +250,9 @@ class UserFavoriteController extends Controller
 
     public function checkIsFavorite(Request $request)
     {
-
+        if (!Auth::guard('renter')->check()) {
+            return response()->json(['isFavorite' => false]);
+        }
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
         $isFavorite = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->exists();

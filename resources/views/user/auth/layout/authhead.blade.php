@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('user_asset/vendor/bootstrap5/bootstrapupdated5.min.css') }} ">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <link rel="stylesheet" href="{{ asset('user_asset/css/frontendstyle.css') }} ">
+<link rel="stylesheet" href="{{ asset('common/css/unified-buttons.css') }} ">
 <link rel="stylesheet" href="{{ asset('user_asset/css/responsive.css') }} ">
 
 

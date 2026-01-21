@@ -89,28 +89,7 @@
     }
 
     /* Button Styling */
-    .btn-primary-custom {
-        background: var(--colorPrimary);
-        border: 2px solid var(--colorPrimary);
-        color: white;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        border-radius: 12px;
-        font-size: 0.95rem;
-        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
-    }
 
-    .btn-primary-custom:hover {
-        background: transparent !important;
-        color: var(--colorPrimary) !important;
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.25);
-    }
-
-    .btn-primary-custom:active {
-        transform: translateY(-1px);
-    }
 
     .alert-info ul {
         margin-bottom: 0;
@@ -211,9 +190,7 @@
                     }, 1500);
                 } else if (response.status === 422) {
                     if (data.errors) {
-                        Object.keys(data.errors).forEach(key => {
-                            toastr.error(data.errors[key][0]);
-                        });
+                        window.ValidationHandler.showErrors($(this), data.errors);
                     } else {
                         toastr.error("Please check your inputs.");
                     }

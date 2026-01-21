@@ -211,42 +211,7 @@ $(document).ready(function() {
         });
     });
 
-    // Single Remove from table
-    $(document)
-        .off('click', '.remove-single-fav') // Remove any old handlers
-        .on('click', '.remove-single-fav', function() {
-            var id = $(this).data('id');
-            var $btn = $(this);
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this property from your favorites?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('add-to-favorite') }}",
-                        method: "POST",
-                        data: { propertyId: id },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire(
-                                    'Removed!',
-                                    response.message,
-                                    'success'
-                                )
-                                table.ajax.reload(null, false);
-                            }
-                        }
-                    });
-                }
-            });
-        });
     
     // Open Notes Modal
     $(document).on('click', '.btn-notes', function() {

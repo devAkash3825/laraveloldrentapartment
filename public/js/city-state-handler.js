@@ -35,7 +35,9 @@
 
         try {
             console.log(`Fetching cities for state ID: ${stateId}`);
-            const response = await fetch(`/cities/${stateId}`);
+            // Use /admin/cities if we're in the admin panel, otherwise use standard /cities
+            const endpoint = window.location.pathname.includes('/admin') ? `/admin/cities/${stateId}` : `/cities/${stateId}`;
+            const response = await fetch(endpoint);
 
             if (!response.ok) {
                 console.error(`Fetch failed with status: ${response.status}`);
@@ -47,8 +49,10 @@
 
             // Clear and add default option
             citySelectElement.innerHTML = '<option value="">Select City</option>';
-            if (typeof jQuery !== 'undefined' && jQuery.fn.niceSelect) {
-                jQuery(citySelectElement).niceSelect('update');
+            // Support for jQuery plugins update
+            if (typeof jQuery !== 'undefined') {
+                if (jQuery.fn.niceSelect) jQuery(citySelectElement).niceSelect('update');
+                if (jQuery.fn.select2) jQuery(citySelectElement).trigger('change');
             }
 
             // Check if cities exist
@@ -79,9 +83,10 @@
 
             citySelectElement.disabled = false;
 
-            // Support for NiceSelect update
-            if (typeof jQuery !== 'undefined' && jQuery.fn.niceSelect) {
-                jQuery(citySelectElement).niceSelect('update');
+            // Support for jQuery plugins update
+            if (typeof jQuery !== 'undefined') {
+                if (jQuery.fn.niceSelect) jQuery(citySelectElement).niceSelect('update');
+                if (jQuery.fn.select2) jQuery(citySelectElement).trigger('change');
             }
 
             console.log('City dropdown populated and enabled');

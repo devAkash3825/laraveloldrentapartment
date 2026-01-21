@@ -183,7 +183,7 @@
 
                         <div class="form-group col-md-4">
                             <label for="state" class="f-600">State <span class="text-danger"> * </span></label>
-                            <select class="form-control @error('state') is-invalid @enderror" id="select-state" name="state" required>
+                            <select class="form-control state-dropdown @error('state') is-invalid @enderror" id="select-state" name="state" data-city-target="#select-city" required>
                                 <option value="">- SELECT STATE -</option>
                                 @foreach ($state as $row)
                                     <option value="{{ $row->Id }}" {{ old('state') == $row->Id ? 'selected' : '' }}>{{ $row->StateName }}</option>
@@ -363,34 +363,16 @@
                 }
             });
 
-            $('#select-state').on('change', function() {
-                var stateId = $(this).val();
-                loadCities(stateId);
-            });
-
-            function loadCities(stateId, selectedCity = null) {
-                if (stateId) {
-                    $.ajax({
-                        url: "{{ url('/admin/property/get-cities-by-state-id') }}/" + stateId,
-                        type: "GET",
-                        dataType: "json",
-                        success: function(data) {
-                            $('#select-city').empty();
-                            $('#select-city').append('<option value="">- SELECT CITY -</option>');
-                            $.each(data, function(key, value) {
-                                $('#select-city').append('<option value="' + value.Id + '"' + (selectedCity == value.Id ? ' selected' : '') + '>' + value.CityName + '</option>');
-                            });
-                        }
-                    });
-                } else {
-                    $('#select-city').empty();
-                    $('#select-city').append('<option value="">- SELECT CITY -</option>');
-                }
-            }
+            // Trigger initial city load on state change is handled by global handler
+        });
 
             // Reload cities on validation error
             @if(old('state'))
-                loadCities("{{ old('state') }}", "{{ old('city') }}");
+                window.CityStateHandler.loadCities("{{ old('state') }}", document.getElementById('select-city'), false).then(() => {
+                    @if(old('city'))
+                        $('#select-city').val("{{ old('city') }}");
+                    @endif
+                });
             @endif
 
             // Basic Preview Logic for Default Image

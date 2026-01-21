@@ -567,11 +567,11 @@ class UserPropertyController extends Controller
                 'GalleryId' => $galleryTypeId,
                 'ImageTitle' => $request->imagetitle,
                 'Description' => $request->description,
-                'DefaultImage' => 0, // Don't default to 1 for every upload
-                'display_in_gallery' => 1,
+                'DefaultImage' => '0',
+                'display_in_gallery' => '1',
                 'CreatedOn' => Carbon::now(),
                 'ModifiedOn' => Carbon::now(),
-                'Status' => 1,
+                'Status' => '1',
             ]);
 
             // Note: If primary key is 'Id', Eloquent might return it via ->getAttribute('Id') or just ->Id

@@ -65,8 +65,8 @@
                     <div class="col-lg-6">
                         <div class="form-group mg-b-10-force">
                             <label class="form-control-label">State: <span class="tx-danger">*</span></label>
-                            <select class="form-control select2" data-placeholder="Choose State" name="editstate"
-                                id="editstate">
+                            <select class="form-control select2 state-dropdown" data-placeholder="Choose State" name="editstate"
+                                id="editstate" data-city-target="#editcity">
                                 <option label="Choose country"></option>
                                 @foreach($state as $row)
                                 <option value="{{$row->Id}}">{{$row->StateName}}</option>
@@ -403,34 +403,6 @@
 </div>   
 @push('adminscripts')
 <script>
-$(document).ready(function() {
-    // Load cities when state changes
-    $("#editstate").on("change", function() {
-        let stateId = $(this).val();
-        let citySelect = $("#editcity");
-        citySelect.empty().append('<option value="">Select City</option>');
-        
-        if (stateId) {
-            let url = "{{ route('admin-get-cities', ['state_id' => ':state_id']) }}".replace(':state_id', stateId);
-            $.ajax({
-                url: url,
-                type: "GET",
-                success: function(data) {
-                    if (Array.isArray(data) && data.length > 0) {
-                        $.each(data, function(key, city) {
-                            citySelect.append('<option value="' + city.Id + '">' + city.CityName + '</option>');
-                        });
-                    } else {
-                        citySelect.append('<option value="">No cities available</option>');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching cities:", error);
-                }
-            });
-        }
-    });
-});
 </script>
 @endpush
 @endsection

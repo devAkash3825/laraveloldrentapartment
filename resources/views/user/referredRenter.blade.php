@@ -11,7 +11,7 @@
         border: none;
     }
     .message-center-header {
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, var(--gradientColor) 100%);
+        background: var(--colorPrimary);
         padding: 30px;
         color: #fff;
     }

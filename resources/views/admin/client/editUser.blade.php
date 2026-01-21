@@ -158,7 +158,7 @@
                         <div class="col-lg-3 col-md-6">
                             <div class="form-group mb-3">
                                 <label class="form-label">State</label>
-                                <select class="form-control select2" name="editstate" id="editstate">
+                                <select class="form-control select2 state-dropdown" name="editstate" id="editstate" data-city-target="#editcity">
                                     <option value="">Choose State</option>
                                     @foreach ($state ?? [] as $row)
                                         <option value="{{ $row->Id }}"
@@ -522,40 +522,22 @@ $(document).ready(function() {
         }
     });
 
-    // Load cities when state changes
-    $("#editstate").on("change", function() {
-        let stateId = $(this).val();
-        let citySelect = $("#editcity");
-        citySelect.empty().append('<option value="">Select City</option>');
-        
-        if (stateId) {
-            let url = "{{ route('admin-get-cities', ['state_id' => ':state_id']) }}".replace(':state_id', stateId);
-            $.ajax({
-                url: url,
-                type: "GET",
-                success: function(data) {
-                    if (Array.isArray(data) && data.length > 0) {
-                        $.each(data, function(key, city) {
-                            citySelect.append('<option value="' + city.Id + '">' + city.CityName + '</option>');
-                        });
-                        
-                        let selectedCity = $("#selectedCity").val();
-                        if (selectedCity) {
-                            citySelect.val(selectedCity);
-                        }
-                    } else {
-                        citySelect.append('<option value="">No cities available</option>');
+    // Trigger initial city load for edit mode
+    const editState = document.getElementById('editstate');
+    if (editState && editState.value) {
+        const editCity = document.getElementById('editcity');
+        const selectedCityId = document.getElementById('selectedCity').value;
+        if (editCity) {
+            window.CityStateHandler.loadCities(editState.value, editCity, false).then(() => {
+                if (selectedCityId) {
+                    editCity.value = selectedCityId;
+                    if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
+                        jQuery(editCity).trigger('change');
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching cities:", error);
                 }
             });
         }
-    });
-    
-    // Trigger initial city load
-    $("#editstate").trigger("change");
+    }
 });
 </script>
 @endpush

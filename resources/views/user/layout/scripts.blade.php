@@ -14,13 +14,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 <script src="{{ asset('user_asset/js/frontendjs.js') }}"></script>
 <script src="{{ asset('ajax/user/userAjax.js') }}"></script>
 <script src="{{ asset('js/city-state-handler.js') }}"></script>
+<script src="{{ asset('common/js/validation.js') }}"></script>
 
 <script>
     function togglePasswordVisibility(id, event) {
@@ -60,3 +61,11 @@
     }
 </script>
 
+
+<script>
+    @if($errors->any())
+        $(document).ready(function() {
+            window.ValidationHandler.showErrors($('form'), @json($errors->toArray()));
+        });
+    @endif
+</script>

@@ -477,72 +477,13 @@ button {
    COMMON CSS START
 =====================*/
 
-.common_btn {
-    font-size: 16px;
-    color: var(--colorWhite);
-    padding: 15px 30px;
-    border: 1px solid var(--colorWhite);
-    border-radius: 30px;
-    font-weight: 500;
-    text-transform: capitalize;
-    transition: all linear 0.3s;
-    -webkit-transition: all linear 0.3s ease;
-    -moz-transition: all linear 0.3s ease;
-    -ms-transition: all linear 0.3s ease;
-    -o-transition: all linear 0.3s ease;
-}
+
 
 .common_btn i {
     font-size: 10px;
     margin-left: 5px;
 }
 
-.common_btn:hover {
-    background: transparent !important;
-    color: var(--btnColor) !important;
-    border-color: var(--btnColor) !important;
-}
-
-.read_btn {
-    font-size: 16px;
-    color: var(--colorBlack);
-    text-transform: capitalize;
-    font-weight: 600;
-    transition: all linear 0.3s;
-    -webkit-transition: all linear 0.3s ease;
-    -moz-transition: all linear 0.3s ease;
-    -ms-transition: all linear 0.3s ease;
-    -o-transition: all linear 0.3s ease;
-}
-
-.read_btn::after {
-    position: absolute;
-    content: "";
-    background: #dddddd26;
-    width: 20px;
-    height: 100px;
-    transform: rotate(25deg);
-    -webkit-transform: rotate(25deg);
-    -moz-transform: rotate(25deg);
-    -ms-transform: rotate(25deg);
-    -o-transform: rotate(25deg);
-    top: -30px;
-    left: -35px;
-    transition: all linear 0.3s;
-    -webkit-transition: all linear 0.3s ease;
-    -moz-transition: all linear 0.3s ease;
-    -ms-transition: all linear 0.3s ease;
-    -o-transition: all linear 0.3s ease;
-}
-
-.read_btn:hover {
-    color: var(--btnColor) !important;
-    background: transparent !important;
-}
-
-.read_btn:hover::after {
-    left: 120%;
-}
 
 .hire_btn {
     font-size: 16px;
@@ -7688,67 +7629,8 @@ button#submit-btn {
 /* Tab CSs */
 
 
-/* Button CSS Start */
-
-.main-btn {
-    font-size: 16px;
-    color: var(--colorBlack);
-    background: var(--btnColor);
-    border-radius: 4px;
-    padding: 12px 20px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: #fff;
-}
-
-.theme-btn {
-    font-size: 16px;
-    background: var(--site-btn-background);
-    border-radius: 4px;
-    padding: 12px 20px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: var(--site-btn-text);
-}
 
 
-.switch-btn {
-    font-size: 16px;
-    color: var(--colorBlack);
-    background: var(--colorPrimary);
-    border-radius: 4px;
-    padding: 12px 20px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: #fff;
-}
-
-.send-message-btn {
-    width: 100%;
-    font-size: 15px;
-    color: var(--colorBlack);
-    background: var(--colorPrimary);
-    padding: 12px 25px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: #fff;
-    border-radius: 5px;
-}
-
-
-/* Button CSS END */
 
 
 /* Notifications Css */

@@ -26,6 +26,7 @@ use App\Models\Message;
 use App\Models\Notification;
 use App\Events\MessageSent;
 use App\Models\NotifyDetail;
+use App\Models\NoteDetail;
 use App\Notifications\ReferredRenterNotification;
 
 class AdminNotesController extends Controller

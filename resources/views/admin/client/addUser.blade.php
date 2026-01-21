@@ -127,8 +127,8 @@
                     <div class="form-group col-lg-2 col-md-2 col-12">
                         <label for="state" class="font-weight-bold">State <span class="text-danger">*</span>
                         </label>
-                        <select class="form-control select2" data-placeholder="Choose State" name="state"
-                            id="state">
+                        <select class="form-control select2 state-dropdown" data-placeholder="Choose State" name="state"
+                            id="state" data-city-target="#city">
                             <option label="Choose State"></option>
                             @foreach ($state as $row)
                             <option value="{{ $row->Id }}">
@@ -412,43 +412,6 @@
         });
 
 
-        $("#state").on("change", function() {
-            let stateId = $(this).val();
-            let citySelect = $("#city");
-            citySelect.empty();
-            citySelect.append('<option value="">Select City</option>');
-            if (stateId) {
-                let url = "{{ route('admin-get-cities', ['state_id' => ':state_id']) }}".replace(
-                    ':state_id', stateId);
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    success: function(data) {
-                        if (Array.isArray(data) && data.length > 0) {
-                            $.each(data, function(key, city) {
-                                citySelect.append(
-                                    '<option value="' + city.Id + '">' + city
-                                    .CityName +
-                                    "</option>"
-                                );
-                            });
-
-                            let selectedCity = $("#selectedCity").val();
-                            if (selectedCity) {
-                                citySelect.val(selectedCity);
-                            }
-                        } else {
-                            citySelect.append('<option> No cities available </option>');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error fetching cities:", error);
-                        alert("Failed to fetch cities. Please try again.");
-                    },
-                });
-            }
-        });
-        $("#state").trigger("change");
     });
 </script>
 @endpush

@@ -1,39 +1,50 @@
 @extends('user/layout/app')
 @section('content')
-@section('title', 'RentApartement | Privacy Promise ')
-<div class="header-premium-gradient mb-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h1 class="text-white fw-bold display-5 mb-2">Privacy Promise</h1>
-                <p class="text-white opacity-75 lead mb-0">Our commitment to your data privacy</p>
-            </div>
-            <div class="col-md-6 text-md-end mt-4 mt-md-0">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb justify-content-md-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">Privacy Promise</li>
-                    </ol>
-                </nav>
+@section('title', 'RentApartment | Privacy Promise')
+
+<div id="breadcrumb_part" style="background-image:url('{{ asset('user_asset/images/breadcrumb_bg.jpg') }}'); background-size: cover; background-position: center;">
+    <div class="bread_overlay" style="background: rgba(0,0,0,0.6);">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 text-center text-white py-5">
+                    <h2 class="font-weight-bold mb-3">Privacy Promise</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center bg-transparent p-0 m-0">
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white">Home</a></li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">Privacy Promise</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
 <div class="container my-5">
     <div class="row">
-        <div class="col-md-12 pt-3">
-            @foreach($data as $term)
-            <div class="mt-3">
-                <h3 class="px-3 py-2 text-left rounded-3" style="color: #fff; font-size: 1.3rem; background: var(--colorPrimary);">
-                    {{ $term->title }}
-                </h3>
-            </div>
-            <div class="p-3">
-                <p class="text-secondary mt-2" style="line-height:2;"> {!! @$term->description !!}</p>
-            </div>
-            @endforeach
+        <div class="col-md-10 mx-auto">
+            @if(isset($data) && count($data) > 0)
+                @foreach($data as $item)
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3" style="width: 4px; height: 24px; background-color: var(--primary-color);"></div>
+                                <h4 class="mb-0 font-weight-bold" style="color: #2c3e50;">{{ $item->title }}</h4>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-muted" style="line-height: 1.8; font-size: 1rem;">
+                                {!! $item->description !!}
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="text-center py-5">
+                    <i class="bi bi-shield-lock text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3 text-muted">No privacy promise content found.</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>

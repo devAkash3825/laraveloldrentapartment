@@ -175,6 +175,7 @@
                         @if (Auth::guard('admin')->user()->hasPermission('access_school_management'))
                             <li class="{{ isActiveRoutes(['admin-school-management']) }}"><a href="{{ route('admin-school-management') }}">School Management</a></li>
                         @endif
+                        <li class="{{ isActiveRoutes(['admin-pets-management']) }}"><a href="{{ route('admin-pets-management') }}">Pets Management</a></li>
                     </ul>
                 </div>
             </li>
@@ -198,9 +199,14 @@
                         <li class="{{ isActiveRoutes(['admin-add-manager']) }}"><a href="{{ route('admin-add-manager') }}">Add Manager</a></li>
                         <li class="{{ isActiveRoutes(['admin-search-manager']) }}"><a href="{{ route('admin-search-manager') }}">Search Manager</a></li>
                         <li class="{{ isActiveRoutes(['admin-list-manager']) }}"><a href="{{ route('admin-list-manager') }}">List Manager</a></li>
+                        <li class="{{ isActiveRoutes(['admin-add-company']) }}"><a href="{{ route('admin-add-company') }}">Add Company</a></li>
+                        <li class="{{ isActiveRoutes(['admin-manage-company']) }}"><a href="{{ route('admin-manage-company') }}">Manage Company</a></li>
+                        <li class="{{ isActiveRoutes(['admin-revert-contactus']) }}"><a href="{{ route('admin-revert-contactus') }}">Contact Us Requests</a></li>
                     </ul>
                 </div>
             </li>
+            
+
 
             <li
                 class="nav-item with-sub {{ isActiveRoutes([

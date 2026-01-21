@@ -1,176 +1,197 @@
 @extends('user.auth.layout.app')
 @section('authcontent')
-    <style>
-        .login-bg a {
-            color: white;
-        }
-
-        .login-bg {
-            background-image: url("{{ asset('img/login-bg.jpg') }}");
-            height: 100vh;
-            align-content: center;
-            align-items: center;
-        }
-
-        .title-container {
-            height: 150px;
-            position: relative;
-            color: #fff;
-            width: 75%;
-            left: 60px;
-
-        }
-
-        .title-container div {
-            background-color: rgba(255, 255, 255, 0.4);
-            -webkit-backdrop-filter: blur(5px);
-            backdrop-filter: blur(5px);
-            padding: 20px;
-        }
-
-        .logo-image {
-            width: 100%;
-            margin-bottom: 15px;
-            object-fit: contain !important;
-        }
-
-
-
-        .step {
-            width: 100%;
-            display: none;
-            padding: 0px 20px;
-        }
-
-        .qbox-container {
-            background-repeat: repeat;
-            position: relative;
-            padding: 30px;
-            height: 100% !important;
-        }
-
-        .qbox-container {
-            background-color: #f7f0f0;
-        }
-
-        button#submit-btn {
-            font-size: 17px;
-            font-weight: bold;
-            position: relative;
-            width: 130px;
-            height: 50px;
-            background: #4caa86;
-            margin: 0 auto;
-            margin-top: 40px;
-            overflow: hidden;
-            z-index: 1;
-            cursor: pointer;
-            transition: color .3s;
-            text-align: center;
-            color: #fff;
-            border: 0;
-        }
-
-        @media (max-width: 767px) {
-            .login-bg {
-                height: 60vh;
-            }
-        }
-
-        @media (max-width: 560px) {
-            .login-bg {
-                height: 60vh;
-
-
-                label {
-                    font-size: 16px;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    margin-bottom: 5px;
-                    color: #00011c;
-                }
-
-                button#submit-btn {
-                    font-size: 17px;
-                    font-weight: bold;
-                    position: relative;
-                    width: 140px;
-                    height: 50px;
-                    background: #4caa86;
-                    margin: 0 auto;
-                    margin-top: 40px;
-                    overflow: hidden;
-                    z-index: 1;
-                    cursor: pointer;
-                    transition: color .3s;
-                    text-align: center;
-                    color: #fff;
-                    border: 0;
-                }
-            }
-
-            .auth-section {
-                height: 100%;
-            }
-
-            .toggle-password {
-                cursor: pointer;
-            }
-    </style>
-    <section id="login-section">
-        <div class="container">
-            <a href="{{ route('home') }}" class="btn back-home-btn"> <i class="bi bi-caret-left-fill"></i> Back to Home </a>
-            <div class="row auth-section">
-                <div class="col-lg-6 auth-row-col4 p-0">
-                    <div class="title-containers">
-                        <div class="login-left-img-block">
-                            <div> <img src="{{ asset('img/login-bg.jpg') }}" alt=""></div>
-                            <div class="brand-logo"><img class="logo-images" src="{{ asset('img/logovitalg.png') }}"
-                                    width="250" height="100"></div>
-                        </div>
+<section id="login-section" class="login-viewport">
+    <div class="row g-0 h-100 w-100">
+        <div class="col-lg-5 d-none d-lg-block p-0">
+            <div class="hero-side h-100">
+                <div class="hero-content">
+                    <a href="{{ route('show-login') }}" class="back-link mb-5 d-inline-block">
+                        <i class="bi bi-arrow-left"></i> Back to Login
+                    </a>
+                    <div class="brand">
+                        <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid mb-4 px-4" style="max-width: 350px; filter: brightness(0) invert(1);">
+                        <h1 class="display-3 fw-bold mb-4">Reset Your<br>Password</h1>
+                        <p class="lead opacity-90">Don't worry, it happens to the best of us. Just enter your email and we'll help you get back in.</p>
                     </div>
                 </div>
-
-                <div class="col-lg-6 col-md-12 col-12">
-                    <section class="wsus__login_page p-0">
-                        <div class="container">
-                            <div class="wsus__login_area mt-2">
-                                <div class="row labels mt-3">
-                                    <h2 class="text-center">Forgot your password?</h2>
-                                    <h6 class="text-center text-secondary mt-2">Don't worry. Just enter your email address
-                                        below and we'll send you some instructions. </h6>
-                                </div>
-
-
-
-                                <form action="index.html" method="post" class="mt-5">
-                                    <label for="mail">Email</label></br>
-                                    <input type="email" id="name" name="name"
-                                        placeholder="Enter your email address" required onblur="validateName(name)">
-                                    <button type="submit fw-700">Reset Password</button>
-                                    <a href="{{ route('show-login') }}" class="btn btn-outline-secondary w-100 mt-2 "
-                                        type="submit fw-700">Back</a>
-                                    <span id="nameError" style="display: none;">There was an error with your email</span>
-                                </form>
-
-                            </div>
-                        </div>
-                    </section>
-
+                <div class="hero-footer mt-auto">
+                    <p class="mb-0 opacity-50">&copy; {{ date('Y') }} RentApartments Inc. All rights reserved.</p>
                 </div>
             </div>
         </div>
-    </section>
+        <div class="col-lg-7">
+            <div class="form-side h-100 d-flex flex-column align-items-center">
+                <div class="form-container w-100 px-4 px-md-5 py-5 my-auto" style="max-width: 550px;">
+                    <div class="d-lg-none mb-4 text-center">
+                        <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
+                    </div>
+                    
+                    <h2 class="auth-title mb-2">Forgot Password?</h2>
+                    <p class="auth-subtitle mb-4">Enter the email address associated with your account.</p>
+
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show border-0 rounded-4 mb-4 shadow-sm" role="alert" style="background-color: #f0fdf4; color: #166534;">
+                            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4 mb-4 shadow-sm" role="alert" style="background-color: #fef2f2; color: #991b1b;">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('forgot-password.post') }}" class="login-form needs-validation" method="post" novalidate>
+                        @csrf
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <div class="input-group-custom">
+                                <i class="bi bi-envelope"></i>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="Enter your email address" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-5 pt-2">
+                            <button type="submit" class="btn btn-primary-custom w-100 p-3 shadow-sm rounded-4">
+                                <i class="bi bi-send-fill me-2"></i> Send Reset Link
+                            </button>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <p class="text-muted">Remember your password? <a href="{{ route('show-login') }}" class="text-primary fw-bold text-decoration-none underline-hover">Back to Login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .login-viewport {
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .hero-side {
+        background: linear-gradient(135deg, var(--colorPrimary) 0%, #111827 100%);
+        padding: 80px 60px;
+        display: flex;
+        flex-direction: column;
+        color: white;
+        position: relative;
+    }
+
+    .hero-side::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: url("{{ asset('img/login-bg.jpg') }}") no-repeat center center;
+        background-size: cover;
+        opacity: 0.2;
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-footer {
+        position: relative;
+        z-index: 1;
+    }
+
+    .back-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        color: white;
+        transform: translateX(-5px);
+    }
+
+    .auth-title {
+        color: #334155;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+    }
+
+    .auth-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    .form-side {
+        background: #ffffff;
+        overflow-y: auto;
+    }
+
+    .input-group-custom {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .input-group-custom i:first-child {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.25rem;
+        z-index: 5;
+    }
+
+    .input-group-custom .form-control {
+        padding-left: 56px !important;
+        height: 60px;
+        border-radius: 16px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        color: #334155;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .input-group-custom .form-control:focus {
+        background: #fff;
+        border-color: var(--colorPrimary);
+        box-shadow: 0 0 0 4px rgba(var(--colorPrimaryRgb), 0.1);
+        outline: none;
+    }
+
+
+
+    .underline-hover:hover {
+        text-decoration: underline !important;
+    }
+
+    @media (max-width: 991px) {
+        .login-viewport {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+        .form-side {
+            padding: 40px 0;
+        }
+    }
+</style>
 @endsection
-@push('authscript')
-    <script>
-        $(document).ready(function() {
-            $(".show-password").on("click", function() {
-                const passwordField = $("#password");
-                const type = passwordField.attr("type") === "password" ? "text" : "password";
-                passwordField.attr("type", type);
-                $(this).toggleClass("bi-eye-fill bi-eye-slash-fill");
-            });
-        });
-    </script>
-@endpush

@@ -29,4 +29,5 @@
         }
     }
 </script>
+<script src="{{ asset('js/city-state-handler.js') }}"></script>
 

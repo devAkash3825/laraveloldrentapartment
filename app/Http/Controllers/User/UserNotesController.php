@@ -27,81 +27,127 @@ use App\Models\RenterInfo;
 use App\Models\Notification;
 use App\Events\RenterMessageSent;
 use App\Events\ManagerMessageSent;
-
+use App\Models\NotifyDetail;
 
 class UserNotesController extends Controller
 {
     public function addNotes(Request $request)
     {
-        $userid = Auth::guard('renter')->user()->Id;
-        $propertyId = $request->propertyId;
-        $message = $request->message;
-        $respondId = $request->input('respond_id', 0);
+        try {
+            $sender = Auth::guard('renter')->user();
+            if (!$sender) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized']);
+            }
 
-        NoteDetail::create([
-            'user_id' => $userid,
-            'property_id' => $propertyId,
-            'message' => $message,
-            'send_time' => now(),
-            'responde_id' => $respondId,
-            'renter_id' => $userid,
-        ]);
-
-        // Create notification for Admin/Manager
-        $property = PropertyInfo::where('Id', $propertyId)->first();
-        if ($property) {
-            $renter = Auth::guard('renter')->user();
-            $notifMessage = "<strong>{$renter->UserName}</strong> added a note to <strong>{$property->PropertyName}</strong>.";
+            $propertyId = $request->propertyId;
+            $message = $request->message;
             
-            if ($property->UserId) {
-                Notification::create([
-                    'from_id' => $userid,
-                    'form_user_type' => 'R',
-                    'to_id' => $property->UserId,
-                    'to_user_type' => 'M',
-                    'property_id' => $propertyId,
-                    'message' => $notifMessage,
-                    'seen' => 0,
-                    'CreatedOn' => now(),
-                ]);
+            // Context: which renter is this note for?
+            $renterId = ($sender->user_type == 'M') ? $request->input('renter_id') : $sender->Id;
+
+            if (!$renterId) {
+                return response()->json(['success' => false, 'message' => 'Renter context missing']);
             }
 
-            $renterInfo = Login::where('Id', $userid)->with('renterinfo')->first();
-            $adminId = $renterInfo->renterinfo->added_by ?? null;
-            if ($adminId) {
-                Notification::create([
-                    'from_id' => $userid,
-                    'form_user_type' => 'R',
-                    'to_id' => $adminId,
-                    'to_user_type' => 'A',
-                    'property_id' => $propertyId,
-                    'message' => $notifMessage,
-                    'seen' => 0,
-                    'CreatedOn' => now(),
-                ]);
-            }
+            // Find existing referral record to link
+            $referral = NotifyDetail::where('renter_id', $renterId)->where('property_id', $propertyId)->first();
+
+            NoteDetail::create([
+                'user_id' => $sender->Id,
+                'sender_id' => $sender->Id,
+                'property_id' => $propertyId,
+                'message' => $message,
+                'send_time' => now(),
+                'renter_id' => $renterId,
+                'referral_id' => $referral ? $referral->notification_id : null,
+            ]);
+
+            // Create notification for Admin/Manager
+            $property = PropertyInfo::where('Id', $propertyId)->first();
+            if ($property) {
+                $propertyName = $property->PropertyName ?? 'Property';
+                $notifMessage = "<strong>{$sender->UserName}</strong> added a note to <strong>{$propertyName}</strong>.";
+            
+            if ($sender->user_type != 'M') {
+                // Renter added note: Notify Manager & Admin
+                if ($property->UserId) {
+                    Notification::create(['from_id' => $sender->Id, 'form_user_type' => 'R', 'to_id' => $property->UserId, 'to_user_type' => 'M', 'property_id' => $propertyId, 'message' => $notifMessage, 'seen' => 0, 'CreatedOn' => now()]);
+                }
+
+                $renterInfo = RenterInfo::where('Login_ID', $sender->Id)->first();
+                $adminId = $renterInfo->added_by ?? null;
+                if ($adminId) {
+                    Notification::create(['from_id' => $sender->Id, 'form_user_type' => 'R', 'to_id' => $adminId, 'to_user_type' => 'A', 'property_id' => $propertyId, 'message' => $notifMessage, 'seen' => 0, 'CreatedOn' => now()]);
+                }
+            } else {
+                // Manager added note: Notify Admin (and optionally Renter)
+                $renterInfo = RenterInfo::where('Login_ID', $renterId)->first();
+                $adminId = $renterInfo->added_by ?? null;
+                
+                if ($adminId) {
+                    // Notify Admin via persistent notification
+                    Notification::create(['from_id' => $sender->Id, 'form_user_type' => 'M', 'to_id' => $adminId, 'to_user_type' => 'A', 'property_id' => $propertyId, 'message' => $notifMessage, 'seen' => 0, 'CreatedOn' => now()]);
+                    
+                    // Email Agent so they can track lead progress (as requested)
+                    $admin = AdminDetail::find($adminId);
+                    if ($admin && $admin->email) {
+                        try {
+                            $rName = ($renterInfo->Firstname ?? '') . ' ' . ($renterInfo->Lastname ?? '');
+                            \Illuminate\Support\Facades\Mail::raw("Manager {$sender->UserName} added a note for referred lead {$rName} on property {$property->PropertyName}:\n\n{$message}", function($m) use ($admin) {
+                                $m->to($admin->email)->subject('Referral Update: Lead Activity Note');
+                            });
+                        } catch (\Exception $e) {
+                            \Log::error('Failed to send lead update email to admin: ' . $e->getMessage());
+                        }
+                    }
+                }
+                
+                // Also notify Renter
+                Notification::create(['from_id' => $sender->Id, 'form_user_type' => 'M', 'to_id' => $renterId, 'to_user_type' => 'R', 'property_id' => $propertyId, 'message' => $notifMessage, 'seen' => 0, 'CreatedOn' => now()]);
+                }
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Note added'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Note added successfully!']);
+        } catch (\Exception $e) {
+            \Log::error('Add Note Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred while adding the note.']);
+        }
     }
 
     public function getNoteDetail(Request $request)
     {
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
+        
         $getdetails = NoteDetail::where('property_id', $propertyId)
             ->where(function($query) use ($userid) {
+                // Fetch notes where the user is either the sender OR the renter associated with the note context
                 $query->where('user_id', $userid)
                       ->orWhere('renter_id', $userid);
             })
+            ->with('user') // Eager load the user who created the note
             ->orderBy('send_time', 'asc')
             ->get();
             
+        // Transform the data to include the specific color class
+        $formattedDetails = $getdetails->map(function ($note) {
+            $userType = $note->user->user_type ?? '';
+            $colorClass = 'text-danger'; // Default to Red (Renter)
+            
+            if ($userType === 'A') {
+                $colorClass = 'text-primary'; // Blue for Admin
+            } elseif ($userType === 'M') {
+                $colorClass = 'text-dark'; // Black for Manager
+            }
+            // 'C' or 'R' stays Red
+
+            $note->color_class = $colorClass;
+            $note->sender_name = $note->user->UserName ?? 'Unknown';
+            return $note;
+        });
+
         return response()->json([
-            'notedetails' => $getdetails
+            'notedetails' => $formattedDetails
         ]);
     }
 

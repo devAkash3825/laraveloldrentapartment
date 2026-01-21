@@ -1,0 +1,84 @@
+/**
+ * Unified Theme Buttons - Rent Apartments
+ * Standardizes all button styles across Renter, Manager, and Auth pages.
+ */
+
+:root {
+    /* Use the standard theme color */
+    --theme-primary: #0d7c66;
+    --theme-primary-rgb: 13, 124, 102;
+    --theme-white: #ffffff;
+    --theme-black: #1c212b;
+    --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Premium Button Style */
+.read_btn,
+.main-btn,
+.btn-primary-custom,
+.btn-success-custom,
+.common_btn,
+.theme-btn,
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    /* Standardized radius */
+    transition: var(--theme-transition);
+    cursor: pointer;
+    text-decoration: none !important;
+    border: 2px solid var(--theme-primary);
+    background: var(--theme-primary);
+    color: var(--theme-white) !important;
+    box-shadow: 0 4px 12px rgba(var(--theme-primary-rgb), 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Unified Hollow Hover Effect */
+.read_btn:hover,
+.main-btn:hover,
+.btn-primary-custom:hover,
+.btn-success-custom:hover,
+.common_btn:hover,
+.theme-btn:hover,
+.btn-primary:hover {
+    background: transparent !important;
+    color: var(--theme-primary) !important;
+    box-shadow: 0 8px 20px rgba(var(--theme-primary-rgb), 0.15);
+    transform: translateY(-2px);
+}
+
+/* Specific Overrides for Success Buttons (e.g. "Register Now") */
+.btn-success-custom {
+    --theme-primary: #10b981;
+    --theme-primary-rgb: 16, 185, 129;
+}
+
+/* Small Variant */
+.btn-sm-custom {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+/* Icon Support */
+.read_btn i,
+.main-btn i,
+.btn-primary-custom i,
+.btn-success-custom i {
+    font-size: 1.1rem;
+}
+
+/* Remove legacy after/before effects that might conflict */
+.read_btn::after,
+.main-btn::after,
+.common_btn::after {
+    display: none !important;
+}

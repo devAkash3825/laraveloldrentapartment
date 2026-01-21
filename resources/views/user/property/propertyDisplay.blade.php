@@ -123,20 +123,22 @@
 </style>
 @endpush
 
-<div id="breadcrumb_part"
-    style="background-image:url('https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyDetails['id'] }}/Original/{{ $propertyDetails['listingImages']['ImageName'] ?? 'default.jpg' }}')">
-    <div class="bread_overlay">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center text-white">
-                    <h4>{{ $propertyDetails['propertyname'] }}</h4>
-                    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}"> Home </a></li>
-                            <li class="breadcrumb-item active" aria-current="page"> listing details </li>
-                        </ol>
-                    </nav>
-                </div>
+<!-- Premium Header -->
+<div class="header-premium-gradient py-5 position-relative overflow-hidden" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyDetails['id'] }}/Original/{{ $propertyDetails['listingImages']['ImageName'] ?? 'default.jpg' }}'); background-size: cover; background-position: center;">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h1 class="text-white fw-bold display-5 mb-2">{{ $propertyDetails['propertyname'] }}</h1>
+                <p class="text-white opacity-75 lead mb-0"><i class="bi bi-geo-alt-fill me-2"></i>{{ $propertyDetails['address'] }}, {{ $propertyDetails['city'] }}</p>
+            </div>
+            <div class="col-md-5 text-md-end mt-4 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('list-properties') }}" class="text-white opacity-75 text-decoration-none small">Properties</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">Details</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
@@ -162,10 +164,9 @@
                                 </a>
                             </p>
                             <ul class="mt-3">
-                                <li id="addtofavorite" value="{{ $propertyDetails['id'] }}" class="addtofavorite">
-                                    <a href="javascript:void(0)">
-                                        <i class="bi bi-heart-fill" style="display: none;"></i>
-                                        <i class="bi bi-heart"></i>
+                                <li id="addtofavorite" data-value="{{ $propertyDetails['id'] }}" class="addtofavorite" style="cursor: pointer;">
+                                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2">
+                                        <i class="fa-regular fa-heart"></i>
                                         Add to Favorite
                                     </a>
                                 </li>

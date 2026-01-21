@@ -32,8 +32,10 @@ Route::get('/login', [UserLoginController::class, 'showUserLoginForm'])->name('s
 Route::post('/login', [UserLoginController::class, 'userLogin'])->name('login');
 Route::post('renter-register', [UserLoginController::class, 'renterRegister'])->name('renter-register');
 Route::post('manager-register', [UserLoginController::class, 'managerRegister'])->name('manager-register');
-Route::get('/forgot-password', [UserLoginController::class, 'forgotPasswod'])->name('forgot-password');
-
+Route::get('/forgot-password', [UserLoginController::class, 'forgotPassword'])->name('forgot-password');
+Route::post('/forgot-password', [UserLoginController::class, 'sendResetLink'])->name('forgot-password.post');
+Route::get('/reset-password/{token}', [UserLoginController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password-final', [UserLoginController::class, 'resetPasswordPost'])->name('password.update');
 
 Route::get('login-user', [UserLoginController::class, 'loginUserForm'])->name('login-user');
 
@@ -52,6 +54,7 @@ Route::get('/privacy-promise', [HomeController::class, 'privacyPromise'])->name(
 Route::get('/manager-terms', [HomeController::class, 'managerTerms'])->name('manager-terms');
 Route::get('/equal-opportunity', [HomeController::class, 'equalOpportunity'])->name('equal-opportunity');
 Route::get('/report-lease', [HomeController::class, 'reportLease'])->name('report-lease');
+Route::post('/report-lease', [HomeController::class, 'submitReportLease'])->name('submit-report-lease');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('advance-search', [HomeController::class, 'advanceSearchPage'])->name('advance-search');
 
@@ -76,6 +79,7 @@ Route::middleware(['authenticated'])->group(function () {
 
 
     Route::group(['prefix' => 'favorite'], function () {
+        Route::get('/', function() { return redirect()->route('list-view'); });
         Route::get('/list-view', [UserFavoriteController::class, 'listview'])->name('list-view');
         Route::get('/thumbnail-view', [UserFavoriteController::class, 'thumbnailView'])->name('thumbnail-view');
         Route::get('/map-view', [UserFavoriteController::class, 'mapView'])->name('map-view');
@@ -102,6 +106,7 @@ Route::middleware(['authenticated'])->group(function () {
     Route::post('/update-floor-plan/{id}', [UserPropertyController::class, 'updateFloorPlan'])->name('update-floor-plan');
     Route::post('/delete-floor-plan/{id}', [UserPropertyController::class, 'deleteFloorPlan'])->name('delete-floor-plan');
     Route::post('/upload-image', [UserPropertyController::class, 'uploadImage'])->name('upload-image');
+    Route::post('/update-gallery-image', [UserPropertyController::class, 'updateGalleryImage'])->name('update-gallery-image');
 
     Route::post('/add-to-favorite', [UserFavoriteController::class, 'addToFavoriteByUser'])->name('add-to-favorite');
     Route::post('/is-favorite', [UserFavoriteController::class, 'checkIsFavorite'])->name('check-is-favorite');
@@ -183,9 +188,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/notify-manager', [AdminNotesController::class, 'notifyManager'])->name('notify-manager');
         Route::post('/mark-all-as-read', [AdminDashboardController::class, 'markAllAsRead'])->name('admin-mark-all-as-read');
         Route::post('/mark-as-seen', [AdminDashboardController::class, 'markAsSeen'])->name('admin-mark-as-seen');
+        Route::get('/notes/view/renter_{renterId}/property_{propertyId}', [AdminNotesController::class, 'viewNotes'])->name('admin-view-notes');
+        Route::post('/notes/save', [AdminNotesController::class, 'saveNote'])->name('admin-save-note');
 
         Route::post('change-status/{id}', [AdminDashboardController::class, 'changeStatus'])->name('admin-change-status');
         Route::get('add-lease', [AdminDashboardController::class, 'addLease'])->name('admin-add-lease');
+        Route::post('add-lease', [AdminDashboardController::class, 'storeLease'])->name('admin-store-lease');
         Route::get('specials', [AdminDashboardController::class, 'specials'])->name('admin-specials');
         Route::get('show-all', [AdminDashboardController::class, 'showAll'])->name('admin-showall');
         Route::get('admin-messages', [AdminDashboardController::class, 'adminMessages'])->name('admin-messages');
@@ -318,6 +326,8 @@ Route::group(['prefix' => 'admin'], function () {
                 Route::post('/delete-school/{id}', [PropertyController::class, 'deleteSchool'])->name('admin-delete-school');
                 Route::post('/school-management/{id}', [PropertyController::class, 'schoolDelete']);
                 Route::post('/school-management/selected', [PropertyController::class, 'schoolSelected'])->name('admin-schoolManagement-deleteSelected');
+                Route::get('/edit-school/{id}', [PropertyController::class, 'editSchool'])->name('admin-edit-school');
+                Route::post('/update-school', [PropertyController::class, 'updateSchool'])->name('admin-update-school');
             });
 
             Route::get('pets-management', [PropertyController::class, 'petsManagement'])->name('admin-pets-management');
@@ -390,6 +400,12 @@ Route::group(['prefix' => 'admin'], function () {
             
             Route::post('delete-manager-terms/{id}', [SettingsController::class, 'deleteManagerTerms'])->name('admin-delete-manager-terms');
             Route::post('delete-terms/{id}', [SettingsController::class, 'deleteTerms'])->name('admin-delete-terms');
+            Route::post('delete-equal-housing/{id}', [SettingsController::class, 'deleteEqualHousing'])->name('admin-delete-equal-housing');
+
+            Route::post('update-privacy-promise', [SettingsController::class, 'updatePrivacyPromise'])->name('admin-update-privacy-promise');
+            Route::get('add-privacy-promise', [SettingsController::class, 'addPrivacyPromise'])->name('admin-add-privacy-promise');
+            Route::post('create-privacy-promise', [SettingsController::class, 'createPrivacyPromise'])->name('admin-create-privacy-promise');
+            Route::post('delete-privacy-promise/{id}', [SettingsController::class, 'deletePrivacyPromise'])->name('admin-delete-privacy-promise');
             Route::post('delete-equal-housing/{id}', [SettingsController::class, 'deleteEqualHousing'])->name('admin-delete-equal-housing');
         });
 

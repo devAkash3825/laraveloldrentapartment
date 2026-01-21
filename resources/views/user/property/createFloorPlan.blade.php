@@ -42,15 +42,7 @@
                             @csrf
                             <input type="hidden" name="propertyId" value="{{ $propertyId }}">
 
-                            @if ($errors->any())
-                                <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-4 py-2">
-                                    <ul class="mb-0 small">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+
 
                             <div class="row g-4">
                                 <!-- Category & Plan Type -->
@@ -61,9 +53,10 @@
                                             <select class="form-select select_2" name="category" required>
                                                 <option value="">Select Category</option>
                                                 @foreach ($categories as $category)
-                                                    <option value="{{ $category->Id }}">{{ $category->Name }}</option>
+                                                    <option value="{{ $category->Id }}" {{ old('category') == $category->Id ? 'selected' : '' }}>{{ $category->Name }}</option>
                                                 @endforeach
                                             </select>
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -72,7 +65,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Plan Type</label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="plan_type" placeholder="(e.g. Apartment, Loft, Townhome)">
+                                            <input type="text" class="form-control" name="plan_type" value="{{ old('plan_type') }}" placeholder="(e.g. Apartment, Loft, Townhome)">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -82,7 +76,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Floor Plan</label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="floor_plan" placeholder="(e.g. Studio, 2 bed 1 bath)">
+                                            <input type="text" class="form-control" name="floor_plan" value="{{ old('floor_plan') }}" placeholder="(e.g. Studio, 2 bed 1 bath)">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -91,7 +86,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Plan Name <span class="text-danger">*</span></label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="plan_name" placeholder="Enter Plan Name" required>
+                                            <input type="text" class="form-control" name="plan_name" value="{{ old('plan_name') }}" placeholder="Enter Plan Name" required>
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -101,7 +97,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Square Footage</label>
                                         <div class="input_area">
-                                            <input type="number" class="form-control" name="square_footage" placeholder="e.g. 850">
+                                            <input type="number" class="form-control" name="square_footage" value="{{ old('square_footage') }}" placeholder="e.g. 850">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -110,7 +107,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Starting at ($)</label>
                                         <div class="input_area">
-                                            <input type="number" class="form-control" name="starting_at" placeholder="Monthly rent">
+                                            <input type="number" class="form-control" name="starting_at" value="{{ old('starting_at') }}" placeholder="Monthly rent">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +117,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Deposit ($)</label>
                                         <div class="input_area">
-                                            <input type="number" class="form-control" name="deposit" placeholder="Deposit amount">
+                                            <input type="number" class="form-control" name="deposit" value="{{ old('deposit') }}" placeholder="Deposit amount">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -129,7 +128,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Link</label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="link" placeholder="External link">
+                                            <input type="text" class="form-control" name="link" value="{{ old('link') }}" placeholder="External link">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +138,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Available URL</label>
                                         <div class="input_area">
-                                            <input type="text" class="form-control" name="available_url" placeholder="Availability link">
+                                            <input type="text" class="form-control" name="available_url" value="{{ old('available_url') }}" placeholder="Availability link">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -147,7 +148,8 @@
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Expiry Date</label>
                                         <div class="input_area">
-                                            <input type="date" class="form-control" name="expiry_date">
+                                            <input type="date" class="form-control" name="expiry_date" value="{{ old('expiry_date') }}">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -156,14 +158,20 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Unit Description / Specials</label>
-                                        <textarea class="form-control summer_note" name="unit_description"></textarea>
+                                        <div class="input_area">
+                                            <textarea class="form-control" name="unit_description" rows="5">{{ old('unit_description') }}</textarea>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label class="form-label fw-600">Special Note</label>
-                                        <textarea class="form-control summer_note" name="special"></textarea>
+                                        <div class="input_area">
+                                            <textarea class="form-control" name="special" rows="5">{{ old('special') }}</textarea>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -197,24 +205,7 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Initialize Summernote
-    if (typeof $('.summer_note').summernote === 'function') {
-        $('.summer_note').summernote({
-            placeholder: 'Type here...',
-            tabsize: 2,
-            height: 150,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
-    }
+    $(document).ready(function() {
 
     // Dynamic Date Rows
     $('#add_row').click(function() {
@@ -233,16 +224,7 @@ $(document).ready(function() {
         $(this).closest('.medicine_row_input').remove();
     });
 
-    // Handle form submission with summernote
-    $('#createfloorplan').on('submit', function() {
-        // Summernote should sync automatically, but let's be safe
-        $('.summer_note').each(function() {
-            if ($(this).summernote('isEmpty')) {
-                $(this).val('');
-            }
-        });
-        return true;
-    });
+
 });
 </script>
 <style>

@@ -1,118 +1,12 @@
-@extends('admin.layouts.app')
+@extends('admin/layouts/app')
+
+@section('title', 'RentApartments Admin | Edit Property')
+
 @push('style')
 <link rel="stylesheet" href="{{ asset('admin_asset/css/tabview.css') }}">
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 @endpush
 @section('content')
-<style>
-    .property-sm-img {
-        height: 3.5rem;
-        width: 3.5rem;
-    }
 
-    .text-editor-container .toolbar {
-        width: 100%;
-        margin: 0 auto 10px;
-    }
-
-    .text-editor-container button {
-        width: 30px;
-        height: 30px;
-        border-radius: 3px;
-        background: none;
-        border: none;
-        box-sizing: border-box;
-        padding: 0;
-        font-size: 20px;
-        color: #a6a6a6;
-        cursor: pointer;
-        outline: none;
-    }
-
-    .text-editor-container button:hover {
-        border: 1px solid #a6a6a6;
-        color: #777;
-    }
-
-    .text-editor-container #bold,
-    .text-editor-container #italic,
-    .text-editor-container #underline {
-        font-size: 18px;
-    }
-
-    .text-editor-container #underline,
-    .text-editor-container #align-right {
-        margin-right: 17px;
-    }
-
-    .text-editor-container #align-left {
-        margin-left: 17px;
-    }
-
-    .text-editor-container select {
-        height: 24px;
-        font-size: 15px;
-        font-weight: bold;
-        color: #444;
-        background: #fcfcfc;
-        border: 1px solid #a6a6a6;
-        border-radius: 3px;
-        margin: 0;
-        outline: none;
-        cursor: pointer;
-    }
-
-    .text-editor-container select>option {
-        font-size: 15px;
-        background: #fafafa;
-    }
-
-    .text-editor-container #fonts {
-        width: 140px;
-    }
-
-    .text-editor-container .sp-replacer {
-        background: #fcfcfc;
-        padding: 1px 2px 1px 3px;
-        border-radius: 3px;
-        border-color: #a6a6a6;
-        margin-top: -1px;
-    }
-
-    .text-editor-container .sp-replacer:hover {
-        border-color: #a6a6a6;
-        color: inherit;
-    }
-
-    .text-editor-container .sp-preview {
-        width: 15px;
-        height: 15px;
-        border: none;
-        margin-top: 2px;
-        margin-right: 3px;
-    }
-
-    .text-editor-container .sp-preview-inner,
-    .text-editor-container .sp-alpha-inner,
-    .text-editor-container .sp-thumb-inner {
-        border-radius: 3px;
-    }
-
-    .text-editor-container .editor {
-        position: relative;
-        width: 100%;
-        /* height: ; */
-        margin: 0 auto;
-        padding: 20px;
-        background: #fcfcfc;
-        border-radius: 3px;
-        box-shadow: inset 0 0 8px 1px rgba(0, 0, 0, 0.2);
-        box-sizing: border-box;
-        overflow: hidden;
-        word-break: break-all;
-        outline: none;
-    }
-</style>
 <style>
         .show-password {
             cursor: pointer;
@@ -193,8 +87,8 @@
                             <div class="form-group col-md-4">
                                 <label for="managername"> User Name </label>
                                 <select class="form-control" id="managername" name="managername">
-                                    <option value="{{ $propertyinfo->login->Id }}">
-                                        {{ $propertyinfo->login->UserName }}
+                                    <option value="{{ optional($propertyinfo->login)->Id }}">
+                                        {{ optional($propertyinfo->login)->UserName ?? 'Select Manager' }}
                                     </option>
                                     @foreach ($managerIds as $row)
                                     <option value="{{ $row->Id }}">{{ $row->UserName }}</option>
@@ -301,11 +195,11 @@
                         <div class="form-row">
                             <div class="form-group col-md-3">
                                 <label for="state">State </label>
-                                <select class="form-control" id="editpropertystate" name="editpropertystate"
-                                    required>
+                                <select class="form-control state-dropdown" id="editpropertystate" name="editpropertystate"
+                                    data-city-target="#editpropertycity" required>
                                     @foreach ($state as $row)
                                     <option value="{{ $row->Id }}"
-                                        {{ $propertyinfo->city->state->Id == $row->Id ? 'selected' : '' }}>
+                                        {{ optional(optional($propertyinfo->city)->state)->Id == $row->Id ? 'selected' : '' }}>
                                         {{ $row->StateName }}
                                     </option>
                                     @endforeach
@@ -317,6 +211,9 @@
                                 <input type="hidden" id="editselectedCity" value="{{ $propertyinfo->CityId }}">
                                 <select id="editpropertycity" class="form-control" name="editpropertycity" required>
                                     <option value="">Select City</option>
+                                    @if($propertyinfo->city)
+                                        <option value="{{ $propertyinfo->city->Id }}" selected>{{ $propertyinfo->city->CityName }}</option>
+                                    @endif
                                 </select>
                             </div>
 
@@ -395,14 +292,14 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Community Descriptions ::</h4>
-                                <textarea id="editcommunitydescription" name="editcommunitydescription" class="form-control summernote">
+                                <textarea id="editcommunitydescription" name="editcommunitydescription" class="form-control" rows="5">
                                 {{ @$propertyinfo->communitydescription->Description ? @$propertyinfo->communitydescription->Description : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Agent Comments ::</h4>
-                                <textarea id="editagentcomments" name="editagentcomments" class="form-control summernote">
+                                <textarea id="editagentcomments" name="editagentcomments" class="form-control" rows="5">
                                 {{ @$propertyinfo->communitydescription->Agent_comments ? @$propertyinfo->communitydescription->Agent_comments : '' }}
                                 </textarea>
                             </div>
@@ -468,7 +365,7 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Keywords ::</h4>
-                                <textarea id="editkeyword" name="editkeyword" class="form-control summernote">
+                                <textarea id="editkeyword" name="editkeyword" class="form-control" rows="3">
                                 {{ $propertyinfo->Keyword ?? '' }}
                                 </textarea>
                             </div>
@@ -496,7 +393,7 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Leasing Terms ::</h4>
-                                <textarea id="editleasingterm" name="editleasingterm" class="form-control summernote">
+                                <textarea id="editleasingterm" name="editleasingterm" class="form-control" rows="5">
                                 {{ @$propertyinfo->propertyAdditionalInfo->LeasingTerms ? @$propertyinfo->propertyAdditionalInfo->LeasingTerms : '' }}
                                 </textarea>
 
@@ -504,14 +401,14 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Qualifiying Criteria ::</h4>
-                                <textarea id="editqualifyingcriteria" name="editqualifyingcriteria" class="form-control summernote">
+                                <textarea id="editqualifyingcriteria" name="editqualifyingcriteria" class="form-control" rows="5">
                                 {{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria ? @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Parking ::</h4>
-                                <textarea id="editparking" name="editparking" class="form-control summernote">
+                                <textarea id="editparking" name="editparking" class="form-control" rows="5">
                                 {{ @$propertyinfo->propertyAdditionalInfo->Parking ? @$propertyinfo->propertyAdditionalInfo->Parking : '' }}
                                 </textarea>
                             </div>
@@ -541,14 +438,14 @@
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Neighborhood ::</h4>
-                                <textarea id="editneighbourhood" name="editneighbourhood" class="form-control summernote">
+                                <textarea id="editneighbourhood" name="editneighbourhood" class="form-control" rows="5">
                                 {{ @$propertyinfo->propertyAdditionalInfo->Neighborhood ? @$propertyinfo->propertyAdditionalInfo->Neighborhood : '' }}
                                 </textarea>
                             </div>
 
                             <div class="form-group col-md-12">
                                 <h4 class="p-2">:: Driving Directions ::</h4>
-                                <textarea id="editdrivingdirection" name="editdrivingdirection" class="form-control summernote">
+                                <textarea id="editdrivingdirection" name="editdrivingdirection" class="form-control" rows="5">
                                 {{ @$propertyinfo->propertyAdditionalInfo->drivedirection ? @$propertyinfo->propertyAdditionalInfo->drivedirection : '' }}
                                 </textarea>
                             </div>
@@ -853,50 +750,7 @@
             ]
         });
 
-        $('#editqualifyingcriteria').summernote({
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style', 'clear']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
 
-        $('#editparking').summernote({
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style', 'clear']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
-
-        $('#editneighbourhood').summernote({
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style', 'clear']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
 
 
         const startYear = 1900;
@@ -954,14 +808,7 @@
         });
         $("#editpropertystate").trigger("change");
 
-        // Initialize Summernote sync for all forms
-        $('form').on('submit', function() {
-            var $form = $(this);
-            $form.find('.summernote').each(function() {
-                var contents = $(this).summernote('code');
-                $(this).val(contents);
-            });
-        });
+
 
 
 

@@ -18,6 +18,7 @@ use App\Repositories\PropertyDetailsRepository;
 use App\Http\Resources\PropertyCollection;
 use App\Models\Login;
 use App\Models\ApartmentFeature;
+use App\Models\Notification;
 
 
 class UserFavoriteController extends Controller
@@ -42,15 +43,17 @@ class UserFavoriteController extends Controller
             return DataTables::of($transformeddata)->addIndexColumn()
                 ->addColumn('propertyname', function ($row) {
                 $url = route('property-display', ['id' => $row['id']]);
-                return '<a href="'.$url.'" class="fav-link-name">
-                            <div class="property-icon-wrapper">
-                                <i class="fa-solid fa-building"></i>
+            return '<a href="'.$url.'" class="prop-link">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div>
+                            <div class="prop-name">'.$row['propertyname'].'</div>
+                            <div class="text-muted smaller" style="font-size: 0.8rem;">
+                                <i class="fa-solid fa-location-dot me-1"></i>'.$row['address'].', '.$row['area'].'
                             </div>
-                            <div class="d-flex flex-column">
-                                <span class="property-name-text">'.$row['propertyname'].'</span>
-                                <span class="text-muted smaller" style="font-size: 0.75rem;">ID: #'.$row['id'].'</span>
-                            </div>
-                        </a>';
+                        </div>
+                    </a>';
             })
             ->addColumn('quote', function ($row) {
                 return '<a class="fav-request-quote-btn" href="javascript:void(0)" onclick="requestQuote('.$row['id'].')">
@@ -61,12 +64,12 @@ class UserFavoriteController extends Controller
                 $viewUrl = route('property-display', ['id' => $row['id']]);
                 $mapUrl = route('street-view', ['id' => $row['id']]);
                 
-                return '<div class="action-btns">
-                           <a href="'.$viewUrl.'" class="btn-icon btn-view" data-bs-toggle="tooltip" title="View Details">
-                               <i class="fa-solid fa-eye"></i>
-                           </a>
+                return '<div class="action-btns" style="white-space: nowrap;">
                            <a href="'.$mapUrl.'" class="btn-icon btn-map" data-bs-toggle="tooltip" title="Interactive Map">
                                <i class="fa-solid fa-map-location-dot"></i>
+                           </a>
+                           <a href="javascript:void(0)" class="btn-icon btn-notes" data-id="'.$row['id'].'" data-bs-toggle="tooltip" title="View/Add Notes">
+                               <i class="fa-solid fa-clipboard-list"></i>
                            </a>
                            <a href="javascript:void(0)" class="btn-icon btn-delete remove-single-fav" data-id="'.$row['id'].'" data-bs-toggle="tooltip" title="Remove from Favorites">
                                <i class="fa-solid fa-trash-can"></i>
@@ -160,21 +163,26 @@ class UserFavoriteController extends Controller
 
     public function addToFavoriteByUser(Request $request)
     {
+        if (!Auth::guard('renter')->check()) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
         $noteMessage = $request->input('notes');
 
         // Check if the favorite already exists
-        $favorite = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->first();
-        if ($favorite) {
-            $favorite->delete();
+        // Use exists() then mass delete to ensure duplicates are cleaned up
+        $exists = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->exists();
+        
+        if ($exists) {
+            Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->delete();
             return response()->json([
                 'success' => true,
                 'action' => 'removed',
                 'message' => 'Property removed from your favorites.'
             ]);
         } else {
-            $favorite = new Favorite();
+             $favorite = new Favorite();
             $favorite->PropertyId = $propertyId;
             $favorite->UserId = $userid;
             $favorite->AddedOn = now();
@@ -242,7 +250,9 @@ class UserFavoriteController extends Controller
 
     public function checkIsFavorite(Request $request)
     {
-
+        if (!Auth::guard('renter')->check()) {
+            return response()->json(['isFavorite' => false]);
+        }
         $userid = Auth::guard('renter')->user()->Id;
         $propertyId = $request->propertyId;
         $isFavorite = Favorite::where('PropertyId', $propertyId)->where('UserId', $userid)->exists();

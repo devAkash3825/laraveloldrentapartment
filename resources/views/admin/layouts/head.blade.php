@@ -24,3 +24,4 @@
     
     <!-- Common Admin CSS -->
     <link rel="stylesheet" href="{{ asset('common/css/admin-common.css') }}">
+    <link rel="stylesheet" href="{{ asset('common/css/validation.css') }}">

@@ -36,36 +36,54 @@
         letter-spacing: -0.025em;
     }
 
-    .custom-table {
-        margin-bottom: 0 !important;
-    }
-
-    .custom-table thead th {
-        background: #fdfdfd;
-        color: var(--text-muted);
-        font-weight: 700;
+    /* Custom Table Styles matching My Properties */
+    .custom-premium-table thead th {
+        font-weight: 600;
+        background-color: #f8f9fa;
         text-transform: uppercase;
-        font-size: 0.65rem;
-        letter-spacing: 0.12em;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
         padding: 16px 24px;
-        border-bottom: 1px solid var(--table-border);
-        border-top: none;
+        border-bottom: 2px solid #e2e8f0;
     }
 
-    .custom-table tbody td {
+    .custom-premium-table tbody td {
         padding: 18px 24px;
-        color: var(--text-main);
+        color: #334155;
         font-size: 0.9rem;
-        border-bottom: 1px solid var(--table-border);
+        border-bottom: 1px solid #f1f5f9;
         vertical-align: middle;
     }
 
-    .custom-table tbody tr:last-child td {
+    .custom-premium-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .custom-table tbody tr:hover {
-        background-color: var(--table-hover);
+    .custom-premium-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Custom Pagination Styling */
+    .custom-pagination-premium .page-link {
+        border-radius: 4px; 
+        margin: 0 4px;
+        border: 1px solid #e2e8f0;
+        padding: 8px 16px;
+        font-weight: 600;
+        color: #334155;
+        transition: all 0.2s;
+    }
+
+    .custom-pagination-premium .page-item.active .page-link {
+        background-color: var(--colorPrimary) !important;
+        border-color: var(--colorPrimary) !important;
+        color: #fff !important;
+    }
+
+    .custom-pagination-premium .page-item.disabled .page-link {
+        background-color: #f8fafc;
+        color: #cbd5e1;
     }
 
     .prop-link {
@@ -145,7 +163,8 @@
 @endpush
 
 @section('content')
-<div class="header-premium-gradient mb-5">
+<!-- Premium Header -->
+<div class="header-premium-gradient py-5">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -155,8 +174,8 @@
             <div class="col-md-6 text-md-end mt-4 mt-md-0">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb justify-content-md-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">Browsing History</li>
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
+                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">Browsing History</li>
                     </ol>
                 </nav>
             </div>
@@ -180,7 +199,7 @@
 
                         <div class="table-responsive">
                             @if(count($paginatedRecords) > 0)
-                            <table class="table custom-table">
+                            <table class="table custom-premium-table mb-0">
                                 <thead>
                                     <tr>
                                         <th width="80">#</th>
@@ -226,9 +245,9 @@
                     </div>
 
                     @if ($paginatedRecords->lastPage() > 1)
-                        <div class="pagination-wrapper">
+                        <div class="p-4 d-flex justify-content-center bg-white border-top">
                             <nav aria-label="Page navigation">
-                                <ul class="pagination">
+                                <ul class="pagination custom-pagination-premium mb-0">
                                     <li class="page-item {{ $paginatedRecords->currentPage() == 1 ? 'disabled' : '' }}">
                                         <a class="page-link" href="{{ $paginatedRecords->currentPage() == 1 ? 'javascript:void(0);' : $paginatedRecords->url($paginatedRecords->currentPage() - 1) }}">
                                             <i class="bi bi-chevron-left"></i>

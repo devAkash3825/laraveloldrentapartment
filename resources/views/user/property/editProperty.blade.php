@@ -88,6 +88,56 @@
         border: 1px solid #f1f5f9;
         margin-bottom: 30px;
     }
+
+    /* Standardized Premium Table Styles */
+    .recent-table-container {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .table-header-box {
+        padding: 24px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fff;
+    }
+
+    .table-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        letter-spacing: -0.025em;
+    }
+
+    .custom-premium-table thead th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        padding: 14px 20px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .custom-premium-table tbody td {
+        padding: 14px 20px;
+        color: #334155;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .custom-premium-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-premium-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
 </style>
 <!-- Premium Header -->
 <div class="header-premium-gradient py-5">
@@ -255,8 +305,8 @@
                                     <div class="my_listing_single">
                                         <label for="state">State</label>
                                         <div class="input_area">
-                                            <select class="form-control form-select form-control-a state-select-box"
-                                                name="editpropertystate" id="editpropertystate" required>
+                                            <select class="form-control form-select form-control-a state-dropdown"
+                                                name="editpropertystate" id="editpropertystate" data-city-target="#editpropertycity" required>
                                                 @foreach ($state as $row)
                                                 <option value="{{ $row->Id }}"
                                                     {{ (isset($propertyinfo->city->state) && $propertyinfo->city->state->Id == $row->Id) ? 'selected' : '' }}>
@@ -417,7 +467,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="qualifying_criteria">:: Qualifying Criteria ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="qualifying_criteria" name="qualifying_criteria">{{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria }}</textarea>
+                                        <textarea class="form-control mt-1" id="qualifying_criteria" name="qualifying_criteria" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->QualifiyingCriteria }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -425,7 +475,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="parking">:: Parking ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="parking" name="parking">{{ @$propertyinfo->propertyAdditionalInfo->Parking }}</textarea>
+                                        <textarea class="form-control mt-1" id="parking" name="parking" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->Parking }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -433,7 +483,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="pet_policy">:: Pet Policy ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="pet_policy" name="pet_policy">{{ @$propertyinfo->propertyAdditionalInfo->PetPolicy }}</textarea>
+                                        <textarea class="form-control mt-1" id="pet_policy" name="pet_policy" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->PetPolicy }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -441,7 +491,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="neighborhood">:: Neighborhood ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="neighborhood" name="neighborhood">{{ @$propertyinfo->propertyAdditionalInfo->Neighborhood }}</textarea>
+                                        <textarea class="form-control mt-1" id="neighborhood" name="neighborhood" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->Neighborhood }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -449,7 +499,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="schools">:: Schools ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="schools" name="schools">{{ @$propertyinfo->propertyAdditionalInfo->Schools }}</textarea>
+                                        <textarea class="form-control mt-1" id="schools" name="schools" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->Schools }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -457,7 +507,7 @@
                                 <div class="col-xl-12">
                                     <div class="my_listing_single">
                                         <label for="driving_directions">:: Driving Directions ::</label>
-                                        <textarea class="form-control summer_note mt-1" id="driving_directions" name="driving_directions">{{ @$propertyinfo->propertyAdditionalInfo->drivedirection }}</textarea>
+                                        <textarea class="form-control mt-1" id="driving_directions" name="driving_directions" rows="5">{{ @$propertyinfo->propertyAdditionalInfo->drivedirection }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -582,138 +632,86 @@
                 </section>
 
                 <section id="imagegallary" data-tab-content>
-                    <div class="relative font-inter antialiased my_listing_table">
-                        <main class="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden">
-                            <div class="w-full max-w-6xl mx-auto px-4 md:px-5 py-24">
-                                <div class="flex justify-center">
-                                    <div class="w-full max-w-2xl bg-white shadow-xl rounded-2xl">
-                                        <div class="p-3">
-                                            <div class="overflow-x-auto">
-                                                <table class="table-auto w-full">
-                                                    <thead class="text-[13px] text-slate-500/70">
-                                                        <tr>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">#</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Image</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-5 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Logo</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-5 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">FloorPlan</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Set Image
-                                                                </div>
-                                                            </th>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Action </div>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="text-sm font-medium">
-                                                        @if ($galleryDetails && $galleryDetails->gallerydetail)
-                                                        @foreach ($galleryDetails->gallerydetail as $imagerec)
-                                                        <tr>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-500">
-                                                                    {{ $loop->iteration }}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="flex items-center">
-                                                                    @php
-                                                                    $imageName =
-                                                                    $imagerec->ImageName ?? null;
-                                                                    @endphp
-
-                                                                    @if ($imageName)
-                                                                    <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}"
-                                                                        alt="Property Image"
-                                                                        style="width:70px !important;height:70px !important;">
-                                                                    @else
-                                                                    <img class="img-fluid"
-                                                                        src="{{ asset('img/no-img.jpg') }}"
-                                                                        alt="Default Image">
-                                                                    @endif
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-500">
-                                                                    <input type="checkbox" id="vehicle1"
-                                                                        name="propertylogo"
-                                                                        {{ $imagerec->DefaultImage ? 'checked' : '' }}>
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-900">
-                                                                    <input type="checkbox" id="vehicle1"
-                                                                        name="" value="Bike">
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-900">
-                                                                    <select
-                                                                        class="form-control form-select form-control-a state-select-box"
-                                                                        name="editpropertystate"
-                                                                        id="editpropertystate" required
-                                                                        style="width:70%;">
-                                                                        <option value="">Select Floor
-                                                                            Plan</option>
-                                                                        @foreach ($selectFloorPlan as $row)
-                                                                        <option
-                                                                            value="{{ $row->Id }}">
-                                                                            {{ $row->PlanName }}
-                                                                        </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="demo-btn-list d-flex"
-                                                                    style="gap: 5px;">
-                                                                    <a href=""
-                                                                        class="btn-primary-icon px-2 py-1 border rounded m-1"
-                                                                        data-bs-toggle="tooltip"
-                                                                        title="View">
-                                                                        <i class="bi bi-eye"></i>
-                                                                    </a>
-                                                                    <a href="javascript:void(0)"
-                                                                        class="btn-danger-icon px-2 py-1 border rounded m-1 delete-gllry-img"
-                                                                        data-id="{{ $imagerec->Id }}"
-                                                                        data-bs-toggle="tooltip"
-                                                                        data-value="{{ $propertyId }}"
-                                                                        title="Delete">
-                                                                        <i class="bi bi-trash"></i>
-                                                                    </a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
+                    <div class="recent-table-container mt-4">
+                        <div class="table-header-box">
+                            <h4 class="table-title">Image Gallery</h4>
+                            <p class="text-muted small mb-0 mt-1">Manage property images, logos, and floorplans</p>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-premium-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="80" class="text-center">#</th>
+                                        <th>Preview</th>
+                                        <th width="100" class="text-center">Logo</th>
+                                        <th width="200">Floor Plan Link</th>
+                                        <th width="120" class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($galleryDetails && $galleryDetails->gallerydetail)
+                                        @foreach ($galleryDetails->gallerydetail as $imagerec)
+                                            <tr>
+                                                <td class="text-center text-muted fw-bold">
+                                                    {{ $loop->iteration }}
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        @php
+                                                            $imageName = $imagerec->ImageName ?? null;
+                                                        @endphp
+                                                        @if ($imageName)
+                                                            <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}"
+                                                                alt="Property Image"
+                                                                class="rounded shadow-sm"
+                                                                style="width:80px; height:60px; object-fit: cover;">
                                                         @else
-                                                        <tr>
-                                                            <td colspan="6" class="text-center text-slate-500">
-                                                                No images found.
-                                                            </td>
-                                                        </tr>
+                                                            <img src="{{ asset('img/no-img.jpg') }}" alt="Default" class="rounded shadow-sm" style="width:80px; height:60px; object-fit: cover;">
                                                         @endif
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </main>
+                                                        <div>
+                                                            <div class="fw-semibold text-dark">{{ $imagerec->ImageTitle ?? 'No Title' }}</div>
+                                                            <div class="text-muted smaller" style="font-size: 0.75rem;">{{ Str::limit($imagerec->Description, 40) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="form-check d-flex justify-content-center">
+                                                        <input class="form-check-input gallery-logo-check" type="radio" name="default_logo" value="{{ $imagerec->Id }}" {{ $imagerec->DefaultImage ? 'checked' : '' }}>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm gallery-floorplan-select">
+                                                        <option value="">None</option>
+                                                        @foreach ($selectFloorPlan as $row)
+                                                            <option value="{{ $row->Id }}" {{ $imagerec->FloorPlanId == $row->Id ? 'selected' : '' }}>{{ $row->PlanName }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex justify-content-center gap-1">
+                                                        <a href="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; line-height: 32px;" data-bs-toggle="tooltip" title="View">
+                                                            <i class="bi bi-eye"></i>
+                                                        </a>
+                                                        <button type="button" class="btn btn-sm btn-outline-success rounded-circle save-gallery-item" data-id="{{ $imagerec->Id }}" style="width: 32px; height: 32px; padding: 0; line-height: 32px;" data-bs-toggle="tooltip" title="Save Changes">
+                                                            <i class="bi bi-save"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle delete-gllry-img" data-id="{{ $imagerec->Id }}" data-value="{{ $propertyId }}" style="width: 32px; height: 32px; padding: 0; line-height: 32px;" data-bs-toggle="tooltip" title="Delete">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="5" class="text-center py-5 text-muted">
+                                                No images found in gallery.
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="content mt-3">
@@ -780,41 +778,83 @@
 <script>
     $(document).ready(function() {
         // Additional Details Form Sync
-        $('#additionalDetailsForm').on('submit', function() {
-            $('.summer_note').each(function() {
-                $(this).val($(this).summernote('code'));
+
+
+        // Update Gallery Image Details
+        $('.save-gallery-item').on('click', function() {
+            const btn = $(this);
+            const row = btn.closest('tr');
+            const id = btn.data('id');
+            const isLogo = row.find('.gallery-logo-check').is(':checked') ? 1 : 0;
+            const floorPlanId = row.find('.gallery-floorplan-select').val();
+
+            $.ajax({
+                url: "{{ route('update-gallery-image') }}",
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    is_logo: isLogo,
+                    floor_plan_id: floorPlanId
+                },
+                beforeSend: function() {
+                    btn.attr('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error('Error updating image details.');
+                },
+                complete: function() {
+                    btn.attr('disabled', false).html('<i class="bi bi-save"></i>');
+                }
             });
         });
 
-        // Gallery Image Deletion
+        // Gallery Image Deletion with Swal
         $('.delete-gllry-img').on('click', function() {
             const id = $(this).data('id');
             const propertyId = $(this).data('value');
             const row = $(this).closest('tr');
 
-            if (confirm('Are you sure you want to delete this image?')) {
-                $.ajax({
-                    url: "{{ url('/delete-gallery-image') }}/" + id,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        propertyId: propertyId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            row.fadeOut(300, function() {
-                                $(this).remove();
-                            });
-                            toastr.success(response.message);
-                        } else {
-                            toastr.error(response.message);
+            Swal.fire({
+                title: 'Delete Image?',
+                text: "Are you sure you want to delete this image permanently?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('/delete-gallery-image') }}/" + id,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            propertyId: propertyId
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                row.fadeOut(300, function() {
+                                    $(this).remove();
+                                });
+                                Swal.fire('Deleted!', response.message, 'success');
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', 'Failed to delete image.', 'error');
                         }
-                    },
-                    error: function(xhr) {
-                        toastr.error('Error deleting image. Please try again.');
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
 
         // Year select population
@@ -829,6 +869,23 @@
         // Set selected years if available
         $('#year-select').val("{{ $propertyinfo->Year }}");
         $('#year-remodeled').val("{{ $propertyinfo->YearRemodel }}");
+
+        // Trigger initial city load for edit mode
+        const editPropertyState = document.getElementById('editpropertystate');
+        if (editPropertyState && editPropertyState.value) {
+            const editPropertyCity = document.getElementById('editpropertycity');
+            const selectedCityId = document.getElementById('editselectedCity').value;
+            if (editPropertyCity) {
+                window.CityStateHandler.loadCities(editPropertyState.value, editPropertyCity, false).then(() => {
+                    if (selectedCityId) {
+                        editPropertyCity.value = selectedCityId;
+                        if (typeof jQuery !== 'undefined' && jQuery.fn.select_2) {
+                            jQuery(editPropertyCity).trigger('change');
+                        }
+                    }
+                });
+            }
+        }
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

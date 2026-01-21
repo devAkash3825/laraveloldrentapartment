@@ -1,25 +1,22 @@
-*{
+* {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 	text-decoration: none;
 	outline: none;
 	list-style: none;
-	font-size 30px;
+	font-size: 15px;
 }
 
 body {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	/*line-height: 1.4em;*/
-	/*height: 100vh;*/
-	/* background-color: #5ac994; */
 	background-color: #1b84e7;
 	min-height: 100vh;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 30px;
-	
+
 }
 
 .container {
@@ -28,7 +25,7 @@ body {
 	max-width: 500px;
 	background: #fff;
 	padding: 40px 30px;
-	box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	perspective: 2700px;
 }
 
@@ -129,7 +126,7 @@ body {
 .form-content .sign-form {
 
 	/* width: calc(100% / 2 - 25px); */
-  width: 100%;
+	width: 100%;
 }
 
 .login-form {
@@ -188,7 +185,7 @@ form .form-content .input-box .input {
 	padding: 0 30px;
 	font-size: 16px;
 	font-weight: 500;
-	border-bottom: 2px solid #bababa;	
+	border-bottom: 2px solid #bababa;
 	transition: all 0.3s  ease
 }
 form .form-content .otp-field .input {
@@ -199,7 +196,7 @@ form .form-content .otp-field .input {
 	padding: 0 30px;
 	font-size: 16px;
 	font-weight: 500;
-	border-bottom: 2px solid #bababa;	
+	border-bottom: 2px solid #bababa;
 	transition: all 0.3s  ease
 }
 
@@ -219,7 +216,22 @@ form .form-content .input-box i {
 	/* color: #5ac994; */
 	color: #1b84e7;
 	font-size: 18px;
+	left: 5px;
 }
+
+form .form-content .input-box .toggle-password {
+	left: auto;
+	right: 10px;
+	cursor: pointer;
+	z-index: 10;
+	transition: all 0.2s ease;
+}
+
+form .form-content .input-box .toggle-password:hover {
+	color: #0d6efd;
+}
+
+
 form .form-content .otp-field i {
 	position: absolute;
 	/* color: #5ac994; */
@@ -282,9 +294,9 @@ form .form-content .button button::before {
 	left: 50%;
 	right: 50%;
 	transition: 0.5s all ease;
-   background: rgb(20,27,41);
-   /* background: linear-gradient(90deg, rgba(20,27,41,1) 0%, rgba(18,65,67,1) 50%, rgba(90,201,148,1) 100%); */
-   background: linear-gradient(to right, #1b84e7 0%, #1515af 100%);
+	background: rgb(20,27,41);
+	/* background: linear-gradient(90deg, rgba(20,27,41,1) 0%, rgba(18,65,67,1) 50%, rgba(90,201,148,1) 100%); */
+	background: linear-gradient(to right, #1b84e7 0%, #1515af 100%);
 
 	border-radius: 6px;
 }
@@ -331,22 +343,22 @@ form .form-content .signup-text {
 	.container .cover {
 		display: none;
 	}
-	
-	.form-content .login-form,
-    .form-content .sign-form {
 
-	width: 100%;
+	.form-content .login-form,
+	.form-content .sign-form {
+
+		width: 100%;
 	}
-	
+
 	.form-content .sign-form {
 		display: none;
 	}
-	
-	.container #flip:checked ~ form .sign-form {
+
+	.container #flip:checked~form .sign-form {
 		display: block;
 	}
-	
-	.container #flip:checked ~ form .login-form {
+
+	.container #flip:checked~form .login-form {
 		display: none;
 	}
 

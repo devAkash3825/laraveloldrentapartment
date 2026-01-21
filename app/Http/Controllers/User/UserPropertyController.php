@@ -48,49 +48,62 @@ class UserPropertyController extends Controller
 
     public function propertyDisplay($id)
     {
-        $propertyinfo = $this->propertyDetailsRepository->getEditPropertyDetails($id);
-        $data = new PropertyCollection($propertyinfo);
-        $propertyDetails = $data->toArray(request());
+        try {
+            $propertyinfo = $this->propertyDetailsRepository->getEditPropertyDetails($id);
+            $data = new PropertyCollection($propertyinfo);
+            $propertyDetails = $data->toArray(request());
 
-        $communityFeatures = $propertyDetails[0]['apartmentinfo'];
-        $featureIds = explode(',', $communityFeatures);
-        $features = ApartmentFeature::whereIn('id', $featureIds)->get();
+            // Handle invalid ID or truncated table
+            if (empty($propertyDetails)) {
+                return redirect()->route('home')->with('error', 'Property not found or is no longer available.');
+            }
 
-        $amenities = $propertyDetails[0]['amenities'];
-        $amenitiesIds = explode(',', $amenities);
-        $amenitiesDetails = CommunityAmenities::whereIn('Id', $amenitiesIds)->get();
+            $propertyDetails = $propertyDetails[0];
 
+            $communityFeatures = $propertyDetails['apartmentinfo'] ?? '';
+            $featureIds = !empty($communityFeatures) ? explode(',', $communityFeatures) : [];
+            $features = ApartmentFeature::whereIn('id', $featureIds)->get();
 
-        $userid = Auth::guard('renter')->user()->Id;
-        $renterinfo = Login::where('Id', $userid)->with('renterinfo')->first();
-        $userid = Auth::guard('renter')->user()->Id;
-        $pid = $id;
+            $amenities = $propertyDetails['amenities'] ?? '';
+            $amenitiesIds = !empty($amenities) ? explode(',', $amenities) : [];
+            $amenitiesDetails = CommunityAmenities::whereIn('Id', $amenitiesIds)->get();
 
+            $auth_user = Auth::guard('renter')->user();
+            $userid = $auth_user->Id ?? null;
+            
+            $renterinfo = null;
+            if ($userid) {
+                $renterinfo = Login::where('Id', $userid)->with('renterinfo')->first();
+                
+                // Add to recent view history
+                $existingRecord = UserProperty::where('userId', $userid)->where('propertyId', $id)->first();
+                if ($existingRecord) {
+                    $existingRecord->lastviewed = now();
+                    $existingRecord->save();
+                } else {
+                    UserProperty::create([
+                        'userId' => $userid,
+                        'propertyId' => $id,
+                        'lastviewed' => now(),
+                    ]);
+                }
+            }
 
-        $existingRecord = UserProperty::where('userId', $userid)->where('propertyId', $pid)->first();
-        if ($existingRecord) {
-            $existingRecord->lastviewed = now();
-            $existingRecord->save();
-        } else {
-            UserProperty::create([
-                'userId' => $userid,
-                'propertyId' => $pid,
-                'lastviewed' => now(),
+            $categories = FloorPlanCategory::all();
+
+            return view('user.property.propertyDisplay', [
+                'propertyDetails' => $propertyDetails,
+                'renterinfo' => $renterinfo,
+                'featureNames' => $features,
+                'amenitiesDetails' => $amenitiesDetails,
+                'categories' => $categories,
+                'propertyinfo'  => $propertyinfo,
             ]);
+
+        } catch (\Exception $e) {
+            Log::error('Property Display Error: ' . $e->getMessage());
+            return redirect()->route('home')->with('error', 'An error occurred while loading the property details.');
         }
-        $categories = FloorPlanCategory::all();
-        $propertyDetails = $propertyDetails[0];
-
-
-
-        return view('user.property.propertyDisplay', [
-            'propertyDetails' => $propertyDetails,
-            'renterinfo' => $renterinfo,
-            'featureNames' => $features,
-            'amenitiesDetails' => $amenitiesDetails,
-            'categories' => $categories,
-            'propertyinfo'  => $propertyinfo,
-        ]);
     }
 
     public function editProperty($id)
@@ -554,11 +567,11 @@ class UserPropertyController extends Controller
                 'GalleryId' => $galleryTypeId,
                 'ImageTitle' => $request->imagetitle,
                 'Description' => $request->description,
-                'DefaultImage' => 0, // Don't default to 1 for every upload
-                'display_in_gallery' => 1,
+                'DefaultImage' => '0',
+                'display_in_gallery' => '1',
                 'CreatedOn' => Carbon::now(),
                 'ModifiedOn' => Carbon::now(),
-                'Status' => 1,
+                'Status' => '1',
             ]);
 
             // Note: If primary key is 'Id', Eloquent might return it via ->getAttribute('Id') or just ->Id
@@ -632,6 +645,36 @@ class UserPropertyController extends Controller
             return response()->json(['success' => true, 'message' => 'Image and record deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['danger' => false, 'message' => 'Error deleting image: ' . $e->getMessage()]);
+        }
+    }
+
+    public function updateGalleryImage(Request $request)
+    {
+        try {
+            $id = $request->id;
+            $isLogo = (string)$request->is_logo; // Cast to string
+            $floorPlanId = $request->floor_plan_id;
+
+            $galleryDetail = GalleryDetails::where('Id', $id)->first();
+            
+            if (!$galleryDetail) {
+                return response()->json(['success' => false, 'message' => 'Image not found.']);
+            }
+
+            // If setting as logo, unset others for this property's gallery
+            if ($isLogo === '1') {
+                // Find all siblings in the same gallery
+                GalleryDetails::where('GalleryId', $galleryDetail->GalleryId)->update(['DefaultImage' => '0']);
+            }
+
+            $galleryDetail->update([
+                'DefaultImage' => $isLogo,
+                'FloorPlanId' => $floorPlanId ?: null // Handle empty string as null
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Gallery details updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating details: ' . $e->getMessage()]);
         }
     }
 

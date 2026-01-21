@@ -25,15 +25,15 @@
                     <div class="d-lg-none mb-4 text-center">
                         <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
                     </div>
-                    
+
                     <h2 class="auth-title mb-2">Welcome Back</h2>
                     <p class="auth-subtitle mb-4">Please enter your details to sign in.</p>
 
                     @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4 mb-4" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     @endif
 
                     <form action="{{ route('login') }}" class="login-form needs-validation" method="post" novalidate>
@@ -45,7 +45,7 @@
                                 <input type="text" class="form-control" name="username" placeholder="Enter your username" required>
                             </div>
                         </div>
-                        
+
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label class="form-label fw-semibold mb-0">Password</label>
@@ -77,9 +77,10 @@
 </section>
 
 <style>
-    #passeye{
+    #passeye {
         left: -4px !important;
     }
+
     .login-viewport {
         height: 100vh;
         width: 100vw;
@@ -218,27 +219,7 @@
     }
 
 
-    .btn-primary-custom {
-        background: var(--colorPrimary);
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
-        border: none;
-        color: white;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.25);
-    }
 
-    .btn-primary-custom:hover {
-        transform: translateY(-3px) scale(1.01);
-        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.25);
-        filter: brightness(1.1);
-        color: white;
-    }
-
-    .btn-primary-custom:active {
-        transform: translateY(-1px);
-    }
 
     .underline-hover:hover {
         text-decoration: underline !important;
@@ -277,6 +258,7 @@
             min-height: 100vh;
             overflow-y: auto;
         }
+
         .form-side {
             padding: 40px 0;
         }
@@ -289,7 +271,7 @@
         const input = document.getElementById(id);
         const btn = event ? event.currentTarget : window.event.srcElement;
         const icon = btn.querySelector('i');
-        
+
         if (input && icon) {
             if (input.type === 'password') {
                 input.type = 'text';

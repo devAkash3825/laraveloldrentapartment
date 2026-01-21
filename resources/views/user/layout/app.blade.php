@@ -44,31 +44,29 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
             }
 
             /* Global Premium Button Styles */
-            .read_btn, .main-btn, .btn-primary-custom, .send-btn, .common_btn, .grad-btn {
+            .read_btn, .main-btn, .btn-primary-custom, .send-btn, .common_btn, .grad-btn, .primary-btn, .theme-btn, .hire_btn {
                 background: var(--btnColor) !important;
-                background: linear-gradient(135deg, var(--btnColor) 0%, var(--gradientColor) 100%) !important;
                 color: white !important;
-                padding: 12px 28px !important;
+                padding: 10px 24px !important;
                 border-radius: 4px !important;
-                font-weight: 700 !important;
-                font-size: 0.95rem !important;
-                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+                font-weight: 600 !important;
+                font-size: 0.9rem !important;
+                transition: all 0.3s ease !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                gap: 10px !important;
-                border: none !important;
-                box-shadow: 0 4px 15px rgba(var(--btnColorRgb), 0.3) !important;
+                gap: 8px !important;
+                border: 2px solid var(--btnColor) !important;
+                box-shadow: none !important;
                 text-decoration: none !important;
                 cursor: pointer;
-                border: 2px solid transparent !important;
             }
 
-            .read_btn:hover, .main-btn:hover, .btn-primary-custom:hover, .send-btn:hover, .common_btn:hover, .grad-btn:hover {
-                transform: translateY(-3px) !important;
-                box-shadow: 0 10px 25px rgba(var(--btnColorRgb), 0.5) !important;
-                filter: brightness(1.1) !important;
-                color: white !important;
+            .read_btn:hover, .main-btn:hover, .btn-primary-custom:hover, .send-btn:hover, .common_btn:hover, .grad-btn:hover, .primary-btn:hover, .theme-btn:hover, .hire_btn:hover {
+                background: transparent !important;
+                color: var(--btnColor) !important;
+                transform: none !important;
+                box-shadow: none !important;
             }
 
             /* Premium Sidebar Styles */
@@ -76,14 +74,9 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
                 background: #fff;
                 border-radius: 4px;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-                padding: 30px 20px;
                 border: 1px solid #f0f0f0;
             }
-            .dash_logo_wrapper {
-                margin-bottom: 30px;
-                padding-bottom: 20px;
-                border-bottom: 1px dashed #eee;
-            }
+            
             .profile-img-main {
                 width: 120px !important;
                 height: 120px !important;
@@ -100,7 +93,7 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
                 margin-bottom: 5px;
             }
             .bg-primary-gradient {
-                background: linear-gradient(135deg, var(--colorPrimary) 0%, var(--gradientColor) 100%) !important;
+                background: var(--colorPrimary) !important;
                 border: none;
                 font-size: 0.75rem;
                 letter-spacing: 0.5px;
@@ -108,7 +101,7 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
                 color: white;
             }
             .bg-info-gradient {
-                background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%) !important;
+                background: #0ea5e9 !important;
                 border: none;
                 color: white;
             }
@@ -241,6 +234,12 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
 
     @if(session('info'))
         toastr.info("<i class='fa-solid fa-circle-info me-2'></i> {{ session('info') }}");
+    @endif
+
+    @if($errors->any())
+        $(document).ready(function() {
+            window.ValidationHandler.showErrors($('form'), @json($errors->toArray()));
+        });
     @endif
 </script>
 </body>

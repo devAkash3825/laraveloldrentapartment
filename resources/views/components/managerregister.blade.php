@@ -1,8 +1,5 @@
-<div class="manager-registration-wrapper">
-    <div class="registration-header text-center mb-4">
-        <div class="icon-badge mb-3">
-            <i class="bi bi-building"></i>
-        </div>
+<div class="manager-registration-wrapper mt-2">
+    <div class="registration-header mb-4">
         <h5 class="fw-bold mb-2" style="color: #1e293b;">Manager Account Registration</h5>
         <p class="text-muted mb-0" style="font-size: 0.95rem;">Access professional tools to manage your properties efficiently.</p>
     </div>
@@ -10,24 +7,26 @@
     <form class="needs-validation manager-form" id="manager-registration-form" novalidate>
         @csrf
         
-        <div class="mb-3">
-            <label class="form-label">Username <span class="text-danger">*</span></label>
-            <div class="input-group-custom">
-                <i class="bi bi-person"></i>
-                <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Username <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-person"></i>
+                    <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">Email Address <span class="text-danger">*</span></label>
-            <div class="input-group-custom">
-                <i class="bi bi-envelope"></i>
-                <input type="email" class="form-control" name="email" placeholder="manager@example.com" required>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                <div class="input-group-custom">
+                    <i class="bi bi-envelope"></i>
+                    <input type="email" class="form-control" name="email" placeholder="manager@example.com" required>
+                </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-12 mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Password <span class="text-danger">*</span></label>
                 <div class="input-group-custom">
                     <i class="bi bi-lock"></i>
@@ -38,7 +37,7 @@
                 </div>
                 <div class="form-text mt-1" style="font-size: 0.8rem; color: #64748b;">Min. 8 characters</div>
             </div>
-            <div class="col-md-12 mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
                 <div class="input-group-custom">
                     <i class="bi bi-shield-check"></i>
@@ -46,21 +45,6 @@
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('manager_password_confirmation', event)">
                         <i class="bi bi-eye"></i>
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="alert alert-info border-0 rounded-3 mb-4" style="background: rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.08); color: #475569; font-size: 0.9rem;">
-            <div class="d-flex align-items-start">
-                <i class="bi bi-info-circle-fill me-2 mt-1" style="color: var(--colorPrimary);"></i>
-                <div>
-                    <strong>Manager Benefits:</strong>
-                    <ul class="mb-0 mt-2 ps-3" style="line-height: 1.8;">
-                        <li>List unlimited properties</li>
-                        <li>Advanced analytics dashboard</li>
-                        <li>Direct communication with renters</li>
-                        <li>Professional property showcase</li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -83,7 +67,7 @@
         width: 70px;
         height: 70px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
+        background: var(--colorPrimary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -105,31 +89,8 @@
     }
 
     /* Button Styling */
-    .btn-primary-custom {
-        background: var(--colorPrimary);
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
-        border: none;
-        color: white;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        border-radius: 12px;
-        font-size: 0.95rem;
-        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
-    }
 
-    .btn-primary-custom:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.35);
-        filter: brightness(1.1);
-        color: white;
-    }
 
-    .btn-primary-custom:active {
-        transform: translateY(-1px);
-    }
-
-    /* Alert Styling */
     .alert-info ul {
         margin-bottom: 0;
         padding-left: 1.2rem;
@@ -229,9 +190,7 @@
                     }, 1500);
                 } else if (response.status === 422) {
                     if (data.errors) {
-                        Object.keys(data.errors).forEach(key => {
-                            toastr.error(data.errors[key][0]);
-                        });
+                        window.ValidationHandler.showErrors($(this), data.errors);
                     } else {
                         toastr.error("Please check your inputs.");
                     }

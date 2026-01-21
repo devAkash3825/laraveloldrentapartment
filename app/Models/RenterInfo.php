@@ -54,6 +54,11 @@ class RenterInfo extends Model
         return $this->hasMany(RenterUpdateHistory::class, 'user_id', 'Login_ID');
     }
 
+    public function leaseHistory()
+    {
+        return $this->hasMany(RenterInfoHistory::class, 'renter_info_id', 'Id');
+    }
+
 
     public function addedByAdmin()
     {

@@ -37,6 +37,7 @@ use App\Models\PropertyInquiry;
 use App\Models\EqualHousingCMS;
 use App\Models\termsCMS;
 use App\Models\Notification;
+use App\Models\NotifyDetail;
 
 
 
@@ -57,51 +58,66 @@ class HomeController extends Controller
     }
     public function index()
     {
-        $latestProperty = $this->propertyDetailsRepository->getLatestPropertiesforHome();
-        $data = new ListingCollection($latestProperty);
-        $propertyDetails = $data->toArray(request());
+        try {
+            $latestProperty = $this->propertyDetailsRepository->getLatestPropertiesforHome();
+            $data = new ListingCollection($latestProperty ?? []);
+            $propertyDetails = $data->toArray(request());
 
-        $totalProperties = PropertyInfo::all();
-        $totalAdmins = AdminDetail::all();
-        $totalRenters = Login::where('user_type', 'C')->get();
-        $totalManagers = Login::where('user_type', 'M')->get();
+            // Get counts with fallback to 0
+            $totalProperties = PropertyInfo::count();
+            $totalAdmins = AdminDetail::count();
+            $totalRenters = Login::where('user_type', 'C')->count();
+            $totalManagers = Login::where('user_type', 'M')->count();
 
-        $totalManagers = count($totalManagers);
-        $totalRenters = count($totalRenters);
-        $totalAdmins = count($totalAdmins);
-        $totalProperties = count($totalProperties);
+            $ourFeatures = OurFeatures::where('status', 1)->get();
 
+            $featuredProperties = PropertyInfo::where('Featured', '1')
+                ->where('Status', '1')
+                ->with(['gallerytype.gallerydetail', 'city.state'])
+                ->whereHas('gallerytype', function ($query) {
+                    $query->whereNotNull('Id');
+                })
+                ->take(8)
+                ->orderBy('Id', 'desc')
+                ->get();
 
-        $ourFeatures = OurFeatures::where('status', 1)->get();
+            $sliderImages = SliderManage::where('is_active', '1')->get();
+            $zone = Zone::all();
 
+            // Handle potential null values if tables are truncated
+            $counter = Counter::first() ?? new Counter();
+            $sectionTitle = SectionTitle::first() ?? new SectionTitle();
 
-        $featuredProperties = PropertyInfo::where('Featured', '1')->where('Status', '1')->with(['gallerytype.gallerydetail', 'city.state'])
-            ->whereHas('gallerytype', function ($query) {
-                $query->whereNotNull('Id');
-            })
-            ->take(8)
-            ->orderBy('Id', 'desc')
-            ->get();
-
-        $sliderImages = SliderManage::where('is_active', '1')->get();
-        $zone = Zone::all();
-
-        $counter = Counter::first();
-        $sectionTitle = SectionTitle::first();
-
-        return view('user.pages.home', [
-            'propertyDetails' => $propertyDetails,
-            'totalAdmins' => $totalAdmins,
-            'totalProperties' => $totalProperties,
-            'totalManagers' => $totalManagers,
-            'totalRenters' => $totalRenters,
-            'featuredProperties' => $featuredProperties,
-            'sliderImages' => $sliderImages,
-            'zones' => $zone,
-            'ourFeatures' => $ourFeatures,
-            'counter' => $counter,
-            'sectionTitle' => $sectionTitle
-        ]);
+            return view('user.pages.home', [
+                'propertyDetails' => $propertyDetails,
+                'totalAdmins' => $totalAdmins,
+                'totalProperties' => $totalProperties,
+                'totalManagers' => $totalManagers,
+                'totalRenters' => $totalRenters,
+                'featuredProperties' => $featuredProperties,
+                'sliderImages' => $sliderImages,
+                'zones' => $zone,
+                'ourFeatures' => $ourFeatures,
+                'counter' => $counter,
+                'sectionTitle' => $sectionTitle
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Home page error: ' . $e->getMessage());
+            // Return basic view or error page if something goes critically wrong
+            return view('user.pages.home', [
+                'propertyDetails' => [],
+                'totalAdmins' => 0,
+                'totalProperties' => 0,
+                'totalManagers' => 0,
+                'totalRenters' => 0,
+                'featuredProperties' => [],
+                'sliderImages' => [],
+                'zones' => [],
+                'ourFeatures' => [],
+                'counter' => new Counter(),
+                'sectionTitle' => new SectionTitle()
+            ]);
+        }
     }
 
     public function dashboard()
@@ -190,8 +206,8 @@ class HomeController extends Controller
 
     public function privacyPromise()
     {
-        $data = termsCMS::all();
-        $pagetitle = "Terms & Condition";
+        $data = \App\Models\PrivacyPromiseCMS::all(); // Updated to correct model
+        $pagetitle = "Privacy Promise";
         return view('user.pages.privacyPromise',['data' => $data, 'pagetitle' => $pagetitle]);
     }
 
@@ -247,7 +263,7 @@ class HomeController extends Controller
                 ]);
                 return response()->json(['success' => 'Property added to recent successfully.']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Addtorecent error: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while trying to log in. Please try again later.']);
         }
@@ -321,14 +337,13 @@ class HomeController extends Controller
 
     public function referredRenter()
     {
-        $authusertype = Auth::guard('renter')->user()->user_type;
         $authuserId = Auth::guard('renter')->user()->Id;
-        $getRec = Message::where('managerId', $authuserId)
-            ->where('notify_manager', 1)
-            ->with('loginrenter.renterinfo')
+        
+        // Use the new scope defined in NotifyDetail model
+        $getRec = NotifyDetail::forManager($authuserId)
+            ->with(['loginrenter.renterinfo', 'propertyinfo'])
+            ->orderBy('send_time', 'desc')
             ->get();
-
-
 
         return view('user.referredRenter', ['rec' => $getRec]);
     }
@@ -342,7 +357,8 @@ class HomeController extends Controller
 
     public function managerTerms()
     {
-        return view('user.pages.managerTerms');
+        $terms = \App\Models\ManagerTermsCMS::all();
+        return view('user.pages.managerTerms', ['terms' => $terms]);
     }
 
     public function requestQuote(Request $request)
@@ -408,6 +424,56 @@ class HomeController extends Controller
         ]);
     }
 
+    public function submitReportLease(Request $request)
+    {
+        $validated = $request->validate([
+            'username' => 'required', // Name on lease
+            'email' => 'required|email',
+            'movedate' => 'required|date',
+            'rentamount' => 'required',
+            'zipcode' => 'required',
+            'address' => 'required',
+            'state' => 'required',
+            'city' => 'required',
+            'assisted_by' => 'required',
+        ]);
 
+        try {
+            $user = Auth::guard('renter')->user();
+            $renterId = $user->Id;
+            
+            // In accordance with the system flow:
+            // 1. The data is NOT immediately stored in the database.
+            // 2. The "Request" effectively lives in the Admin's Email Inbox.
+
+            // Create In-App Notification for Admin (to track that a request was sent)
+            Notification::create([
+                'from_id' => $renterId,
+                'form_user_type' => 'R',
+                'to_id' => 1, // Super Admin
+                'to_user_type' => 'A',
+                'property_id' => null,
+                'message' => "Renter <strong>{$user->UserName}</strong> has submitted a Lease Report request.",
+                'seen' => 0,
+                'CreatedOn' => now(),
+            ]);
+
+            // Send Email to Admin (The primary "Request" storage)
+            try {
+                $settings = \App\Models\Setting::pluck('value', 'key');
+                $adminEmail = $settings['site_email'] ?? 'admin@crmrent.com';
+                \Illuminate\Support\Facades\Mail::to($adminEmail)->send(new \App\Mail\LeaseReportMail($request->all(), $user));
+            } catch (\Exception $e) {
+                Log::error('Lease Report Email Error: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Failed to send email report. Please try again.']);
+            }
+            
+            return response()->json(['success' => true, 'message' => 'Lease report submitted successfully! Our team will review it and update your records.']);
+
+        } catch (\Exception $e) {
+            Log::error('Lease Report Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred.']);
+        }
+    }
 
 }

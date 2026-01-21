@@ -28,7 +28,9 @@ $(function () {
     // 2. FAVORITE FUNCTIONALITY
     function checkIsFav() {
         var $favBtn = $("#addtofavorite");
-        var propertyId = $favBtn.attr('value') || $favBtn.val(); // Handle both li value and data
+        if ($favBtn.length === 0) return;
+
+        var propertyId = $favBtn.data('value') || $favBtn.attr('value') || $favBtn.val();
         if (!propertyId) return;
 
         $.ajax({
@@ -52,7 +54,7 @@ $(function () {
     $("#addtofavorite").on("click", function (e) {
         e.preventDefault();
         var $btn = $(this);
-        var propertyId = $btn.attr('value') || $btn.val();
+        var propertyId = $btn.data('value') || $btn.attr('value') || $btn.val();
         if (!propertyId) return;
 
         // Directly call toggleFavorite without a modal
@@ -75,22 +77,60 @@ $(function () {
                     if (response.action === 'added') {
                         toastr.success('<i class="fa-solid fa-heart me-2"></i>' + response.message);
                     } else {
+                        // Action was 'removed'
                         toastr.info('<i class="fa-regular fa-heart me-2"></i>' + response.message);
+
+                        // If this was a remove button in the table, remove the row immediately
+                        if ($btn.hasClass('remove-single-fav')) {
+                            var $row = $btn.closest('tr');
+                            if ($.fn.DataTable.isDataTable('#fav-listview')) {
+                                $('#fav-listview').DataTable().row($row).remove().draw(false);
+                            } else {
+                                $row.fadeOut(300, function () { $(this).remove(); });
+                            }
+                        }
                     }
-                    checkIsFav(); // Refresh state
+                    checkIsFav(); // Refresh global favorite state (e.g. counters)
+
+                    // Always reload table if it exists to ensure sync
                     if ($.fn.DataTable.isDataTable('#fav-listview')) {
                         $('#fav-listview').DataTable().ajax.reload(null, false);
                     }
                 }
             },
-            error: function () {
-                toastr.error("Could not update favorites. Please login and try again.");
+            error: function (xhr) {
+                if (xhr.status === 401) {
+                    toastr.error("Please login to manage favorites.");
+                } else {
+                    toastr.error("Could not update favorites. Please try again.");
+                }
             },
             complete: function () {
                 $btn.css('pointer-events', 'auto').css('opacity', '1');
             }
         });
     }
+
+    // Remove single favorite from list view
+    $(document).on('click', '.remove-single-fav', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var propertyId = $btn.data('id');
+
+        Swal.fire({
+            title: 'Remove from Favorites?',
+            text: "Are you sure you want to remove this property?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, remove it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                toggleFavorite(propertyId, $btn, '');
+            }
+        });
+    });
 
     // 3. DATATABLES INITIALIZATION
     const dtConfigs = [
@@ -126,8 +166,12 @@ $(function () {
                 $form[0].reset();
             },
             error: function (xhr) {
-                let msg = xhr.responseJSON?.error || "Failed to change password.";
-                toastr.error(msg);
+                if (xhr.status === 422) {
+                    window.ValidationHandler.showErrors($form, xhr.responseJSON.errors);
+                } else {
+                    let msg = xhr.responseJSON?.error || "Failed to change password.";
+                    toastr.error(msg);
+                }
             }
         });
     });
@@ -156,12 +200,10 @@ $(function () {
             },
             error: function (xhr) {
                 if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.errors;
-                    $.each(errors, function (key, value) {
-                        $form.find("[name='" + key + "']").after('<div class="error-message text-danger small mt-1">' + value[0] + '</div>');
-                    });
+                    window.ValidationHandler.showErrors($form, xhr.responseJSON.errors);
+                } else {
+                    toastr.error("An error occurred. Please try again later.");
                 }
-                toastr.error("Please fix the errors below.");
             },
             complete: function () {
                 $btn.prop("disabled", false).html('Submit');
@@ -198,8 +240,7 @@ $(function () {
         }
     }
 
-    // 8. MISC HELPERS
-    $(".summer_note").length && $(".summer_note").summernote();
+
 
     // Dynamic row addition (if needed)
     $("#add_row").on("click", function () {

@@ -20,3 +20,13 @@
 <script src="{{ asset('admin_asset/js/slim.js') }}"></script>
 <!-- Common Admin JS -->
 <script src="{{ asset('common/js/admin-common.js') }}"></script>
+<script src="{{ asset('js/city-state-handler.js') }}"></script>
+<script src="{{ asset('common/js/validation.js') }}"></script>
+
+<script>
+    @if($errors->any())
+        $(document).ready(function() {
+            window.ValidationHandler.showErrors($('form'), @json($errors->toArray()));
+        });
+    @endif
+</script>

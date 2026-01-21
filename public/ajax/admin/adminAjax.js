@@ -495,8 +495,11 @@ $(document).ready(function () {
                 toastr.success(response.message);
             },
             error: function (response) {
-                console.log("===>", response);
-                toastr.error(response.responseJSON.error);
+                if (response.status === 422) {
+                    window.ValidationHandler.showErrors($("#cityform"), response.responseJSON.errors);
+                } else {
+                    toastr.error(response.responseJSON?.error || "An error occurred.");
+                }
             },
         });
     });

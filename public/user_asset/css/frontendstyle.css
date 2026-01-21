@@ -13,14 +13,14 @@
     --colorPrimary: #0d7c66;
     --btnColor: #0d7c66;
     --text-color: #ffff;
-    --colorSecondary: #398e91;
+    --colorSecondary: #0d7c66;
     --colorBlack: #1c212b;
     --background-color: #ffffff;
-    --btn-teal: #398e91;
-    --btn-light-green: #4caa86;
+    --btn-teal: #0d7c66;
+    --btn-light-green: #0d7c66;
     --bg-theme1: #0d7c66;
-    --btn-color1: #4caa86;
-    --btn-color2: #398e91;
+    --btn-color1: #0d7c66;
+    --btn-color2: #0d7c66;
     --paraColor: #7c7474;
     --colorWhite: #ffffff;
     --ratingColor: #ffc107;
@@ -38,15 +38,15 @@
     --nav-dropdown-background-color: #ffffff;
     --nav-dropdown-color: #444444;
     --nav-dropdown-hover-color: #2eca6a;
-    --site-primary-btn: #4caa86;
-    --site-secondary-btn: #398e91;
+    --site-primary-btn: #0d7c66;
+    --site-secondary-btn: #0d7c66;
     --site-main-theme: #0d7c66;
     --site-dark-text: #1c212b;
     --site-white-text: #ffff;
     --site-white-theme: #ffff;
-    --site-color-text: #398e91;
+    --site-color-text: #0d7c66;
     --site-btn-text: #ffff;
-    --site-btn-background: #4caa86;
+    --site-btn-background: #0d7c66;
     --site-primary-btn-text: #ffff;
 }
 
@@ -93,9 +93,10 @@ table.dataTable thead th {
 
 .container {
     width: 100%;
-    max-width: 1280px !important;
+    max-width: 1380px !important;
     margin: 0 auto;
-    padding: 0 20px !important;
+    padding: 0px !important;
+    /* padding: 0 20px !important; */
 }
 
 ul,
@@ -251,8 +252,9 @@ img {
 }
 
 .btn-primary-sm1:hover {
-    background-color: #16423c;
-    color: #fff;
+    background-color: transparent !important;
+    color: var(--btnColor) !important;
+    border: 1px solid var(--btnColor);
 }
 
 .list-property-name {
@@ -334,13 +336,13 @@ button {
 }
 
 .bg-grad {
-    background: var(--colorPrimary);
-    background-image: linear-gradient(to right, var(--btn-teal) 0%, var(--btn-light-green) 100%);
+    background: var(--btnColor) !important;
+    background-image: none !important;
 }
 
 .grad-btn {
-    background: var(--colorPrimary);
-    background-image: linear-gradient(to right, var(--btn-teal) 0%, var(--btn-light-green) 100%);
+    background: var(--btnColor) !important;
+    background-image: none !important;
 }
 
 .bg-light-gray {
@@ -475,71 +477,13 @@ button {
    COMMON CSS START
 =====================*/
 
-.common_btn {
-    font-size: 16px;
-    color: var(--colorWhite);
-    padding: 15px 30px;
-    border: 1px solid var(--colorWhite);
-    border-radius: 30px;
-    font-weight: 500;
-    text-transform: capitalize;
-    transition: all linear 0.3s;
-    -webkit-transition: all linear 0.3s ease;
-    -moz-transition: all linear 0.3s ease;
-    -ms-transition: all linear 0.3s ease;
-    -o-transition: all linear 0.3s ease;
-}
+
 
 .common_btn i {
     font-size: 10px;
     margin-left: 5px;
 }
 
-.common_btn:hover {
-    background: var(--colorBlack);
-    color: var(--colorWhite);
-    border-color: var(--colorBlack);
-}
-
-.read_btn {
-    font-size: 16px;
-    color: var(--colorBlack);
-    text-transform: capitalize;
-    font-weight: 600;
-    transition: all linear 0.3s;
-    -webkit-transition: all linear 0.3s ease;
-    -moz-transition: all linear 0.3s ease;
-    -ms-transition: all linear 0.3s ease;
-    -o-transition: all linear 0.3s ease;
-}
-
-.read_btn::after {
-    position: absolute;
-    content: "";
-    background: #dddddd26;
-    width: 20px;
-    height: 100px;
-    transform: rotate(25deg);
-    -webkit-transform: rotate(25deg);
-    -moz-transform: rotate(25deg);
-    -ms-transform: rotate(25deg);
-    -o-transform: rotate(25deg);
-    top: -30px;
-    left: -35px;
-    transition: all linear 0.3s;
-    -webkit-transition: all linear 0.3s ease;
-    -moz-transition: all linear 0.3s ease;
-    -ms-transition: all linear 0.3s ease;
-    -o-transition: all linear 0.3s ease;
-}
-
-.read_btn:hover {
-    color: var(--colorPrimary);
-}
-
-.read_btn:hover::after {
-    left: 120%;
-}
 
 .hire_btn {
     font-size: 16px;
@@ -7389,7 +7333,6 @@ button#submit-btn {
 
 .top-list-tab {
     display: flex;
-    border: 1px solid #eaeaea;
     justify-content: space-between;
 }
 
@@ -7686,67 +7629,8 @@ button#submit-btn {
 /* Tab CSs */
 
 
-/* Button CSS Start */
-
-.main-btn {
-    font-size: 16px;
-    color: var(--colorBlack);
-    background: var(--btnColor);
-    border-radius: 4px;
-    padding: 12px 20px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: #fff;
-}
-
-.theme-btn {
-    font-size: 16px;
-    background: var(--site-btn-background);
-    border-radius: 4px;
-    padding: 12px 20px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: var(--site-btn-text);
-}
 
 
-.switch-btn {
-    font-size: 16px;
-    color: var(--colorBlack);
-    background: var(--colorPrimary);
-    border-radius: 4px;
-    padding: 12px 20px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: #fff;
-}
-
-.send-message-btn {
-    width: 100%;
-    font-size: 15px;
-    color: var(--colorBlack);
-    background: var(--colorPrimary);
-    padding: 12px 25px;
-    text-transform: capitalize;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-    transition: all linear 0.3s;
-    color: #fff;
-    border-radius: 5px;
-}
-
-
-/* Button CSS END */
 
 
 /* Notifications Css */
@@ -8654,7 +8538,7 @@ select:focus {
 
 .input-group-custom i:first-child {
     position: absolute;
-    left: 20px;
+    left: -5px;
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
@@ -8724,4 +8608,9 @@ select:focus {
     border-radius: 12px !important;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     opacity: 1 !important;
+}
+
+.action-btns {
+    display: flex !important;
+    justify-content: center !important;
 }

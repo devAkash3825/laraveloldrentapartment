@@ -4,6 +4,10 @@
     min-height: 100vh;
 }
 
+:root {
+    --primary-color: var(--primary);
+}
+
 /* Default tab content hidden */
 [data-tab-content] {
     display: none;

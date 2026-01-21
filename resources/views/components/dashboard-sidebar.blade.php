@@ -17,9 +17,6 @@
                 {{ Auth::guard('renter')->user()->renterinfo->Firstname ?? '' }} {{ Auth::guard('renter')->user()->renterinfo->Lastname ?? '' }}
              @endif
         </h5>
-        <p class="text-center badge rounded-pill bg-primary-gradient px-3">
-            {{ Auth::guard('renter')->user()->user_type == 'M' ? 'Manager' : 'Renter' }}
-        </p>
     </div>
 
     <ul class="dashboard_link">
@@ -52,6 +49,13 @@
         <li> <a class="{{ isActiveRoute('recently-visited') }}" href="{{ route('recently-visited') }}">
             <i class="fa-solid fa-clock-rotate-left"></i> Recently Visited </a>
         </li>
+        @if (Auth::guard('renter')->user()->user_type == 'C')
+        <li>
+            <a class="{{ isActiveRoute('report-lease') }}" href="{{ route('report-lease') }}">
+                <i class="fa-solid fa-file-contract"></i> Report Lease
+            </a>
+        </li>
+        @endif
         <li class="mt-4">
             <a href="{{ route('logout') }}" class="text-danger">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout

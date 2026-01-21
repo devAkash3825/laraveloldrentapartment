@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 @section('content')
 @php
-$settings = DB::table('settings')->pluck('value', 'key');
+$settings = DB::table('settings')->pluck('value', 'key')->toArray();
 @endphp
 @push('style')
 <link rel="stylesheet" href="{{ asset('admin_asset/css/tabview.css') }}">
@@ -121,7 +121,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                     <option value="">Select</option>
                                     <option value="UTC">UTC</option>
                                     @foreach (config('time-zone') as $key => $timezone)
-                                    <option @selected($key===$settings['site_timezone'] ) value="{{ $key }}">
+                                    <option @selected($key === ($settings['site_timezone'] ?? null)) value="{{ $key }}">
                                         {{ $key }}
                                         - {{ $timezone }}
                                     </option>
@@ -150,7 +150,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                 <div id="image-preview" class="image-preview">
                                     <label for="image-upload" class="image-hover-label">Choose File</label>
                                     <input type="file" name="logo" id="image-upload" style="display: none;" />
-                                    <input type="hidden" name="old_logo" value="{{ $settings['logo'] }}" />
+                                    <input type="hidden" name="old_logo" value="{{ $settings['logo'] ?? '' }}" />
                                 </div>
                             </div>
                         </div>
@@ -161,7 +161,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                 <div id="image-favicon-preview" class="image-preview">
                                     <label for="image-upload-favicon" class="image-hover-label">Choose File</label>
                                     <input type="file" name="favicon" id="image-upload-favicon" style="display: none;" />
-                                    <input type="hidden" name="old_favicon" value="{{ $settings['favicon'] }}" />
+                                    <input type="hidden" name="old_favicon" value="{{ $settings['favicon'] ?? '' }}" />
                                 </div>
                             </div>
                         </div>
@@ -186,7 +186,7 @@ $settings = DB::table('settings')->pluck('value', 'key');
                                 <label for="">Default Site Color <span class="text-danger"> * </span></label>
                                 <div class="input-group colorpickerinput">
                                     <input type="text" class="form-control" name="site_default_color"
-                                        value="{{ $settings['site_default_color'] }}">
+                                        value="{{ $settings['site_default_color'] ?? '#1b84e7' }}">
                                     <div class="input-group-append">
                                         <div class="input-group-text">
                                             <i class="fas fa-fill-drip"></i>

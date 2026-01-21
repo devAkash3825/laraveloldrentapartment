@@ -25,15 +25,15 @@
                     <div class="d-lg-none mb-4 text-center">
                         <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
                     </div>
-                    
+
                     <h2 class="auth-title mb-2">Welcome Back</h2>
                     <p class="auth-subtitle mb-4">Please enter your details to sign in.</p>
 
                     @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4 mb-4" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     @endif
 
                     <form action="{{ route('login') }}" class="login-form needs-validation" method="post" novalidate>
@@ -45,7 +45,7 @@
                                 <input type="text" class="form-control" name="username" placeholder="Enter your username" required>
                             </div>
                         </div>
-                        
+
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label class="form-label fw-semibold mb-0">Password</label>
@@ -77,9 +77,10 @@
 </section>
 
 <style>
-    #passeye{
+    #passeye {
         left: -4px !important;
     }
+
     .login-viewport {
         height: 100vh;
         width: 100vw;
@@ -277,6 +278,7 @@
             min-height: 100vh;
             overflow-y: auto;
         }
+
         .form-side {
             padding: 40px 0;
         }
@@ -289,7 +291,7 @@
         const input = document.getElementById(id);
         const btn = event ? event.currentTarget : window.event.srcElement;
         const icon = btn.querySelector('i');
-        
+
         if (input && icon) {
             if (input.type === 'password') {
                 input.type = 'text';

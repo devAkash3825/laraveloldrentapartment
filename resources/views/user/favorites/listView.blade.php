@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Premium Header -->
-<div class="header-premium-gradient py-5">
+<div class="header-premium-gradient">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -23,34 +23,37 @@
     </div>
 </div>
 
-<section id="dashboard" class="py-5 bg-light">
+<section id="dashboard" class="">
     <div class="container">
         <div class="row">
             <div class="col-lg-3">
                 <x-dashboard-sidebar />
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-9 ps-lg-4">
                 <div class="dashboard_content">
-                    <div class="mb-4">
+                    <div class="mb-5">
                         <x-favorite-sidebar />
                     </div>
                     
-                    <div class="my_listing list_padding bg-white rounded-1 shadow-sm p-4 border">
-                        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                            <h4 class="fw-bold mb-0 text-dark">My Collection</h4>
-                            <button class="btn btn-danger btn-sm rounded-1 px-3" id="delete-selected" style="display:none;">
+                    <div class="recent-table-container">
+                        <div class="table-header-box d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="table-title">My Collection</h2>
+                                <p class="text-muted small mb-0 mt-1">Manage your saved apartment listings</p>
+                            </div>
+                            <button class="btn btn-danger btn-sm rounded-3 px-3 py-2 fw-bold shadow-sm" id="delete-selected" style="display:none;">
                                 <i class="fa-solid fa-trash-can me-2"></i> Remove Selected
                             </button>
                         </div>
 
                         <div class="table-responsive">
-                            <table id="fav-listview" class="table table-hover align-middle">
-                                <thead class="bg-light">
+                            <table id="fav-listview" class="table custom-table">
+                                <thead>
                                     <tr>
-                                        <th width="30" class="border-0 rounded-start"><input type="checkbox" class="form-check-input" id="selectAll"></th>
-                                        <th class="border-0 fw-bold text-uppercase small text-muted">Apartment Details</th>
-                                        <th width="180" class="border-0 fw-bold text-uppercase small text-muted">Quick Inquiry</th>
-                                        <th width="150" class="border-0 fw-bold text-uppercase small text-muted text-center rounded-end">Manage</th>
+                                        <th width="50" class="text-center"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                                        <th width="350">Apartment Details</th>
+                                        <th width="150" class="text-center">Quick Inquiry</th>
+                                        <th width="220" class="text-center">Manage</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,6 +111,8 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: "{{ route('list-view') }}",
+        searching: false,
+        lengthChange: false,
         columns: [
             { data: 'id', name: 'id', orderable: false, searchable: false,
                 render: function(data) {
@@ -127,7 +132,7 @@ $(document).ready(function() {
                 previous: '<i class="fa-solid fa-chevron-left"></i>',
                 next: '<i class="fa-solid fa-chevron-right"></i>'
             },
-            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>',
+            processing: '<div class="d-flex flex-column align-items-center justify-content-center mt-4"><div class="spinner-border text-primary mb-2" role="status"></div><span class="text-muted fw-bold">Updating collection...</span></div>',
             emptyTable: '<div class="text-center p-5"><i class="fa-solid fa-heart-circle-xmark fa-3x mb-3 text-muted"></i><h5 class="fw-bold">No saved properties</h5><p class="text-muted mb-0">Browse our listings and save your favorite apartments.</p></div>'
         },
         pageLength: 10,
@@ -324,16 +329,101 @@ $(document).ready(function() {
 
 </script>
 <style>
-    /* Premium List View Styles */
-    .dashboard_content .table thead th {
-        font-weight: 600;
-        background-color: #f8f9fa;
-        padding: 15px;
+    :root {
+        --table-border: #f1f5f9;
+        --table-hover: #f8fafc;
+        --text-main: #334155;
+        --text-muted: #64748b;
     }
-    
-    .dashboard_content .table tbody td {
-        padding: 15px;
+
+    .recent-table-container {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--table-border);
+        overflow: hidden;
+    }
+
+    .table-header-box {
+        padding: 24px 30px;
+        border-bottom: 1px solid var(--table-border);
+        background: #fff;
+    }
+
+    .table-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        letter-spacing: -0.025em;
+    }
+
+    .custom-table {
+        margin-bottom: 0 !important;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .custom-table thead th {
+        background: #fdfdfd;
+        color: var(--text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--table-border);
+        border-top: none;
+    }
+
+    .custom-table tbody td {
+        padding: 18px 24px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--table-border);
         vertical-align: middle;
+    }
+
+    .custom-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-table tbody tr:hover {
+        background-color: var(--table-hover);
+    }
+
+    .prop-link {
+        color: #1e293b;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .icon-box {
+        width: 44px;
+        height: 44px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .prop-link:hover {
+        color: var(--colorPrimary);
+    }
+
+    .prop-link:hover .icon-box {
+        background: var(--colorPrimary);
+        color: #fff;
+        transform: rotate(-5deg);
     }
 
     .form-check-input {
@@ -348,42 +438,13 @@ $(document).ready(function() {
         border-color: var(--colorPrimary);
     }
 
-    .fav-link-name {
-        text-decoration: none !important;
-        color: #1e293b;
-        font-weight: 600;
-        transition: color 0.2s;
-    }
-    
-    .fav-link-name:hover {
-        color: var(--colorPrimary);
-    }
-
-    .property-icon-wrapper {
-        width: 40px;
-        height: 40px;
-        background: #f1f5f9;
-        border-radius: 4px; /* Square Premium */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-        margin-right: 12px;
-        flex-shrink: 0;
-    }
-
-    .fav-link-name {
-        display: flex;
-        align-items: center;
-    }
-
     .fav-request-quote-btn {
         background: #fff;
         border: 1px solid #e2e8f0;
-        padding: 8px 16px;
-        border-radius: 4px; /* Square Premium */
+        padding: 10px 18px;
+        border-radius: 10px;
         font-size: 0.85rem;
-        font-weight: 600;
+        font-weight: 700;
         color: #475569;
         text-decoration: none;
         transition: all 0.2s;
@@ -393,68 +454,87 @@ $(document).ready(function() {
     }
 
     .fav-request-quote-btn:hover {
-        background: #f8fafc;
+        background: var(--table-hover);
         border-color: var(--colorPrimary);
         color: var(--colorPrimary);
+        transform: translateY(-2px);
     }
 
     .btn-icon {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border: 1px solid #e2e8f0;
-        border-radius: 4px; /* Square Premium */
+        border-radius: 12px;
         color: #64748b;
         background: #fff;
-        transition: all 0.2s;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         text-decoration: none;
-        margin-left: 5px;
+        margin: 0 3px;
     }
 
     .btn-icon:hover {
         background: var(--colorPrimary);
         border-color: var(--colorPrimary);
-        color: #fff;
-        transform: translateY(-2px);
+        color: #fff !important;
+        transform: scale(1.1) translateY(-3px);
+        box-shadow: 0 5px 15px rgba(var(--colorPrimaryRgb), 0.3);
     }
 
-    /* Keep Delete Red */
     .btn-delete:hover {
-        background: #ef4444;
-        border-color: #ef4444;
+        background: #ef4444 !important;
+        border-color: #ef4444 !important;
     }
 
-    /* Clean up DataTables controls */
-    .dataTables_wrapper .dataTables_filter input {
-        border-radius: 4px;
-        padding: 6px 12px;
-        border: 1px solid #e2e8f0;
+    /* DataTables Customization */
+    .dataTables_wrapper .dataTables_info {
+        padding: 24px 30px;
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-top: 1px solid var(--table-border);
     }
-    
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: var(--colorPrimary);
-        outline: none;
+
+    .dataTables_wrapper .dataTables_paginate {
+        padding: 15px;
     }
-    
+
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border-radius: 4px !important;
+        border-radius: 10px !important;
         border: 1px solid #e2e8f0 !important;
         margin: 0 4px;
-        padding: 6px 12px !important;
+        padding: 8px 16px !important;
         background: #fff !important;
+        font-weight: 700 !important;
+        color: var(--text-main) !important;
+        transition: all 0.2s;
     }
-    
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
+        background: var(--table-hover) !important;
+        border-color: #cbd5e1 !important;
+        color: var(--colorPrimary) !important;
+    }
+
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
         background: var(--colorPrimary) !important;
         color: #fff !important;
         border-color: var(--colorPrimary) !important;
+        box-shadow: 0 4px 12px rgba(var(--colorPrimaryRgb), 0.3);
     }
 
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
-        background-color: #f1f5f9 !important;
-        color: #0f172a !important;
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        background: #f8fafc !important;
+    }
+
+    .spinner-border-premium {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.25em;
+        color: var(--colorPrimary);
     }
 </style>
 @endpush

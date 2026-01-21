@@ -76,14 +76,9 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
                 background: #fff;
                 border-radius: 4px;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-                padding: 30px 20px;
                 border: 1px solid #f0f0f0;
             }
-            .dash_logo_wrapper {
-                margin-bottom: 30px;
-                padding-bottom: 20px;
-                border-bottom: 1px dashed #eee;
-            }
+            
             .profile-img-main {
                 width: 120px !important;
                 height: 120px !important;

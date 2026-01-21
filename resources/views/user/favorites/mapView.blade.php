@@ -8,7 +8,7 @@
         }
     </style>
 <!-- Premium Header -->
-<div class="header-premium-gradient py-5">
+<div class="header-premium-gradient">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -32,8 +32,10 @@
                 <div class="col-lg-3">
                     <x-dashboard-sidebar />
                 </div>
-                <div class="col-lg-9">
-                    <x-favorite-sidebar />
+                <div class="col-lg-9 ps-lg-4">
+                    <div class="mb-4">
+                        <x-favorite-sidebar />
+                    </div>
                     @if (count($mapdata) > 0)
                         <span id="map" style="height:500px;float:left;" class="mt-3"></span>
                         <div class="col-md-6 p-0">

@@ -31,6 +31,7 @@
                                         <th>Renter</th>
                                         <th>Send Time</th>
                                         <th>Response Time </th>
+                                        <th>Agent</th>
                                         <th>Actions </th>
                                     </tr>
                                 </thead>
@@ -79,6 +80,10 @@
                             {
                                 data: "responsetime",
                                 name: "responsetime"
+                            },
+                            {
+                                data: "agent",
+                                name: "agent"
                             },
                             {
                                 data: "action",

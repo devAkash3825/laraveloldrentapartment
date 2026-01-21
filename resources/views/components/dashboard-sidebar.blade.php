@@ -17,9 +17,6 @@
                 {{ Auth::guard('renter')->user()->renterinfo->Firstname ?? '' }} {{ Auth::guard('renter')->user()->renterinfo->Lastname ?? '' }}
              @endif
         </h5>
-        <p class="text-center badge rounded-pill bg-primary-gradient px-3">
-            {{ Auth::guard('renter')->user()->user_type == 'M' ? 'Manager' : 'Renter' }}
-        </p>
     </div>
 
     <ul class="dashboard_link">

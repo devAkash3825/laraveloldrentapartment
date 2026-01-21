@@ -42,15 +42,17 @@ class UserFavoriteController extends Controller
             return DataTables::of($transformeddata)->addIndexColumn()
                 ->addColumn('propertyname', function ($row) {
                 $url = route('property-display', ['id' => $row['id']]);
-                return '<a href="'.$url.'" class="fav-link-name">
-                            <div class="property-icon-wrapper">
-                                <i class="fa-solid fa-building"></i>
+            return '<a href="'.$url.'" class="prop-link">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div>
+                            <div class="prop-name">'.$row['propertyname'].'</div>
+                            <div class="text-muted smaller" style="font-size: 0.8rem;">
+                                <i class="fa-solid fa-location-dot me-1"></i>'.$row['address'].', '.$row['area'].'
                             </div>
-                            <div class="d-flex flex-column">
-                                <span class="property-name-text">'.$row['propertyname'].'</span>
-                                <span class="text-muted smaller" style="font-size: 0.75rem;">ID: #'.$row['id'].'</span>
-                            </div>
-                        </a>';
+                        </div>
+                    </a>';
             })
             ->addColumn('quote', function ($row) {
                 return '<a class="fav-request-quote-btn" href="javascript:void(0)" onclick="requestQuote('.$row['id'].')">
@@ -61,10 +63,7 @@ class UserFavoriteController extends Controller
                 $viewUrl = route('property-display', ['id' => $row['id']]);
                 $mapUrl = route('street-view', ['id' => $row['id']]);
                 
-                return '<div class="action-btns">
-                           <a href="'.$viewUrl.'" class="btn-icon btn-view" data-bs-toggle="tooltip" title="View Details">
-                               <i class="fa-solid fa-eye"></i>
-                           </a>
+                return '<div class="action-btns" style="white-space: nowrap;">
                            <a href="'.$mapUrl.'" class="btn-icon btn-map" data-bs-toggle="tooltip" title="Interactive Map">
                                <i class="fa-solid fa-map-location-dot"></i>
                            </a>

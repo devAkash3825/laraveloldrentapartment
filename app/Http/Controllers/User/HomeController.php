@@ -37,6 +37,7 @@ use App\Models\PropertyInquiry;
 use App\Models\EqualHousingCMS;
 use App\Models\termsCMS;
 use App\Models\Notification;
+use App\Models\NotifyDetail;
 
 
 
@@ -57,51 +58,66 @@ class HomeController extends Controller
     }
     public function index()
     {
-        $latestProperty = $this->propertyDetailsRepository->getLatestPropertiesforHome();
-        $data = new ListingCollection($latestProperty);
-        $propertyDetails = $data->toArray(request());
+        try {
+            $latestProperty = $this->propertyDetailsRepository->getLatestPropertiesforHome();
+            $data = new ListingCollection($latestProperty ?? []);
+            $propertyDetails = $data->toArray(request());
 
-        $totalProperties = PropertyInfo::all();
-        $totalAdmins = AdminDetail::all();
-        $totalRenters = Login::where('user_type', 'C')->get();
-        $totalManagers = Login::where('user_type', 'M')->get();
+            // Get counts with fallback to 0
+            $totalProperties = PropertyInfo::count();
+            $totalAdmins = AdminDetail::count();
+            $totalRenters = Login::where('user_type', 'C')->count();
+            $totalManagers = Login::where('user_type', 'M')->count();
 
-        $totalManagers = count($totalManagers);
-        $totalRenters = count($totalRenters);
-        $totalAdmins = count($totalAdmins);
-        $totalProperties = count($totalProperties);
+            $ourFeatures = OurFeatures::where('status', 1)->get();
 
+            $featuredProperties = PropertyInfo::where('Featured', '1')
+                ->where('Status', '1')
+                ->with(['gallerytype.gallerydetail', 'city.state'])
+                ->whereHas('gallerytype', function ($query) {
+                    $query->whereNotNull('Id');
+                })
+                ->take(8)
+                ->orderBy('Id', 'desc')
+                ->get();
 
-        $ourFeatures = OurFeatures::where('status', 1)->get();
+            $sliderImages = SliderManage::where('is_active', '1')->get();
+            $zone = Zone::all();
 
+            // Handle potential null values if tables are truncated
+            $counter = Counter::first() ?? new Counter();
+            $sectionTitle = SectionTitle::first() ?? new SectionTitle();
 
-        $featuredProperties = PropertyInfo::where('Featured', '1')->where('Status', '1')->with(['gallerytype.gallerydetail', 'city.state'])
-            ->whereHas('gallerytype', function ($query) {
-                $query->whereNotNull('Id');
-            })
-            ->take(8)
-            ->orderBy('Id', 'desc')
-            ->get();
-
-        $sliderImages = SliderManage::where('is_active', '1')->get();
-        $zone = Zone::all();
-
-        $counter = Counter::first();
-        $sectionTitle = SectionTitle::first();
-
-        return view('user.pages.home', [
-            'propertyDetails' => $propertyDetails,
-            'totalAdmins' => $totalAdmins,
-            'totalProperties' => $totalProperties,
-            'totalManagers' => $totalManagers,
-            'totalRenters' => $totalRenters,
-            'featuredProperties' => $featuredProperties,
-            'sliderImages' => $sliderImages,
-            'zones' => $zone,
-            'ourFeatures' => $ourFeatures,
-            'counter' => $counter,
-            'sectionTitle' => $sectionTitle
-        ]);
+            return view('user.pages.home', [
+                'propertyDetails' => $propertyDetails,
+                'totalAdmins' => $totalAdmins,
+                'totalProperties' => $totalProperties,
+                'totalManagers' => $totalManagers,
+                'totalRenters' => $totalRenters,
+                'featuredProperties' => $featuredProperties,
+                'sliderImages' => $sliderImages,
+                'zones' => $zone,
+                'ourFeatures' => $ourFeatures,
+                'counter' => $counter,
+                'sectionTitle' => $sectionTitle
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Home page error: ' . $e->getMessage());
+            // Return basic view or error page if something goes critically wrong
+            return view('user.pages.home', [
+                'propertyDetails' => [],
+                'totalAdmins' => 0,
+                'totalProperties' => 0,
+                'totalManagers' => 0,
+                'totalRenters' => 0,
+                'featuredProperties' => [],
+                'sliderImages' => [],
+                'zones' => [],
+                'ourFeatures' => [],
+                'counter' => new Counter(),
+                'sectionTitle' => new SectionTitle()
+            ]);
+        }
     }
 
     public function dashboard()
@@ -321,14 +337,13 @@ class HomeController extends Controller
 
     public function referredRenter()
     {
-        $authusertype = Auth::guard('renter')->user()->user_type;
         $authuserId = Auth::guard('renter')->user()->Id;
-        $getRec = Message::where('managerId', $authuserId)
-            ->where('notify_manager', 1)
-            ->with('loginrenter.renterinfo')
+        
+        // Use the new scope defined in NotifyDetail model
+        $getRec = NotifyDetail::forManager($authuserId)
+            ->with(['loginrenter.renterinfo', 'propertyinfo'])
+            ->orderBy('send_time', 'desc')
             ->get();
-
-
 
         return view('user.referredRenter', ['rec' => $getRec]);
     }

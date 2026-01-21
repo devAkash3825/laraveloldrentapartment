@@ -460,38 +460,35 @@ class SettingsController extends Controller
 
     public function updateSectionTitle(Request $request)
     {
-        $sectionId = SectionTitle::first();
-        $title = SectionTitle::where('id', $sectionId->id)->update([
-            'our_feature_title' => $request->our_feature_title,
-            'our_feature_sub_title' => $request->our_feature_sub_title,
-            'our_featured_listing_title' => $request->our_featured_listing_title,
-            'our_featured_listing_sub_title' => $request->our_featured_listing_sub_title,
-        ]);
-        if ($title) {
+        try {
+            SectionTitle::updateOrCreate(
+                ['id' => 1],
+                [
+                    'our_feature_title' => $request->our_feature_title,
+                    'our_feature_sub_title' => $request->our_feature_sub_title,
+                    'our_featured_listing_title' => $request->our_featured_listing_title,
+                    'our_featured_listing_sub_title' => $request->our_featured_listing_sub_title,
+                ]
+            );
             return response()->json(['message' => 'Section Updated Successfully']);
-        } else {
-            return response()->json(['error' => 'Not Updated Please Try Again Later']);
+        } catch (\Exception $e) {
+            \Log::error('Update Section Title Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Not Updated Please Try Again Later'], 500);
         }
     }
 
     public function updateAppearence(Request $request)
     {
-        $sitecolor = Setting::where('key', 'site_default_color')->update([
-            'value' => $request->site_default_color,
-        ]);
-        $btnColor = Setting::where('key', 'site_btn_color')->update([
-            'value' => $request->site_btn_color,
-        ]);
-        $gradientColor = Setting::updateOrCreate(
-            ['key' => 'site_gradient_color'],
-            ['value' => $request->site_gradient_color]
-        );
+        try {
+            Setting::updateOrCreate(['key' => 'site_default_color'], ['value' => $request->site_default_color]);
+            Setting::updateOrCreate(['key' => 'site_btn_color'], ['value' => $request->site_btn_color]);
+            Setting::updateOrCreate(['key' => 'site_gradient_color'], ['value' => $request->site_gradient_color]);
 
-        if ($sitecolor && $btnColor) {
             (new SettingsService())->clearCachedSettings();
             return response()->json(['message' => 'Site Colors and Appearance Updated Successfully']);
-        } else {
-            return response()->json(['error' => 'Not Updated Please Try Again Later']);
+        } catch (\Exception $e) {
+            \Log::error('Update Appearance Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Not Updated Please Try Again Later'], 500);
         }
     }
 

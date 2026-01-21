@@ -962,8 +962,7 @@ class ClientController extends Controller
     public function notifyHistory(Request $request)
     {
         try {
-            $notifyhistory = NotifyDetail::with('renterinfo')
-                ->with('propertyinfo.login')
+            $notifyhistory = NotifyDetail::with(['renterinfo', 'propertyinfo.login', 'agent'])
                 ->orderBy('send_time', 'desc')
                 ->get();
 
@@ -988,6 +987,9 @@ class ClientController extends Controller
                     ->addColumn('responsetime', function ($row) {
                         return @$row->respond_time ? $row->respond_time->format('Y-m-d H:i:s') : '';
                     })
+                    ->addColumn('agent', function ($row) {
+                        return $row->agent ? e($row->agent->admin_name) : 'Admin';
+                    })
                     ->addColumn('action', function ($row) {
                         $viewUrl = route('admin-view-notify-history', ['id' => $row->notification_id]);
                         $editUrl = route('admin-edit-notify-history', ['id' => $row->notification_id]);
@@ -1005,7 +1007,7 @@ class ClientController extends Controller
                                     </div>';
                         return $action;
                     })
-                    ->rawColumns(['selectall', 'propertyname', 'owner', 'rentername', 'sendtime', 'responsetime', 'action'])
+                    ->rawColumns(['selectall', 'propertyname', 'owner', 'rentername', 'sendtime', 'responsetime', 'agent', 'action'])
                     ->make(true);
             } else {
                 return view('admin.client.notifyHistory');

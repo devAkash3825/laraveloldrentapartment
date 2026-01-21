@@ -2,7 +2,7 @@
 @section('title', 'RentApartement | Thumbnail View')
 @section('content')
 <!-- Premium Header -->
-<div class="header-premium-gradient py-5">
+<div class="header-premium-gradient">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -26,10 +26,11 @@
                 <div class="col-lg-3">
                     <x-dashboard-sidebar />
                 </div>
-                <div class="col-lg-9">
-                    <div class="container">
+                <div class="col-lg-9 ps-lg-4">
+                    <div class="mb-4">
                         <x-favorite-sidebar />
-                        <div class="row">
+                    </div>
+                    <div class="row">
 
                             @if (count($data) > 0)
                                 <div class="row">

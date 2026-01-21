@@ -48,49 +48,62 @@ class UserPropertyController extends Controller
 
     public function propertyDisplay($id)
     {
-        $propertyinfo = $this->propertyDetailsRepository->getEditPropertyDetails($id);
-        $data = new PropertyCollection($propertyinfo);
-        $propertyDetails = $data->toArray(request());
+        try {
+            $propertyinfo = $this->propertyDetailsRepository->getEditPropertyDetails($id);
+            $data = new PropertyCollection($propertyinfo);
+            $propertyDetails = $data->toArray(request());
 
-        $communityFeatures = $propertyDetails[0]['apartmentinfo'];
-        $featureIds = explode(',', $communityFeatures);
-        $features = ApartmentFeature::whereIn('id', $featureIds)->get();
+            // Handle invalid ID or truncated table
+            if (empty($propertyDetails)) {
+                return redirect()->route('home')->with('error', 'Property not found or is no longer available.');
+            }
 
-        $amenities = $propertyDetails[0]['amenities'];
-        $amenitiesIds = explode(',', $amenities);
-        $amenitiesDetails = CommunityAmenities::whereIn('Id', $amenitiesIds)->get();
+            $propertyDetails = $propertyDetails[0];
 
+            $communityFeatures = $propertyDetails['apartmentinfo'] ?? '';
+            $featureIds = !empty($communityFeatures) ? explode(',', $communityFeatures) : [];
+            $features = ApartmentFeature::whereIn('id', $featureIds)->get();
 
-        $userid = Auth::guard('renter')->user()->Id;
-        $renterinfo = Login::where('Id', $userid)->with('renterinfo')->first();
-        $userid = Auth::guard('renter')->user()->Id;
-        $pid = $id;
+            $amenities = $propertyDetails['amenities'] ?? '';
+            $amenitiesIds = !empty($amenities) ? explode(',', $amenities) : [];
+            $amenitiesDetails = CommunityAmenities::whereIn('Id', $amenitiesIds)->get();
 
+            $auth_user = Auth::guard('renter')->user();
+            $userid = $auth_user->Id ?? null;
+            
+            $renterinfo = null;
+            if ($userid) {
+                $renterinfo = Login::where('Id', $userid)->with('renterinfo')->first();
+                
+                // Add to recent view history
+                $existingRecord = UserProperty::where('userId', $userid)->where('propertyId', $id)->first();
+                if ($existingRecord) {
+                    $existingRecord->lastviewed = now();
+                    $existingRecord->save();
+                } else {
+                    UserProperty::create([
+                        'userId' => $userid,
+                        'propertyId' => $id,
+                        'lastviewed' => now(),
+                    ]);
+                }
+            }
 
-        $existingRecord = UserProperty::where('userId', $userid)->where('propertyId', $pid)->first();
-        if ($existingRecord) {
-            $existingRecord->lastviewed = now();
-            $existingRecord->save();
-        } else {
-            UserProperty::create([
-                'userId' => $userid,
-                'propertyId' => $pid,
-                'lastviewed' => now(),
+            $categories = FloorPlanCategory::all();
+
+            return view('user.property.propertyDisplay', [
+                'propertyDetails' => $propertyDetails,
+                'renterinfo' => $renterinfo,
+                'featureNames' => $features,
+                'amenitiesDetails' => $amenitiesDetails,
+                'categories' => $categories,
+                'propertyinfo'  => $propertyinfo,
             ]);
+
+        } catch (\Exception $e) {
+            Log::error('Property Display Error: ' . $e->getMessage());
+            return redirect()->route('home')->with('error', 'An error occurred while loading the property details.');
         }
-        $categories = FloorPlanCategory::all();
-        $propertyDetails = $propertyDetails[0];
-
-
-
-        return view('user.property.propertyDisplay', [
-            'propertyDetails' => $propertyDetails,
-            'renterinfo' => $renterinfo,
-            'featureNames' => $features,
-            'amenitiesDetails' => $amenitiesDetails,
-            'categories' => $categories,
-            'propertyinfo'  => $propertyinfo,
-        ]);
     }
 
     public function editProperty($id)

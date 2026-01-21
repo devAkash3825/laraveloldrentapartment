@@ -16,7 +16,11 @@ class FavoriteService
 
     public function getFavoriteProperties()
     {
-        $userId = Auth::guard('renter')->user()->Id;
+        $user = Auth::guard('renter')->user();
+        if (!$user) {
+            return collect();
+        }
+        $userId = $user->Id;
         $properties = $this->favoriteRepository->getFavoriteProperties($userId);
         return $properties;
     }

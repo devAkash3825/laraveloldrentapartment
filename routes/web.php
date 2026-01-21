@@ -32,8 +32,10 @@ Route::get('/login', [UserLoginController::class, 'showUserLoginForm'])->name('s
 Route::post('/login', [UserLoginController::class, 'userLogin'])->name('login');
 Route::post('renter-register', [UserLoginController::class, 'renterRegister'])->name('renter-register');
 Route::post('manager-register', [UserLoginController::class, 'managerRegister'])->name('manager-register');
-Route::get('/forgot-password', [UserLoginController::class, 'forgotPasswod'])->name('forgot-password');
-
+Route::get('/forgot-password', [UserLoginController::class, 'forgotPassword'])->name('forgot-password');
+Route::post('/forgot-password', [UserLoginController::class, 'sendResetLink'])->name('forgot-password.post');
+Route::get('/reset-password/{token}', [UserLoginController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password-final', [UserLoginController::class, 'resetPasswordPost'])->name('password.update');
 
 Route::get('login-user', [UserLoginController::class, 'loginUserForm'])->name('login-user');
 

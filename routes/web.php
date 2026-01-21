@@ -326,6 +326,8 @@ Route::group(['prefix' => 'admin'], function () {
                 Route::post('/delete-school/{id}', [PropertyController::class, 'deleteSchool'])->name('admin-delete-school');
                 Route::post('/school-management/{id}', [PropertyController::class, 'schoolDelete']);
                 Route::post('/school-management/selected', [PropertyController::class, 'schoolSelected'])->name('admin-schoolManagement-deleteSelected');
+                Route::get('/edit-school/{id}', [PropertyController::class, 'editSchool'])->name('admin-edit-school');
+                Route::post('/update-school', [PropertyController::class, 'updateSchool'])->name('admin-update-school');
             });
 
             Route::get('pets-management', [PropertyController::class, 'petsManagement'])->name('admin-pets-management');

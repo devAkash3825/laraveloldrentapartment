@@ -107,6 +107,9 @@
 
                     <div class="card-footer py-2 px-2 bg-light-soft border-top-0 mx-auto">
                         <div class="btn-group-wrapper">
+                            <a href="javascript:void(0)" onclick="claimRenter({{ $data->Id }})" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
+                                <i class="fa-solid fa-user-tag"></i> Claim Profile
+                            </a>
                             <a href="{{ route('admin-edit-renter', ['id' => $data->Id]) }}" class="btn btn-premium btn-premium-outline-primary view-profile-btns">
                                 <i class="fa-solid fa-file-signature"></i> Add Lease
                             </a>
@@ -472,6 +475,31 @@
             .catch(error => {
                 // console.error('Error:', error);
             });
+    }
+    function claimRenter(id) {
+        if(!confirm('Are you sure you want to claim this renter?')) return;
+        
+        fetch("{{ route('admin-claim-renter') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ renterId: id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                AdminToast.success("Renter claimed successfully");
+                location.reload();
+            } else {
+                AdminToast.error("Failed to claim renter");
+            }
+        })
+        .catch(err => {
+             console.error(err);
+             AdminToast.error("Error occurred");
+        });
     }
 </script>
 @endpush

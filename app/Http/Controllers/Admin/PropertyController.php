@@ -561,7 +561,7 @@ class PropertyController extends Controller
                 ->addColumn('status', DataTableService::statusColumn('status'))
                 ->addColumn('actions', DataTableService::actionColumn([
                     'edit' => [
-                        'route' => fn($row) => route('admin-edit-city', ['id' => $row->school_id]),
+                        'route' => fn($row) => route('admin-edit-school', ['id' => $row->school_id]),
                         'icon' => 'fa-pen',
                         'class' => 'edit-btn'
                     ],
@@ -634,6 +634,39 @@ class PropertyController extends Controller
         School::whereIn('school_id', $ids)->delete();
 
         return response()->json(['message' => 'Selected records have been deleted successfully.']);
+    }
+
+    public function editSchool($id)
+    {
+        $school = School::where('school_id', $id)->first();
+        if (!$school) {
+            return redirect()->back()->with('error', 'School not found');
+        }
+        return view('admin.property.editSchool', compact('school'));
+    }
+
+    public function updateSchool(Request $request)
+    {
+        $request->validate([
+            'school_id' => 'required',
+            'school_name' => 'required|string|max:255',
+            'school_type' => 'required|in:Elementary,Middle,High,District',
+        ]);
+        
+        try {
+            $school = School::where('school_id', $request->school_id)->first();
+            if ($school) {
+                $school->update([
+                    'school_name' => $request->school_name,
+                    'school_type' => $request->school_type,
+                    'modified'    => Carbon::now(),
+                ]);
+                return response()->json(['success' => 'School updated successfully']);
+            }
+            return response()->json(['errors' => ['general' => ['School not found']]], 404);
+        } catch (\Exception $e) {
+            return response()->json(['errors' => ['general' => ['Error updating school: ' . $e->getMessage()]]], 500);
+        }
     }
 
     public function feesManagement()

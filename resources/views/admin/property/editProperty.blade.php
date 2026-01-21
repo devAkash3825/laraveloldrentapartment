@@ -1,3 +1,7 @@
+@extends('admin/layouts/app')
+
+@section('title', 'RentApartments Admin | Edit Property')
+
 @push('style')
 <link rel="stylesheet" href="{{ asset('admin_asset/css/tabview.css') }}">
 @endpush
@@ -83,8 +87,8 @@
                             <div class="form-group col-md-4">
                                 <label for="managername"> User Name </label>
                                 <select class="form-control" id="managername" name="managername">
-                                    <option value="{{ $propertyinfo->login->Id }}">
-                                        {{ $propertyinfo->login->UserName }}
+                                    <option value="{{ optional($propertyinfo->login)->Id }}">
+                                        {{ optional($propertyinfo->login)->UserName ?? 'Select Manager' }}
                                     </option>
                                     @foreach ($managerIds as $row)
                                     <option value="{{ $row->Id }}">{{ $row->UserName }}</option>
@@ -195,7 +199,7 @@
                                     data-city-target="#editpropertycity" required>
                                     @foreach ($state as $row)
                                     <option value="{{ $row->Id }}"
-                                        {{ $propertyinfo->city->state->Id == $row->Id ? 'selected' : '' }}>
+                                        {{ optional(optional($propertyinfo->city)->state)->Id == $row->Id ? 'selected' : '' }}>
                                         {{ $row->StateName }}
                                     </option>
                                     @endforeach
@@ -207,6 +211,9 @@
                                 <input type="hidden" id="editselectedCity" value="{{ $propertyinfo->CityId }}">
                                 <select id="editpropertycity" class="form-control" name="editpropertycity" required>
                                     <option value="">Select City</option>
+                                    @if($propertyinfo->city)
+                                        <option value="{{ $propertyinfo->city->Id }}" selected>{{ $propertyinfo->city->CityName }}</option>
+                                    @endif
                                 </select>
                             </div>
 
@@ -743,50 +750,7 @@
             ]
         });
 
-        $('#editqualifyingcriteria').summernote({
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style', 'clear']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
 
-        $('#editparking').summernote({
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style', 'clear']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
-
-        $('#editneighbourhood').summernote({
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style', 'clear']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
 
 
         const startYear = 1900;

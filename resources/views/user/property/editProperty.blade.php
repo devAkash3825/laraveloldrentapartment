@@ -88,6 +88,56 @@
         border: 1px solid #f1f5f9;
         margin-bottom: 30px;
     }
+
+    /* Standardized Premium Table Styles */
+    .recent-table-container {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .table-header-box {
+        padding: 24px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fff;
+    }
+
+    .table-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        letter-spacing: -0.025em;
+    }
+
+    .custom-premium-table thead th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        padding: 14px 20px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .custom-premium-table tbody td {
+        padding: 14px 20px;
+        color: #334155;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .custom-premium-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-premium-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
 </style>
 <!-- Premium Header -->
 <div class="header-premium-gradient py-5">
@@ -582,138 +632,83 @@
                 </section>
 
                 <section id="imagegallary" data-tab-content>
-                    <div class="relative font-inter antialiased my_listing_table">
-                        <main class="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden">
-                            <div class="w-full max-w-6xl mx-auto px-4 md:px-5 py-24">
-                                <div class="flex justify-center">
-                                    <div class="w-full max-w-2xl bg-white shadow-xl rounded-2xl">
-                                        <div class="p-3">
-                                            <div class="overflow-x-auto">
-                                                <table class="table-auto w-full">
-                                                    <thead class="text-[13px] text-slate-500/70">
-                                                        <tr>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">#</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Image</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-5 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Logo</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-5 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">FloorPlan</div>
-                                                            </th>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Set Image
-                                                                </div>
-                                                            </th>
-                                                            <th
-                                                                class="px-3 py-2 first:pl-3 last:pr-3 bg-slate-100 first:rounded-l last:rounded-r last:pl-5 last:sticky last:right-0">
-                                                                <div class="font-medium text-left">Action </div>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="text-sm font-medium">
-                                                        @if ($galleryDetails && $galleryDetails->gallerydetail)
-                                                        @foreach ($galleryDetails->gallerydetail as $imagerec)
-                                                        <tr>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-500">
-                                                                    {{ $loop->iteration }}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="flex items-center">
-                                                                    @php
-                                                                    $imageName =
-                                                                    $imagerec->ImageName ?? null;
-                                                                    @endphp
-
-                                                                    @if ($imageName)
-                                                                    <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}"
-                                                                        alt="Property Image"
-                                                                        style="width:70px !important;height:70px !important;">
-                                                                    @else
-                                                                    <img class="img-fluid"
-                                                                        src="{{ asset('img/no-img.jpg') }}"
-                                                                        alt="Default Image">
-                                                                    @endif
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-500">
-                                                                    <input type="checkbox" id="vehicle1"
-                                                                        name="propertylogo"
-                                                                        {{ $imagerec->DefaultImage ? 'checked' : '' }}>
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-900">
-                                                                    <input type="checkbox" id="vehicle1"
-                                                                        name="" value="Bike">
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="text-slate-900">
-                                                                    <select
-                                                                        class="form-control form-select form-control-a state-select-box"
-                                                                        name="editpropertystate"
-                                                                        id="editpropertystate" required
-                                                                        style="width:70%;">
-                                                                        <option value="">Select Floor
-                                                                            Plan</option>
-                                                                        @foreach ($selectFloorPlan as $row)
-                                                                        <option
-                                                                            value="{{ $row->Id }}">
-                                                                            {{ $row->PlanName }}
-                                                                        </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-3 py-3 border-b border-slate-200">
-                                                                <div class="demo-btn-list d-flex"
-                                                                    style="gap: 5px;">
-                                                                    <a href=""
-                                                                        class="btn-primary-icon px-2 py-1 border rounded m-1"
-                                                                        data-bs-toggle="tooltip"
-                                                                        title="View">
-                                                                        <i class="bi bi-eye"></i>
-                                                                    </a>
-                                                                    <a href="javascript:void(0)"
-                                                                        class="btn-danger-icon px-2 py-1 border rounded m-1 delete-gllry-img"
-                                                                        data-id="{{ $imagerec->Id }}"
-                                                                        data-bs-toggle="tooltip"
-                                                                        data-value="{{ $propertyId }}"
-                                                                        title="Delete">
-                                                                        <i class="bi bi-trash"></i>
-                                                                    </a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
+                    <div class="recent-table-container mt-4">
+                        <div class="table-header-box">
+                            <h4 class="table-title">Image Gallery</h4>
+                            <p class="text-muted small mb-0 mt-1">Manage property images, logos, and floorplans</p>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-premium-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="80" class="text-center">#</th>
+                                        <th>Preview</th>
+                                        <th width="100" class="text-center">Logo</th>
+                                        <th width="200">Floor Plan Link</th>
+                                        <th width="120" class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($galleryDetails && $galleryDetails->gallerydetail)
+                                        @foreach ($galleryDetails->gallerydetail as $imagerec)
+                                            <tr>
+                                                <td class="text-center text-muted fw-bold">
+                                                    {{ $loop->iteration }}
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        @php
+                                                            $imageName = $imagerec->ImageName ?? null;
+                                                        @endphp
+                                                        @if ($imageName)
+                                                            <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}"
+                                                                alt="Property Image"
+                                                                class="rounded shadow-sm"
+                                                                style="width:80px; height:60px; object-fit: cover;">
                                                         @else
-                                                        <tr>
-                                                            <td colspan="6" class="text-center text-slate-500">
-                                                                No images found.
-                                                            </td>
-                                                        </tr>
+                                                            <img src="{{ asset('img/no-img.jpg') }}" alt="Default" class="rounded shadow-sm" style="width:80px; height:60px; object-fit: cover;">
                                                         @endif
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </main>
+                                                        <div>
+                                                            <div class="fw-semibold text-dark">{{ $imagerec->ImageTitle ?? 'No Title' }}</div>
+                                                            <div class="text-muted smaller" style="font-size: 0.75rem;">{{ Str::limit($imagerec->Description, 40) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="form-check d-flex justify-content-center">
+                                                        <input class="form-check-input" type="checkbox" name="propertylogo" {{ $imagerec->DefaultImage ? 'checked' : '' }} disabled>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm" disabled>
+                                                        <option value="">None</option>
+                                                        @foreach ($selectFloorPlan as $row)
+                                                            <option value="{{ $row->Id }}">{{ $row->PlanName }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex justify-content-center gap-1">
+                                                        <a href="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $propertyId }}/Original/{{ $imageName }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                                            <i class="bi bi-eye"></i>
+                                                        </a>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle delete-gllry-img" data-id="{{ $imagerec->Id }}" data-value="{{ $propertyId }}" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="5" class="text-center py-5 text-muted">
+                                                No images found in gallery.
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="content mt-3">

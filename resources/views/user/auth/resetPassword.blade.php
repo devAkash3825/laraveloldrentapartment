@@ -186,19 +186,19 @@
 
     .btn-primary-custom {
         background: var(--colorPrimary);
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb), 0.8) 100%);
-        border: none;
+        border: 2px solid var(--colorPrimary);
         color: white;
         font-weight: 700;
         letter-spacing: 0.5px;
         transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb), 0.25);
+        box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.25);
     }
 
     .btn-primary-custom:hover {
+        background: transparent !important;
+        color: var(--colorPrimary) !important;
         transform: translateY(-3px) scale(1.01);
-        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.25);
-        color: white;
+        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.2);
     }
 
     .toggle-password-btn {

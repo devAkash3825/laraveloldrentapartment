@@ -165,6 +165,7 @@ class UserLoginController extends Controller
             'renterstate'           => 'required',
             'rentercity'            => 'required',
             'aboutmovein'           => 'required',
+            'earliestdate'          => 'required',
             'latestdate'            => 'required',
             'petinfo'               => 'required',
             'source'                => 'required',

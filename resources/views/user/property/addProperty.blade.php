@@ -1,7 +1,7 @@
 @extends('user.layout.app')
 @section('content')
 <!-- Premium Header -->
-<div class="header-premium-gradient">
+<div class="header-premium-gradient py-5">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">

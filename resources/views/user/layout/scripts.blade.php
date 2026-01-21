@@ -20,6 +20,7 @@
 
 <script src="{{ asset('user_asset/js/frontendjs.js') }}"></script>
 <script src="{{ asset('ajax/user/userAjax.js') }}"></script>
+<script src="{{ asset('js/city-state-handler.js') }}"></script>
 
 <script>
     function togglePasswordVisibility(id, event) {

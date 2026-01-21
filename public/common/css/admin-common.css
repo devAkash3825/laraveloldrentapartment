@@ -12,8 +12,8 @@
    GLOBAL RESET & VARIABLES
    ============================================ */
 :root {
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
+    --primary-color: #0d7c66;
+    --primary-hover: #0a6352;
     --dark-color: #151d33;
     --success-color: #10b981;
     --danger-color: #ef4444;

@@ -12,8 +12,8 @@
                     </a>
                     <div class="brand">
                         <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid mb-4 px-4" style="max-width: 350px; filter: brightness(0) invert(1);">
-                        <h1 class="display-3 fw-bold mb-4">Start Your<br>Journey</h1>
-                        <p class="lead opacity-90">Find your perfect home with RentApartments. Join our professional community today and unlock premium listings.</p>
+                        <h1 class="display-3 fw-bold mb-4 text-color">Start Your Journey</h1>
+                        <p class="lead opacity-90 text-white">Find your perfect home with RentApartments. Join our professional community today and unlock premium listings.</p>
                     </div>
                 </div>
                 <div class="hero-footer mt-auto">
@@ -21,23 +21,19 @@
                 </div>
             </div>
         </div>
-
-        <!-- Right Side - Form Section -->
+        
         <div class="col-lg-7">
             <div class="form-side h-100 d-flex flex-column align-items-center justify-content-center">
                 <div class="form-container w-100 px-3 px-sm-4 px-md-5 py-4 py-md-5">
-                    <!-- Mobile Logo -->
                     <div class="d-lg-none mb-4 text-center">
                         <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
                     </div>
                     
-                    <!-- Header -->
                     <div class="text-center mb-4">
                         <h2 class="auth-title mb-2">Create Account</h2>
                         <p class="auth-subtitle mb-0">Join our community and find your perfect home.</p>
                     </div>
 
-                    <!-- Tabs -->
                     <ul class="nav nav-pills custom-tabs mb-4" id="pills-tab" role="tablist">
                         <li class="nav-item flex-fill" role="presentation">
                             <button class="nav-link active" id="pills-renter-tab" data-bs-toggle="pill" data-bs-target="#renterregister" type="button" role="tab">
@@ -51,7 +47,6 @@
                         </li>
                     </ul>
 
-                    <!-- Tab Content -->
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="renterregister" role="tabpanel">
                             <x-renterregister /> 
@@ -194,6 +189,7 @@
         background: white;
         color: var(--colorPrimary);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        width: 100%;
     }
 
     .custom-tabs .nav-link:hover:not(.active) {

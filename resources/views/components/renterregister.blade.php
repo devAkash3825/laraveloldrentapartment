@@ -1,27 +1,27 @@
 <div class="renter-registration-wrapper">
     <!-- Progress Steps -->
-    <div class="step-progress mb-4">
-        <div class="step-item active" data-step="0">
+    <div class="renter-step-progress mb-4">
+        <div class="renter-step-item active" data-step="0">
             <div class="step-circle"><i class="bi bi-shield-lock"></i></div>
             <div class="step-label d-none d-md-block">Account</div>
         </div>
-        <div class="step-line"></div>
-        <div class="step-item" data-step="1">
+        <div class="renter-step-line"></div>
+        <div class="renter-step-item" data-step="1">
             <div class="step-circle"><i class="bi bi-person-badge"></i></div>
             <div class="step-label d-none d-md-block">Personal</div>
         </div>
-        <div class="step-line"></div>
-        <div class="step-item" data-step="2">
+        <div class="renter-step-line"></div>
+        <div class="renter-step-item" data-step="2">
             <div class="step-circle"><i class="bi bi-cursor"></i></div>
             <div class="step-label d-none d-md-block">Preferences</div>
         </div>
-        <div class="step-line"></div>
-        <div class="step-item" data-step="3">
+        <div class="renter-step-line"></div>
+        <div class="renter-step-item" data-step="3">
             <div class="step-circle"><i class="bi bi-list-stars"></i></div>
             <div class="step-label d-none d-md-block">Details</div>
         </div>
-        <div class="step-line"></div>
-        <div class="step-item" data-step="4">
+        <div class="renter-step-line"></div>
+        <div class="renter-step-item" data-step="4">
             <div class="step-circle"><i class="bi bi-wallet2"></i></div>
             <div class="step-label d-none d-md-block">Budget</div>
         </div>
@@ -31,22 +31,24 @@
         @csrf
         
         <!-- Step 1: Account Info -->
-        <div class="form-step active" id="step0">
+        <div class="renter-form-step active" id="renter_step0">
             <h5 class="step-title mb-4"><i class="bi bi-shield-lock me-2"></i> Account Security</h5>
             
-            <div class="mb-3">
-                <label class="form-label">Username <span class="text-danger">*</span></label>
-                <div class="input-group-custom">
-                    <i class="bi bi-person"></i>
-                    <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Username <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-person"></i>
+                        <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label">Email Address <span class="text-danger">*</span></label>
-                <div class="input-group-custom">
-                    <i class="bi bi-envelope"></i>
-                    <input type="email" class="form-control" name="email" placeholder="email@example.com" required>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" class="form-control" name="email" placeholder="email@example.com" required>
+                    </div>
                 </div>
             </div>
 
@@ -76,7 +78,7 @@
         </div>
 
         <!-- Step 2: Personal Info -->
-        <div class="form-step" id="step1">
+        <div class="renter-form-step" id="renter_step1">
             <h5 class="step-title mb-4"><i class="bi bi-person-badge me-2"></i> Personal Details</h5>
             
             <div class="row">
@@ -118,7 +120,7 @@
                     <label class="form-label">State <span class="text-danger">*</span></label>
                     <div class="input-group-custom">
                         <i class="bi bi-geo"></i>
-                        <select class="form-select state-select" name="renterstate" required>
+                        <select class="form-select state-dropdown" name="renterstate" data-city-target="#renter_city" required>
                             <option value="">Select State</option>
                             @foreach ($state as $row)
                                 <option value="{{ $row->Id }}">{{ $row->StateName }}</option>
@@ -130,39 +132,45 @@
                     <label class="form-label">City <span class="text-danger">*</span></label>
                     <div class="input-group-custom">
                         <i class="bi bi-geo-alt"></i>
-                        <select class="form-select city-select" name="rentercity" required disabled>
+                        <select class="form-select city-select" id="renter_city" name="rentercity" required disabled>
                             <option value="">Select City</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Current Address <span class="text-danger">*</span></label>
-                <div class="input-group-custom">
-                    <i class="bi bi-house-door" style="top: 20px; transform: none;"></i>
-                    <textarea class="form-control" name="currentAddress" rows="2" placeholder="Your full current address" required style="padding-top: 14px !important;"></textarea>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Current Address <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-house-door" style="top: 20px; transform: none;"></i>
+                        <textarea class="form-control" name="currentAddress" rows="2" placeholder="Your full current address" required style="padding-top: 14px !important;"></textarea>
+                    </div>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Zip Code <span class="text-danger">*</span></label>
-                <div class="input-group-custom">
-                    <i class="bi bi-mailbox"></i>
-                    <input type="text" class="form-control" name="zip" placeholder="Zip Code" required>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Zip Code <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-mailbox"></i>
+                        <input type="text" class="form-control" name="zip" placeholder="Zip Code" required>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Step 3: Preferences -->
-        <div class="form-step" id="step2">
+        <div class="renter-form-step" id="renter_step2">
             <h5 class="step-title mb-4"><i class="bi bi-cursor me-2"></i> Moving Preferences</h5>
             
-            <div class="mb-3">
-                <label class="form-label">Target Areas/Neighborhoods <span class="text-danger">*</span></label>
-                <div class="input-group-custom">
-                    <i class="bi bi-search"></i>
-                    <input type="text" class="form-control" name="aboutmovein" placeholder="e.g. Downtown, Uptown" required>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Target Areas/Neighborhoods <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" name="aboutmovein" placeholder="e.g. Downtown, Uptown" required>
+                    </div>
                 </div>
             </div>
 
@@ -207,30 +215,34 @@
         </div>
 
         <!-- Step 4: Details -->
-        <div class="form-step" id="step3">
+        <div class="renter-form-step" id="renter_step3">
             <h5 class="step-title mb-4"><i class="bi bi-list-stars me-2"></i> Apartment Details</h5>
             
-            <div class="mb-3">
-                <label class="form-label d-block mb-3">Bedrooms Needed <span class="text-danger">*</span></label>
-                <div class="bedroom-selector">
-                    @foreach (['1', '2', '3', '4', '5+'] as $bed)
-                        <input type="checkbox" class="btn-check" name="bedrooms[]" value="{{ $bed }}" id="bed{{ $bed }}">
-                        <label class="btn btn-outline-primary-custom" for="bed{{ $bed }}">{{ $bed }} Bed</label>
-                    @endforeach
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label d-block mb-3">Bedrooms Needed <span class="text-danger">*</span></label>
+                    <div class="bedroom-selector">
+                        @foreach (['1', '2', '3', '4', '5+'] as $bed)
+                            <input type="checkbox" class="btn-check" name="bedrooms[]" value="{{ $bed }}" id="bed{{ $bed }}">
+                            <label class="btn btn-outline-primary-custom" for="bed{{ $bed }}">{{ $bed }} Bed</label>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Additional Information <span class="text-danger">*</span></label>
-                <div class="input-group-custom">
-                    <i class="bi bi-chat-left-text" style="top: 20px; transform: none;"></i>
-                    <textarea class="form-control" name="additional_info" rows="4" placeholder="Any other specific requirements?" required style="padding-top: 14px !important;"></textarea>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Additional Information <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-chat-left-text" style="top: 20px; transform: none;"></i>
+                        <textarea class="form-control" name="additional_info" rows="4" placeholder="Any other specific requirements?" required style="padding-top: 14px !important;"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Step 5: Budget -->
-        <div class="form-step" id="step4">
+        <div class="renter-form-step" id="renter_step4">
             <h5 class="step-title mb-4"><i class="bi bi-wallet2 me-2"></i> Budget Range</h5>
             
             <div class="row">
@@ -257,13 +269,13 @@
 
         <!-- Form Navigation -->
         <div class="form-navigation mt-4 d-flex justify-content-between align-items-center">
-            <button type="button" class="btn btn-secondary-custom prev-btn" style="display: none;">
+            <button type="button" class="btn btn-secondary-custom renter-prev-btn" style="display: none;">
                 <i class="bi bi-arrow-left me-1"></i> Back
             </button>
-            <button type="button" class="btn btn-primary-custom next-btn ms-auto">
+            <button type="button" class="btn btn-primary-custom renter-next-btn ms-auto">
                 Next <i class="bi bi-arrow-right ms-1"></i>
             </button>
-            <button type="submit" class="btn btn-success-custom submit-btn ms-auto" style="display: none;">
+            <button type="submit" class="btn btn-success-custom renter-submit-btn ms-auto" style="display: none;">
                 <i class="bi bi-check2-circle me-2"></i> Register Now
             </button>
         </div>
@@ -276,7 +288,7 @@
 
 <style>
     /* Step Progress */
-    .step-progress {
+    .renter-step-progress {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -284,7 +296,7 @@
         padding: 0 10px;
     }
 
-    .step-item {
+    .renter-step-item {
         text-align: center;
         flex-shrink: 0;
         position: relative;
@@ -304,13 +316,13 @@
         margin: 0 auto 0.5rem;
     }
 
-    .step-item.active .step-circle {
+    .renter-step-item.active .step-circle {
         background: var(--colorPrimary);
         color: white;
         box-shadow: 0 0 0 4px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
     }
 
-    .step-item.completed .step-circle {
+    .renter-step-item.completed .step-circle {
         background: #10b981;
         color: white;
     }
@@ -322,11 +334,11 @@
         margin-top: 0.5rem;
     }
 
-    .step-item.active .step-label {
+    .renter-step-item.active .step-label {
         color: var(--colorPrimary);
     }
 
-    .step-line {
+    .renter-step-line {
         flex: 1;
         height: 2px;
         background: #e2e8f0;
@@ -335,12 +347,12 @@
     }
 
     /* Multi-step Form */
-    .form-step {
+    .renter-form-step {
         display: none;
         animation: fadeIn 0.3s ease;
     }
 
-    .form-step.active {
+    .renter-form-step.active {
         display: block;
     }
 
@@ -371,7 +383,6 @@
         font-size: 0.92rem;
         font-weight: 700;
         transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        border: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -380,16 +391,16 @@
 
     .btn-primary-custom {
         background: var(--colorPrimary);
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
+        border: 2px solid var(--colorPrimary);
         color: white;
         box-shadow: 0 4px 15px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
     }
 
     .btn-primary-custom:hover {
+        background: transparent !important;
+        color: var(--colorPrimary) !important;
         transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.35);
-        filter: brightness(1.1);
-        color: white;
+        box-shadow: 0 10px 25px rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.2);
     }
 
     .btn-secondary-custom {
@@ -406,16 +417,16 @@
 
     .btn-success-custom {
         background: #10b981;
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: 2px solid #10b981;
         color: white;
         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
     }
 
     .btn-success-custom:hover {
+        background: transparent !important;
+        color: #10b981 !important;
         transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-        filter: brightness(1.1);
-        color: white;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
     }
 
     /* Bedroom Selector */
@@ -513,14 +524,17 @@
 
 <script>
     (function() {
+        const formContainer = document.querySelector('.renter-registration-wrapper');
+        if (!formContainer) return;
+
         let currentStep = 0;
-        const totalSteps = 5;
-        const steps = document.querySelectorAll('.form-step');
-        const stepItems = document.querySelectorAll('.step-item');
-        const nextBtn = document.querySelector('.next-btn');
-        const prevBtn = document.querySelector('.prev-btn');
-        const submitBtn = document.querySelector('.submit-btn');
-        const form = document.getElementById('renter-registration-form');
+        const steps = formContainer.querySelectorAll('.renter-form-step');
+        const totalSteps = steps.length;
+        const stepItems = formContainer.querySelectorAll('.renter-step-item');
+        const nextBtn = formContainer.querySelector('.renter-next-btn');
+        const prevBtn = formContainer.querySelector('.renter-prev-btn');
+        const submitBtn = formContainer.querySelector('.renter-submit-btn');
+        const form = formContainer.querySelector('#renter-registration-form');
 
         function updateUI() {
             // Update form steps
@@ -542,22 +556,24 @@
             });
 
             // Update navigation buttons
-            prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-flex';
+            prevBtn.style.setProperty('display', currentStep === 0 ? 'none' : 'inline-flex', 'important');
             
             if (currentStep === totalSteps - 1) {
-                nextBtn.style.display = 'none';
-                submitBtn.style.display = 'inline-flex';
+                nextBtn.style.setProperty('display', 'none', 'important');
+                submitBtn.style.setProperty('display', 'inline-flex', 'important');
             } else {
-                nextBtn.style.display = 'inline-flex';
-                submitBtn.style.display = 'none';
+                nextBtn.style.setProperty('display', 'inline-flex', 'important');
+                submitBtn.style.setProperty('display', 'none', 'important');
             }
 
             // Scroll to top
-            document.querySelector('.form-side')?.scrollTo({ top: 0, behavior: 'smooth' });
+            formContainer.querySelector('.form-side')?.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function validateStep(stepIndex) {
-            const currentStepEl = document.getElementById(`step${stepIndex}`);
+            const currentStepEl = formContainer.querySelector(`.renter-form-step#renter_step${stepIndex}`);
+            if (!currentStepEl) return true;
+            
             const inputs = currentStepEl.querySelectorAll('input[required], select[required], textarea[required]');
             let isValid = true;
 
@@ -577,7 +593,7 @@
 
             // Validate bedroom selection on step 3
             if (stepIndex === 3) {
-                const bedroomChecked = document.querySelectorAll('input[name="bedrooms[]"]:checked');
+                const bedroomChecked = formContainer.querySelectorAll('input[name="bedrooms[]"]:checked');
                 if (bedroomChecked.length === 0) {
                     toastr.warning("Please select at least one bedroom option");
                     return false;
@@ -585,7 +601,7 @@
             }
 
             inputs.forEach(input => {
-                if (!input.value || (input.type === 'email' && !input.validity.valid)) {
+                if (!input.checkValidity() || (input.type === 'checkbox' && !input.checked)) {
                     input.classList.add('is-invalid');
                     isValid = false;
                 } else {
@@ -613,36 +629,6 @@
             if (currentStep > 0) {
                 currentStep--;
                 updateUI();
-            }
-        });
-
-        // City handling
-        const stateSelect = document.querySelector('.state-select');
-        const citySelect = document.querySelector('.city-select');
-
-        stateSelect?.addEventListener('change', async function() {
-            const stateId = this.value;
-            if (!stateId) {
-                citySelect.innerHTML = '<option value="">Select City</option>';
-                citySelect.disabled = true;
-                return;
-            }
-
-            citySelect.disabled = true;
-            citySelect.innerHTML = '<option value="">Loading...</option>';
-
-            try {
-                const response = await fetch(`/cities/${stateId}`);
-                const cities = await response.json();
-                
-                citySelect.innerHTML = '<option value="">Select City</option>';
-                cities.forEach(city => {
-                    citySelect.innerHTML += `<option value="${city.Id}">${city.CityName}</option>`;
-                });
-                citySelect.disabled = false;
-            } catch (error) {
-                console.error("Error fetching cities:", error);
-                toastr.error("Failed to load cities");
             }
         });
 

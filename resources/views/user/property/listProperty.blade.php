@@ -3,39 +3,19 @@
 @push('style')
 @endpush
 @section('content')
-<div id="breadcrumb_part"
-    style="background: url(../images/breadcroumb_bg.jpg);background-size: cover;background-repeat: no-repeat;background-position: center;">
-    <div class="bread_overlay">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center text-white">
-                    <h4>listing</h4>
-                    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}"> Home </a></li>
-                            <li class="breadcrumb-item active" aria-current="page"> listing </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<div class="header-premium-gradient">
+<!-- Premium Header -->
+<div class="header-premium-gradient py-5">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <h1 class="text-white fw-bold display-5 mb-2"> listing </h1>
-                <p class="text-white opacity-75 lead mb-0">Manage all your listing apartments in one place</p>
+                <h1 class="text-white fw-bold display-5 mb-2">Our Properties</h1>
+                <p class="text-white opacity-75 lead mb-0">Discover your next home from our curated selection</p>
             </div>
             <div class="col-md-6 text-md-end mt-4 mt-md-0">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb justify-content-md-end mb-0">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white opacity-75 text-decoration-none small">Home</a></li>
-                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">Collection</li>
+                        <li class="breadcrumb-item active text-white fw-bold small" aria-current="page">Property Listings</li>
                     </ol>
                 </nav>
             </div>

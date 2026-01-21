@@ -1,27 +1,27 @@
 <div class="property-form-container">
     <!-- Premium Progress Stepper -->
-    <div class="registration-stepper mb-5">
-        <div class="step-badge active" data-step="0">
+    <div class="prop-stepper mb-5">
+        <div class="prop-step-badge active" data-step="0">
             <div class="step-icon"><i class="bi bi-geo-alt"></i></div>
             <span class="step-text">Location</span>
         </div>
-        <div class="step-connector"></div>
-        <div class="step-badge" data-step="1">
+        <div class="prop-step-connector"></div>
+        <div class="prop-step-badge" data-step="1">
             <div class="step-icon"><i class="bi bi-shield-check"></i></div>
             <span class="step-text">Authorization</span>
         </div>
-        <div class="step-connector"></div>
-        <div class="step-badge" data-step="2">
+        <div class="prop-step-connector"></div>
+        <div class="prop-step-badge" data-step="2">
             <div class="step-icon"><i class="bi bi-building"></i></div>
             <span class="step-text">Essentials</span>
         </div>
-        <div class="step-connector"></div>
-        <div class="step-badge" data-step="3">
+        <div class="prop-step-connector"></div>
+        <div class="prop-step-badge" data-step="3">
             <div class="step-icon"><i class="bi bi-telephone"></i></div>
             <span class="step-text">Listing Info</span>
         </div>
-        <div class="step-connector"></div>
-        <div class="step-badge" data-step="4">
+        <div class="prop-step-connector"></div>
+        <div class="prop-step-badge" data-step="4">
             <div class="step-icon"><i class="bi bi-credit-card"></i></div>
             <span class="step-text">Billing</span>
         </div>
@@ -41,7 +41,7 @@
         @endif
         
         <!-- Step 1: Property Location -->
-        <div class="form-step active" id="step0">
+        <div class="prop-form-step active" id="step0">
             <div class="step-header mb-5">
                 <div class="d-flex align-items-center gap-3 mb-2">
                     <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill">Step 1 of 5</span>
@@ -55,7 +55,7 @@
                     <label class="form-label fw-bold text-dark-emphasis mb-2">State <span class="text-danger">*</span></label>
                     <div class="input-group-modern">
                         <i class="bi bi-geo-alt-fill"></i>
-                        <select class="form-select state-select" name="add_property_state" id="add-property-state" required>
+                        <select class="form-select state-dropdown" name="add_property_state" id="add-property-state" data-city-target="#add-property-city" required>
                             <option value="">Select State</option>
                             @foreach ($state as $row)
                                 <option value="{{ $row->Id }}">{{ $row->StateName }}</option>
@@ -88,7 +88,7 @@
         </div>
 
         <!-- Step 2: Terms & Authorization -->
-        <div class="form-step" id="step1">
+        <div class="prop-form-step" id="step1">
             <div class="step-header mb-5">
                 <div class="d-flex align-items-center gap-3 mb-2">
                     <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill">Step 2 of 5</span>
@@ -118,7 +118,7 @@
         </div>
 
         <!-- Step 3: Core Property Details -->
-        <div class="form-step" id="step2">
+        <div class="prop-form-step" id="step2">
             <div class="step-header mb-5">
                 <div class="d-flex align-items-center gap-3 mb-2">
                     <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill">Step 3 of 5</span>
@@ -182,7 +182,7 @@
         </div>
 
         <!-- Step 4: Contact & Schedule -->
-        <div class="form-step" id="step3">
+        <div class="prop-form-step" id="step3">
             <div class="step-header mb-5">
                 <div class="d-flex align-items-center gap-3 mb-2">
                     <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill">Step 4 of 5</span>
@@ -284,7 +284,7 @@
         </div>
 
         <!-- Step 5: Billing Address -->
-        <div class="form-step" id="step4">
+        <div class="prop-form-step" id="step4">
             <div class="step-header mb-5">
                 <div class="d-flex align-items-center gap-3 mb-2">
                     <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill">Step 5 of 5</span>
@@ -330,7 +330,7 @@
                     <label class="form-label fw-bold text-dark-emphasis mb-2">Billing State <span class="text-danger">*</span></label>
                     <div class="input-group-modern">
                         <i class="bi bi-map"></i>
-                        <select class="form-select state-select" name="bill_address_state" id="bill_address_state" required>
+                        <select class="form-select state-dropdown" name="bill_address_state" id="bill_address_state" data-city-target="#bill_address_city" required>
                             <option value="">Select State</option>
                             @foreach ($state as $row)
                                 <option value="{{ $row->Id }}">{{ $row->StateName }}</option>
@@ -397,16 +397,20 @@
         </div>
 
         <!-- Multi-Step Navigation -->
-        <div class="form-navigation mt-5 pt-4 border-top d-flex justify-content-between">
-            <button type="button" class="read_btn prev-btn mt-2" style="background: #334155; display: none; padding: 12px 25px;">
-                <i class="bi bi-arrow-left me-2"></i> Back
-            </button>
-            <button type="button" class="read_btn next-btn ms-auto mt-2" style="padding: 12px 40px;">
-                Next Step <i class="bi bi-arrow-right ms-2"></i>
-            </button>
-            <button type="submit" class="read_btn submit-btn ms-auto mt-2" style="display: none; padding: 12px 40px; background: #10b981;">
-                <i class="bi bi-check2-all me-2"></i> Submit Listing
-            </button>
+        <div class="form-navigation mt-5 pt-4 border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="button" class="read_btn prop-prev-btn" style="display: none;">
+                    <i class="bi bi-arrow-left me-2"></i> Back
+                </button>
+                <div class="ms-auto">
+                    <button type="button" class="read_btn prop-next-btn">
+                        Next Step <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                    <button type="submit" class="read_btn prop-submit-btn" style="display: none !important;">
+                        <i class="bi bi-check2-all me-2"></i> Submit Listing
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>
@@ -423,7 +427,7 @@
     }
 
     /* Stepper Enhancement */
-    .registration-stepper {
+    .prop-stepper {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
@@ -431,7 +435,7 @@
         position: relative;
     }
 
-    .step-badge {
+    .prop-step-badge {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -465,7 +469,7 @@
         white-space: nowrap;
     }
 
-    .step-badge.active .step-icon {
+    .prop-step-badge.active .step-icon {
         background: var(--colorPrimary);
         color: white;
         border-color: var(--colorPrimary);
@@ -473,17 +477,17 @@
         transform: translateY(-5px);
     }
 
-    .step-badge.active .step-text {
+    .prop-step-badge.active .step-text {
         color: var(--colorPrimary);
     }
 
-    .step-badge.completed .step-icon {
+    .prop-step-badge.completed .step-icon {
         background: #10b981;
         color: white;
         border-color: #10b981;
     }
 
-    .step-connector {
+    .prop-step-connector {
         flex: 1;
         height: 4px;
         background: #f1f5f9;
@@ -493,7 +497,7 @@
         overflow: hidden;
     }
 
-    .step-connector::after {
+    .prop-step-connector::after {
         content: '';
         position: absolute;
         left: 0;
@@ -504,7 +508,7 @@
         transition: width 0.5s ease;
     }
 
-    .step-connector.active::after {
+    .prop-step-connector.active::after {
         width: 100%;
     }
 
@@ -622,8 +626,8 @@
     }
 
     /* Steps Logic */
-    .form-step { display: none; animation: premiumFade 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-    .form-step.active { display: block; }
+    .prop-form-step { display: none; animation: premiumFade 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+    .prop-form-step.active { display: block; }
 
     @keyframes premiumFade {
         from { opacity: 0; transform: scale(0.98) translateY(15px); }
@@ -631,28 +635,7 @@
     }
 
     /* Buttons - Standardized to project look */
-    .read_btn {
-        background: var(--colorPrimary);
-        color: white !important;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 28px;
-        font-weight: 600;
-        font-size: 0.92rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        text-decoration: none;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-    .read_btn:hover {
-        background: #1a1a1a;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        color: white !important;
-    }
+    
 
     .custom-switch-premium .form-check-input {
         width: 3.5rem;
@@ -669,23 +652,26 @@
     @media (max-width: 768px) {
         .property-form-container { padding: 30px 20px; border-radius: 0; }
         .step-text { display: none; }
-        .step-badge { flex: 0 0 54px; }
-        .registration-stepper { padding: 0; margin-bottom: 2.5rem !important; }
+        .prop-step-badge { flex: 0 0 54px; }
+        .prop-stepper { padding: 0; margin-bottom: 2.5rem !important; }
         .step-icon { width: 44px; height: 44px; font-size: 1.1rem; border-radius: 14px; }
-        .step-connector { margin-top: 20px; }
+        .prop-step-connector { margin-top: 20px; }
     }
 </style>
 
 <script>
     (function() {
+        const formContainer = document.querySelector('.property-form-container');
+        if (!formContainer) return;
+
         let currentStep = 0;
-        const totalSteps = 5;
-        const steps = document.querySelectorAll('.form-step');
-        const stepBadges = document.querySelectorAll('.step-badge');
-        const nextBtn = document.querySelector('.next-btn');
-        const prevBtn = document.querySelector('.prev-btn');
-        const submitBtn = document.querySelector('.submit-btn');
-        const connectors = document.querySelectorAll('.step-connector');
+        const steps = formContainer.querySelectorAll('.prop-form-step');
+        const totalSteps = steps.length;
+        const stepBadges = formContainer.querySelectorAll('.prop-step-badge');
+        const nextBtn = formContainer.querySelector('.prop-next-btn');
+        const prevBtn = formContainer.querySelector('.prop-prev-btn');
+        const submitBtn = formContainer.querySelector('.prop-submit-btn');
+        const connectors = formContainer.querySelectorAll('.prop-step-connector');
 
         function updateUI() {
             steps.forEach((step, index) => {
@@ -702,21 +688,30 @@
                 conn.classList.toggle('active', index < currentStep);
             });
 
-            prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-flex';
+            // Update button visibility
+            if (currentStep === 0) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.setProperty('display', 'inline-flex', 'important');
+            }
             
             if (currentStep === totalSteps - 1) {
+                // Last step: hide Next, show Submit
                 nextBtn.style.display = 'none';
-                submitBtn.style.display = 'inline-flex';
+                submitBtn.style.setProperty('display', 'inline-flex', 'important');
             } else {
-                nextBtn.style.display = 'inline-flex';
-                submitBtn.style.display = 'none';
+                // Other steps: show Next, hide Submit
+                nextBtn.style.setProperty('display', 'inline-flex', 'important');
+                submitBtn.style.setProperty('display', 'none', 'important');
             }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 100, behavior: 'smooth' });
         }
 
         function validateStep() {
-            const currentStepEl = document.getElementById(`step${currentStep}`);
+            const currentStepEl = formContainer.querySelector(`.prop-form-step#step${currentStep}`);
+            if (!currentStepEl) return true;
+
             const inputs = currentStepEl.querySelectorAll('input[required], select[required], textarea[required]');
             let isValid = true;
 
@@ -749,37 +744,12 @@
             }
         });
 
-        // City & State Loader Implementation
-        const stateSelects = document.querySelectorAll('.state-select');
-        const citySelects = document.querySelectorAll('.city-select');
+        // Initialize UI
+        updateUI();
 
-        stateSelects.forEach((stateSel, idx) => {
-            stateSel.addEventListener('change', async function() {
-                const citySel = citySelects[idx];
-                const stateId = this.value;
-                if (!stateId) {
-                    citySel.innerHTML = '<option value="">Select City</option>';
-                    citySel.disabled = true;
-                    return;
-                }
+        // City/State dropdowns are now handled by the global city-state-handler.js
+        // No inline code needed - just use class="state-dropdown" and data-city-target="#city-id"
 
-                citySel.innerHTML = '<option value="">Loading Cities...</option>';
-                citySel.disabled = true;
-
-                try {
-                    const res = await fetch(`/cities/${stateId}`);
-                    const data = await res.json();
-                    citySel.innerHTML = '<option value="">Select City</option>';
-                    data.forEach(c => {
-                        citySel.innerHTML += `<option value="${c.Id}">${c.CityName}</option>`;
-                    });
-                    citySel.disabled = false;
-                } catch(e) {
-                    toastr.error("Connectivity issue while fetching cities.");
-                    citySel.innerHTML = '<option value="">Select City</option>';
-                }
-            });
-        });
 
         // Billing Auto-fill logic
         document.getElementById('sameaspropertyaddress')?.addEventListener('change', function() {
@@ -802,6 +772,9 @@
 
                 const billState = document.getElementById('bill_address_state');
                 billState.value = stateId;
+                if (typeof jQuery !== 'undefined' && jQuery.fn.niceSelect) {
+                    jQuery(billState).niceSelect('update');
+                }
                 billState.dispatchEvent(new Event('change'));
 
                 const interval = setInterval(() => {
@@ -816,7 +789,5 @@
             }
         });
 
-        // Initial check for required states
-        updateUI();
     })();
 </script>

@@ -221,8 +221,7 @@
 
     .btn-primary-custom {
         background: var(--colorPrimary);
-        background: linear-gradient(135deg, var(--colorPrimary) 0%, rgba(var(--colorPrimaryRgb, 106, 100, 241), 0.8) 100%);
-        border: none;
+        border: 2px solid var(--colorPrimary);
         color: white;
         font-weight: 700;
         letter-spacing: 0.5px;
@@ -231,10 +230,10 @@
     }
 
     .btn-primary-custom:hover {
+        background: transparent !important;
+        color: var(--colorPrimary) !important;
         transform: translateY(-3px) scale(1.01);
-        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.25);
-        filter: brightness(1.1);
-        color: white;
+        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.2);
     }
 
     .btn-primary-custom:active {

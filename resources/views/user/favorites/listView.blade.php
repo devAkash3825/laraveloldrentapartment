@@ -47,7 +47,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table id="fav-listview" class="table custom-table">
+                            <table id="fav-listview" class="table custom-premium-table mb-0">
                                 <thead>
                                     <tr>
                                         <th width="50" class="text-center"><input type="checkbox" class="form-check-input" id="selectAll"></th>
@@ -358,25 +358,24 @@ $(document).ready(function() {
         letter-spacing: -0.025em;
     }
 
-    .custom-table {
+    .custom-premium-table {
         margin-bottom: 0 !important;
         border-collapse: separate;
         border-spacing: 0;
     }
 
-    .custom-table thead th {
-        background: #fdfdfd;
-        color: var(--text-muted);
-        font-weight: 700;
+    .custom-premium-table thead th {
+        font-weight: 600;
+        background-color: #f8f9fa;
         text-transform: uppercase;
-        font-size: 0.65rem;
-        letter-spacing: 0.12em;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
         padding: 16px 24px;
-        border-bottom: 1px solid var(--table-border);
-        border-top: none;
+        border-bottom: 2px solid #e2e8f0;
     }
 
-    .custom-table tbody td {
+    .custom-premium-table tbody td {
         padding: 18px 24px;
         color: var(--text-main);
         font-size: 0.9rem;

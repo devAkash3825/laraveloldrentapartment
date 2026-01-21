@@ -13,14 +13,14 @@
     --colorPrimary: #0d7c66;
     --btnColor: #0d7c66;
     --text-color: #ffff;
-    --colorSecondary: #398e91;
+    --colorSecondary: #0d7c66;
     --colorBlack: #1c212b;
     --background-color: #ffffff;
-    --btn-teal: #398e91;
-    --btn-light-green: #4caa86;
+    --btn-teal: #0d7c66;
+    --btn-light-green: #0d7c66;
     --bg-theme1: #0d7c66;
-    --btn-color1: #4caa86;
-    --btn-color2: #398e91;
+    --btn-color1: #0d7c66;
+    --btn-color2: #0d7c66;
     --paraColor: #7c7474;
     --colorWhite: #ffffff;
     --ratingColor: #ffc107;
@@ -38,15 +38,15 @@
     --nav-dropdown-background-color: #ffffff;
     --nav-dropdown-color: #444444;
     --nav-dropdown-hover-color: #2eca6a;
-    --site-primary-btn: #4caa86;
-    --site-secondary-btn: #398e91;
+    --site-primary-btn: #0d7c66;
+    --site-secondary-btn: #0d7c66;
     --site-main-theme: #0d7c66;
     --site-dark-text: #1c212b;
     --site-white-text: #ffff;
     --site-white-theme: #ffff;
-    --site-color-text: #398e91;
+    --site-color-text: #0d7c66;
     --site-btn-text: #ffff;
-    --site-btn-background: #4caa86;
+    --site-btn-background: #0d7c66;
     --site-primary-btn-text: #ffff;
 }
 
@@ -252,8 +252,9 @@ img {
 }
 
 .btn-primary-sm1:hover {
-    background-color: #16423c;
-    color: #fff;
+    background-color: transparent !important;
+    color: var(--btnColor) !important;
+    border: 1px solid var(--btnColor);
 }
 
 .list-property-name {
@@ -335,13 +336,13 @@ button {
 }
 
 .bg-grad {
-    background: var(--colorPrimary);
-    background-image: linear-gradient(to right, var(--btn-teal) 0%, var(--btn-light-green) 100%);
+    background: var(--btnColor) !important;
+    background-image: none !important;
 }
 
 .grad-btn {
-    background: var(--colorPrimary);
-    background-image: linear-gradient(to right, var(--btn-teal) 0%, var(--btn-light-green) 100%);
+    background: var(--btnColor) !important;
+    background-image: none !important;
 }
 
 .bg-light-gray {
@@ -497,9 +498,9 @@ button {
 }
 
 .common_btn:hover {
-    background: var(--colorBlack);
-    color: var(--colorWhite);
-    border-color: var(--colorBlack);
+    background: transparent !important;
+    color: var(--btnColor) !important;
+    border-color: var(--btnColor) !important;
 }
 
 .read_btn {
@@ -535,7 +536,8 @@ button {
 }
 
 .read_btn:hover {
-    color: var(--colorPrimary);
+    color: var(--btnColor) !important;
+    background: transparent !important;
 }
 
 .read_btn:hover::after {
@@ -8654,7 +8656,7 @@ select:focus {
 
 .input-group-custom i:first-child {
     position: absolute;
-    left: 20px;
+    left: -5px;
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
@@ -8725,7 +8727,8 @@ select:focus {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     opacity: 1 !important;
 }
-.action-btns{
+
+.action-btns {
     display: flex !important;
     justify-content: center !important;
 }

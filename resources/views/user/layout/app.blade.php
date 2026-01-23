@@ -15,7 +15,7 @@ if (!function_exists('hexToRgb')) {
         return "$r, $g, $b";
     }
 }
-$siteColor = $settings['site_default_color'] ?? '#0D7C66';
+$siteColor = $settings['site_default_color'] ?? 'rgb(13, 124, 102)';
 $btnColor = $settings['site_btn_color'] ?? '#0D7C66';
 $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
 @endphp
@@ -42,8 +42,7 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
                 --gradientColor: {{ $gradientColor }};
                 --gradientColorRgb: {{ hexToRgb($gradientColor) }};
             }
-
-            /* Global Premium Button Styles */
+            
             .read_btn, .main-btn, .btn-primary-custom, .send-btn, .common_btn, .grad-btn, .primary-btn, .theme-btn, .hire_btn {
                 background: var(--btnColor) !important;
                 color: white !important;
@@ -68,8 +67,7 @@ $gradientColor = $settings['site_gradient_color'] ?? '#398E91';
                 transform: none !important;
                 box-shadow: none !important;
             }
-
-            /* Premium Sidebar Styles */
+            
             .premium-sidebar {
                 background: #fff;
                 border-radius: 4px;

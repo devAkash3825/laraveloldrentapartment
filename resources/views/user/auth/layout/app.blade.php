@@ -15,6 +15,10 @@ if (!function_exists('hexToRgb')) {
         return "$r, $g, $b";
     }
 }
+
+$siteColor = $settings['site_default_color'] ?? 'rgb(13, 124, 102)';
+$btnColor = $settings['site_btn_color'] ?? '#0D7C66';
+$gradientColor = $settings['site_gradient_color'] ?? '#398E91';
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -25,8 +29,8 @@ if (!function_exists('hexToRgb')) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
             :root {
-                --colorPrimary: {{ $settings['site_default_color'] ?? '#6366f1' }};
-                --btnColor: {{ $settings['site_btn_color'] ?? '#4f46e5' }};
+                --colorPrimary: {{ $siteColor }};
+                --btnColor: {{ $btnColor }};
                 --colorPrimaryRgb: {{ hexToRgb($settings['site_default_color'] ?? '#6366f1') }};
                 --textMain: #334155;
                 --textMuted: #64748b;
@@ -88,6 +92,31 @@ if (!function_exists('hexToRgb')) {
             }
             .mb-4 {
                 margin-bottom: 1rem !important;
+            }
+
+            .read_btn, .main-btn, .btn-primary-custom, .send-btn, .common_btn, .grad-btn, .primary-btn, .theme-btn, .hire_btn {
+                background: var(--btnColor) !important;
+                color: white !important;
+                padding: 10px 24px !important;
+                border-radius: 4px !important;
+                font-weight: 600 !important;
+                font-size: 0.9rem !important;
+                transition: all 0.3s ease !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 8px !important;
+                border: 2px solid var(--btnColor) !important;
+                box-shadow: none !important;
+                text-decoration: none !important;
+                cursor: pointer;
+            }
+
+            .read_btn:hover, .main-btn:hover, .btn-primary-custom:hover, .send-btn:hover, .common_btn:hover, .grad-btn:hover, .primary-btn:hover, .theme-btn:hover, .hire_btn:hover {
+                background: transparent !important;
+                color: var(--btnColor) !important;
+                transform: none !important;
+                box-shadow: none !important;
             }
     </style>
 </head>

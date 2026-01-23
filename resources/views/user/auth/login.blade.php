@@ -1,5 +1,6 @@
 @extends('user.auth.layout.app')
 @section('authcontent')
+
 <section id="login-section" class="login-viewport">
     <div class="row g-0 h-100 w-100">
         <div class="col-lg-5 d-none d-lg-block p-0">
@@ -61,7 +62,7 @@
                         </div>
 
                         <div class="mb-4 pt-2">
-                            <button type="submit" class="btn btn-primary-custom w-25 p-3 shadow-sm rounded-4">
+                            <button type="submit" class="btn btn-primary-custom w-100 p-3 shadow-sm rounded-4">
                                 <i class="bi bi-box-arrow-in-right me-2"></i> Log In
                             </button>
                         </div>

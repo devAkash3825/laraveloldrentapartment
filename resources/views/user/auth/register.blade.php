@@ -3,7 +3,6 @@
 
 <section id="register-section" class="register-viewport">
     <div class="row g-0 h-100 w-100">
-        <!-- Left Side - Hero Section -->
         <div class="col-lg-5 d-none d-lg-block">
             <div class="hero-side h-100">
                 <div class="hero-content">
@@ -29,7 +28,7 @@
                         <img src="{{ asset('img/logovitalg.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
                     </div>
                     
-                    <div class="text-center mb-4">
+                    <div class="text-center mb-4 mt-4">
                         <h2 class="auth-title mb-2">Create Account</h2>
                         <p class="auth-subtitle mb-0">Join our community and find your perfect home.</p>
                     </div>
@@ -152,9 +151,9 @@
     }
 
     .form-container {
-        max-width: 650px;
+        max-width: 750px;
         width: 100%;
-        margin: 0 auto;
+        /* margin: 0 auto; */
     }
 
     /* Custom Tabs */

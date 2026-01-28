@@ -123,6 +123,8 @@ Route::middleware(['authenticated'])->group(function () {
     Route::get('/messages-tab', [UserNotesController::class, 'messagePage'])->name('messages-tab');
     Route::get('/send-message/{id}', [UserNotesController::class, 'sendMessagePage'])->name('send-messages');
     Route::get('/manager-message/property_{p_id}/renter_{r_id}', [UserNotesController::class, 'managerMessagePage'])->name('manager-message');
+    Route::get('/track-inquiry/{id}', [UserNotesController::class, 'trackInquiry'])->name('track-inquiry');
+    Route::get('/track-referral/{id}', [UserNotesController::class, 'trackReferral'])->name('track-referral');
     Route::post('/favorite/add-notes', [UserNotesController::class, 'addNotes'])->name('add-notes');
     Route::post('/favorite/get-notes-detail', [UserNotesController::class, 'getNoteDetail'])->name('get-notes-detail');
     Route::post('/store-message', [UserNotesController::class, 'storeMessage'])->name('store-message');

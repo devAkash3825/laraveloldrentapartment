@@ -38,7 +38,7 @@
                             <div class="tf___single_chat">
                                 <div class="tf__single_chat_top">
                                     <div class="img">
-                                        <img src="https://rentapartment.s3.ap-southeast-2.amazonaws.com/Gallery/Property_{{ $getPropertyInfo['Id'] }}/Original/{{ $getPropertyInfo->gallerytype->gallerydetail[0]['ImageName'] }}"
+                                        <img src="{{ $getPropertyInfo->getFirstImageUrl() }}"
                                             alt="property" class="img-fluid w-100">
                                     </div>
                                     <div class="text">

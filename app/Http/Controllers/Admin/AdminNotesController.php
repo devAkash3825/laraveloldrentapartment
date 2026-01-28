@@ -75,12 +75,20 @@ class AdminNotesController extends Controller
             ]
         );
 
-        // 3. Send Professional Notification (Email + DB)
+        // 3. Notify Manager (Email + DB)
         $manager->notify(new ReferredRenterNotification($renter, $property, $currentAdmin));
+
+        // 4. Notify Renter (Email + DB) - New requirement
+        $renter->notify(new \App\Notifications\RecommendationNotification($property, $currentAdmin));
+
+        // 5. If this is a repeat referral, log it for audit
+        if ($count > 1) {
+            \Log::info("Duplicate referral: Agent {$currentAdmin->id} re-notified Manager {$manager->Id} about Renter {$r_id} for Property {$p_id}");
+        }
 
         return response()->json([
             'status' => 'Success',
-            'message' => 'Renter referred and manager notified successfully!'
+            'message' => 'Renter referred and both parties notified successfully!'
         ]);
     }
     

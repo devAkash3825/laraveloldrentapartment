@@ -102,9 +102,15 @@ class UserNotesController extends Controller
                     }
                 }
                 
-                // Also notify Renter
-                Notification::create(['from_id' => $sender->Id, 'form_user_type' => 'M', 'to_id' => $renterId, 'to_user_type' => 'R', 'property_id' => $propertyId, 'message' => $notifMessage, 'seen' => 0, 'CreatedOn' => now()]);
+                // Also notify Renter via formal notification
+                $renterLogin = Login::find($renterId);
+                if ($renterLogin) {
+                    $renterLogin->notify(new \App\Notifications\ManagerNoteNotification($sender, $property, $message));
                 }
+
+                // Internal persistent notification for UI
+                Notification::create(['from_id' => $sender->Id, 'form_user_type' => 'M', 'to_id' => $renterId, 'to_user_type' => 'R', 'property_id' => $propertyId, 'message' => $notifMessage, 'seen' => 0, 'CreatedOn' => now()]);
+            }
         }
 
         return response()->json(['success' => true, 'message' => 'Note added successfully!']);
@@ -222,35 +228,73 @@ class UserNotesController extends Controller
 
     public function managerMessagePage($p_id, $r_id)
     {
-        $user = Auth::guard('renter')->user();
-        
-        $messageNotes = Message::where('propertyId', $p_id)->where('renterId', $r_id)
-            ->with(['conversation', 'propertyinfo'])
-            ->first();
+        try {
+            $user = Auth::guard('renter')->user();
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Please login as a manager.');
+            }
 
-        if (!$messageNotes) {
-            return redirect()->back()->with('error', 'Conversation not found');
+            Log::info("Manager ID: {$user->Id} attempting to access thread for Property: {$p_id}, Renter: {$r_id}");
+            
+            $messageNotes = Message::where('propertyId', $p_id)->where('renterId', $r_id)
+                ->with(['conversation', 'propertyinfo'])
+                ->first();
+
+            // If thread doesn't exist, check if an inquiry or referral exists to justify creating one
+            if (!$messageNotes) {
+                $inquiry = \App\Models\PropertyInquiry::where('PropertyId', $p_id)->where('UserId', $r_id)->first();
+                $referral = \App\Models\NotifyDetail::where('property_id', $p_id)->where('renter_id', $r_id)->first();
+
+                if ($inquiry || $referral) {
+                    $property = PropertyInfo::find($p_id);
+                    if ($property && $property->UserId == $user->Id) {
+                        Log::info("Auto-creating message thread for Manager ID: {$user->Id} on Property: {$p_id}");
+                        $messageNotes = Message::create([
+                            'propertyId' => $p_id,
+                            'renterId' => $r_id,
+                            'managerId' => $property->UserId,
+                            'notify_manager' => 1
+                        ]);
+                        $messageNotes->load(['conversation', 'propertyinfo']);
+                    }
+                }
+            }
+
+            if (!$messageNotes) {
+                Log::warning("Access Denied or Conversation Not Found: Manager ID: {$user->Id}, Property: {$p_id}, Renter: {$r_id}");
+                return redirect()->back()->with('error', 'Conversation not found or you do not have permission to view it.');
+            }
+
+            // Check permission: Manager assigned, or Property owner
+            $isOwner = optional($messageNotes->propertyinfo)->UserId == $user->Id;
+            $isAssigned = $messageNotes->managerId == $user->Id;
+
+            if ($isOwner || $isAssigned || $messageNotes->notify_manager == 1) {
+                // Mark as read for Manager
+                $messageNotes->conversation()->whereNull('managerId')->update(['is_read' => true]);
+
+                $getPropertyInfo = PropertyInfo::where('Id', $p_id)->with('gallerytype.gallerydetail')->first();
+                if (!$getPropertyInfo) {
+                    return redirect()->back()->with('error', 'Property information not found.');
+                }
+
+                return view(
+                    'user.managerMessages',
+                    [
+                        'messages' => [$messageNotes],
+                        'getPropertyInfo' => $getPropertyInfo
+                    ]
+                );
+            }
+
+            Log::warning("Unauthorized Access Attempt: Manager ID: {$user->Id} for Thread ID: {$messageNotes->id}");
+            return redirect()->back()->with('error', 'Unauthorized access.');
+
+        } catch (\Exception $e) {
+            Log::error("Manager Message Page Error: " . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            return redirect()->back()->with('error', 'An error occurred while loading the conversation.');
         }
-
-        // Check permission: Manager assigned, or Property owner
-        $isOwner = $messageNotes->propertyinfo->UserId == $user->Id;
-        $isAssigned = $messageNotes->managerId == $user->Id;
-
-        if ($isOwner || $isAssigned || $messageNotes->notify_manager == 1) {
-            // Mark as read for Manager
-            $messageNotes->conversation()->whereNull('managerId')->update(['is_read' => true]);
-
-            $getPropertyInfo = PropertyInfo::where('Id', $p_id)->with('gallerytype.gallerydetail')->first();
-            return view(
-                'user.managerMessages',
-                [
-                    'messages' => [$messageNotes],
-                    'getPropertyInfo' => $getPropertyInfo
-                ]
-            );
-        }
-
-        return redirect()->back()->with('error', 'Unauthorized');
     }
 
 
@@ -380,6 +424,38 @@ class UserNotesController extends Controller
 
             return response()->json(['status' => 'success', 'message' => 'Message Sent']);
         }
+    }
+
+    public function trackInquiry($id)
+    {
+        $inquiry = \App\Models\PropertyInquiry::findOrFail($id);
+        
+        // Audit: Track response time if not already tracked
+        if (!$inquiry->respond_time) {
+            $inquiry->update(['respond_time' => now()]);
+            Log::info("Lead tracking: Inquiry #{$id} was responded to by " . (Auth::guard('renter')->user()->UserName ?? 'User'));
+        }
+
+        return redirect()->route('manager-message', [
+            'p_id' => $inquiry->PropertyId, 
+            'r_id' => $inquiry->UserId ?: 0 // Handle G (Guest) later if needed
+        ]);
+    }
+
+    public function trackReferral($id)
+    {
+        $referral = NotifyDetail::where('notification_id', $id)->firstOrFail();
+        
+        // Audit: Track response time if not already tracked
+        if (!$referral->respond_time) {
+            $referral->update(['respond_time' => now()]);
+            Log::info("Lead tracking: Referral #{$id} was responded to by " . (Auth::guard('renter')->user()->UserName ?? 'User'));
+        }
+
+        return redirect()->route('manager-message', [
+            'p_id' => $referral->property_id, 
+            'r_id' => $referral->renter_id
+        ]);
     }
 
 }

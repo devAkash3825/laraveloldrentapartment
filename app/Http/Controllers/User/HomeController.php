@@ -377,54 +377,42 @@ class HomeController extends Controller
 
             $username = $request->input('firstname') . ' ' . $request->input('lastname');
             
-            PropertyInquiry::create([
+            $inquiry = PropertyInquiry::create([
                 'PropertyId' => $request->propertyId,
                 'UserId' => $authuserId,
                 'UserName' => $username,
                 'Email' => $request->email,
                 'MoveDate' => $request->movedate,
                 'Message' => $request->comments,
-                'Phone' => $request->phone, // Added Phone
+                'Phone' => $request->phone,
+                'UserIp' => $request->ip(), // Audit req: Track IP address
                 'CreatedOn' => now(),
             ]);
 
-            // Notify Manager and Admin
+            // Audit Trail: Notify Manager and Admin via Formal Notification System
             $property = PropertyInfo::where('Id', $request->propertyId)->first();
-            $propertyName = $property->PropertyName ?? 'Property #' . $request->propertyId;
-            $renterName = $isReneter ? Auth::guard('renter')->user()->UserName : $username;
-            
-            $notifMsg = "New Property Inquiry from <strong>{$username}</strong> for <strong>{$propertyName}</strong>";
-            
-            // Notify Manager
-            if ($property && $property->UserId && $property->UserId != $authuserId) {
-                Notification::create([
-                    'from_id' => $authuserId,
-                    'form_user_type' => $userType,
-                    'to_id' => $property->UserId,
-                    'to_user_type' => 'M', // Manager
-                    'property_id' => $request->propertyId,
-                    'message' => $notifMsg,
-                    'seen' => 0,
-                    'CreatedOn' => now(),
-                ]);
+            if ($property) {
+                // 1. Notify Manager
+                if ($property->UserId) {
+                    $manager = Login::find($property->UserId);
+                    if ($manager) {
+                        $manager->notify(new \App\Notifications\PropertyInquiryNotification($inquiry, $property));
+                    }
+                }
+                
+                // 2. Notify Admin Agent (The one assigned to the renter or city)
+                $adminEmail = \App\Models\Setting::where('key', 'site_email')->value('value') ?: 'admin@apartmentguyz.com';
+                $admin = Login::where('Email', $adminEmail)->first() ?: Login::find(1);
+                
+                if ($admin) {
+                    $admin->notify(new \App\Notifications\PropertyInquiryNotification($inquiry, $property));
+                }
             }
 
-            // Notify Admin
-            Notification::create([
-                'from_id' => $authuserId,
-                'form_user_type' => $userType,
-                'to_id' => 1, // Super Admin
-                'to_user_type' => 'A',
-                'property_id' => $request->propertyId,
-                'message' => $notifMsg,
-                'seen' => 0,
-                'CreatedOn' => now(),
-            ]);
-
-            return response()->json(['message' => 'Quote request sent successfully!']);
+            return response()->json(['message' => 'Quote request sent successfully! Our team and the property manager have been notified.']);
         } catch (\Exception $e) {
             Log::error('Request Quote Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+            return response()->json(['error' => 'An error occurred while processing your inquiry.'], 500);
         }
     }
 

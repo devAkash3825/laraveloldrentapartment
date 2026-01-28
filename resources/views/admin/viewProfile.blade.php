@@ -159,7 +159,38 @@
                     </div>
                 </div>
 
+                @if($latestLeaseReport)
+                <div class="card card-profile mg-t-20 border-info shadow-sm">
+                    <div class="card-header bg-info-soft py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="slim-card-title tx-info mb-0"><i class="fa-solid fa-file-contract mr-2"></i> Latest Lease Report ({{ $latestLeaseReport->created_at->format('M d, Y') }})</h6>
+                        <a href="{{ route('admin-view-lease-report', ['id' => $latestLeaseReport->id]) }}" class="btn btn-sm btn-outline-info">View Detailed Report</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="invoice-info-row"><span class="font-weight-bold">Community</span> <span>{{ $latestLeaseReport->namecommunityorlandlords }}</span></p>
+                                <p class="invoice-info-row"><span class="font-weight-bold">Address</span> <span>{{ $latestLeaseReport->address }} {{ $latestLeaseReport->apt ? '#'.$latestLeaseReport->apt : '' }}</span></p>
+                                <p class="invoice-info-row"><span class="font-weight-bold">Move-in Date</span> <span>{{ $latestLeaseReport->movedate }}</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="invoice-info-row"><span class="font-weight-bold">Rent Amount</span> <span>${{ $latestLeaseReport->rentamount }}</span></p>
+                                <p class="invoice-info-row"><span class="font-weight-bold">Assisted By</span> <span>{{ $latestLeaseReport->assisted_by }}</span></p>
+                                <p class="invoice-info-row"><span class="font-weight-bold">Status</span> 
+                                    <span>
+                                        @if($latestLeaseReport->status == 0) <span class="badge badge-warning">Pending Review</span>
+                                        @elseif($latestLeaseReport->status == 1) <span class="badge badge-success">Approved</span>
+                                        @else <span class="badge badge-danger">Rejected</span>
+                                        @endif
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <div class="card card-profile mg-t-20">
+
                     <div class="card-header bg-white border-bottom-0 py-3">
                         <h6 class="slim-card-title">Detailed Information</h6>
                     </div>

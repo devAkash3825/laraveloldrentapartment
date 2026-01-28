@@ -43,7 +43,7 @@ class UserNotesController extends Controller
             $message = $request->message;
             
             // Context: which renter is this note for?
-            $renterId = ($sender->user_type == 'M') ? $request->input('renter_id') : $sender->Id;
+            $renterId = ($sender->user_type == 'M' && $request->has('renter_id')) ? $request->input('renter_id') : $sender->Id;
 
             if (!$renterId) {
                 return response()->json(['success' => false, 'message' => 'Renter context missing']);
@@ -116,39 +116,59 @@ class UserNotesController extends Controller
 
     public function getNoteDetail(Request $request)
     {
-        $userid = Auth::guard('renter')->user()->Id;
-        $propertyId = $request->propertyId;
-        
-        $getdetails = NoteDetail::where('property_id', $propertyId)
-            ->where(function($query) use ($userid) {
-                // Fetch notes where the user is either the sender OR the renter associated with the note context
-                $query->where('user_id', $userid)
-                      ->orWhere('renter_id', $userid);
-            })
-            ->with('user') // Eager load the user who created the note
-            ->orderBy('send_time', 'asc')
-            ->get();
-            
-        // Transform the data to include the specific color class
-        $formattedDetails = $getdetails->map(function ($note) {
-            $userType = $note->user->user_type ?? '';
-            $colorClass = 'text-danger'; // Default to Red (Renter)
-            
-            if ($userType === 'A') {
-                $colorClass = 'text-primary'; // Blue for Admin
-            } elseif ($userType === 'M') {
-                $colorClass = 'text-dark'; // Black for Manager
+        try {
+            $user = Auth::guard('renter')->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
             }
-            // 'C' or 'R' stays Red
+            
+            $userid = $user->Id;
+            $propertyId = $request->propertyId;
+            
+            $getdetails = NoteDetail::where('property_id', $propertyId)
+                ->where(function($query) use ($userid) {
+                    // Fetch notes where the user is either the sender OR the renter associated with the note context
+                    $query->where('user_id', $userid)
+                          ->orWhere('renter_id', $userid);
+                })
+                ->with('user') // Eager load the user who created the note
+                ->orderBy('send_time', 'asc')
+                ->get();
+                
+            // Transform the data to ensure it is correctly serialized for JSON
+            $formattedDetails = $getdetails->map(function ($note) {
+                $userType = $note->user->user_type ?? '';
+                $colorClass = 'text-danger'; // Default to Red (Renter)
+                $senderName = $note->user->UserName ?? 'Unknown';
 
-            $note->color_class = $colorClass;
-            $note->sender_name = $note->user->UserName ?? 'Unknown';
-            return $note;
-        });
+                // Check if it was an admin note (usually admin notes don't have a linked 'Login' user or have admin_id set)
+                if (!$note->user && $note->admin_id) {
+                    $colorClass = 'text-primary';
+                    $senderName = 'Admin';
+                } else if ($userType === 'A') {
+                    $colorClass = 'text-primary'; // Blue for Admin
+                } else if ($userType === 'M') {
+                    $colorClass = 'text-dark'; // Black for Manager
+                }
 
-        return response()->json([
-            'notedetails' => $formattedDetails
-        ]);
+                return [
+                    'note_id' => $note->note_id,
+                    'message' => $note->message,
+                    'send_time' => $note->send_time ? $note->send_time->toDateTimeString() : null,
+                    'color_class' => $colorClass,
+                    'sender_name' => $senderName,
+                    'user_type' => $userType
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'notedetails' => $formattedDetails
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Get Note Detail Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error loading notes.']);
+        }
     }
 
     public function messagePage()

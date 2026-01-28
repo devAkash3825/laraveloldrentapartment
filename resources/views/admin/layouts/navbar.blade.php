@@ -128,6 +128,7 @@
                         <li class="{{ isActiveRoutes(['admin-activeRenter']) }}"><a href="{{ route('admin-activeRenter') }}"> Active Renters </a></li>
                         <li class="{{ isActiveRoutes(['admin-inactiveRenter']) }}"><a href="{{ route('admin-inactiveRenter') }}"> InActive Renter </a></li>
                         <li class="{{ isActiveRoutes(['admin-leasedRenter']) }}"><a href="{{ route('admin-leasedRenter') }}"> Leased Renter </a></li>
+                        <li class="{{ isActiveRoutes(['admin-lease-reports']) }}"><a href="{{ route('admin-lease-reports') }}"> Lease Reports <span class="badge badge-info ml-1">New</span> </a></li>
                         <li class="{{ isActiveRoutes(['admin-unassigned-renters']) }}"><a href="{{ route('admin-unassigned-renters') }}"> Unassigned Renter </a></li>
                         <li class="{{ isActiveRoutes(['admin-search-renter']) }}"><a href="{{ route('admin-search-renter') }}">Search Renter</a></li>
                         <li class="{{ isActiveRoutes(['admin-call-history']) }}"><a href="{{ route('admin-call-history') }}">Call History</a></li>

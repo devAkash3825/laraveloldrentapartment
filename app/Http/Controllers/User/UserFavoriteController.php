@@ -145,20 +145,7 @@ class UserFavoriteController extends Controller
         ]);
     }
 
-    public function addNotes(Request $request)
-    {
-        dd($request->all());
-    }
 
-    public function getNoteDetail(Request $request)
-    {
-        $userid = Auth::guard('renter')->user()->Id;
-        $propertyId = $request->propertyId;
-        $getdetails = NoteDetail::where('user_id', $userid)->where('property_id', $propertyId)->get();
-        return response()->json([
-            'notedetails' => $getdetails
-        ]);
-    }
 
 
     public function addToFavoriteByUser(Request $request)

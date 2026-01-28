@@ -17,6 +17,7 @@ use App\Models\PropertySpecial;
 use App\Models\RenterInfo;
 use App\Models\Special;
 use App\Models\UserProperty;
+use App\Models\LeaseReport;
 use App\Repositories\FavoriteRepository;
 use App\Repositories\RenterInfoRepository;
 use Carbon\Carbon;
@@ -265,10 +266,13 @@ class AdminDashboardController extends Controller
             ->orderBy('lastviewed', 'desc')->limit(10)
             ->with('propertyinfo.gallerytype.gallerydetail')
             ->get();
+            
+        $latestLeaseReport = LeaseReport::where('renter_id', $id)->orderBy('created_at', 'desc')->first();
 
         return view('admin.viewProfile', [
             'data'         => $renterInfo,
             'recentviewed' => $recentproperties,
+            'latestLeaseReport' => $latestLeaseReport,
         ]);
     }
 
@@ -974,5 +978,78 @@ class AdminDashboardController extends Controller
                 'message' => "An error occurred: " . $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function leaseReports(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = LeaseReport::with('renter.renterinfo')->orderBy('created_at', 'desc');
+            return Datatables::eloquent($data)
+                ->addIndexColumn()
+                ->addColumn('renter_name', function($row){
+                    return ($row->renter && $row->renter->renterinfo) 
+                        ? $row->renter->renterinfo->Firstname . ' ' . $row->renter->renterinfo->Lastname 
+                        : 'N/A';
+                })
+                ->editColumn('created_at', function($row){
+                    return $row->created_at->format('Y-m-d H:i');
+                })
+                ->addColumn('status_label', function($row){
+                    if($row->status == 0) return '<span class="badge badge-warning">Pending</span>';
+                    if($row->status == 1) return '<span class="badge badge-success">Approved</span>';
+                    return '<span class="badge badge-danger">Rejected</span>';
+                })
+                ->addColumn('action', function($row){
+                    $viewUrl = route('admin-view-lease-report', ['id' => $row->id]);
+                    return '<a href="'.$viewUrl.'" class="btn btn-sm btn-primary">View</a>';
+                })
+                ->rawColumns(['status_label', 'action'])
+                ->make(true);
+        }
+        return view('admin.leaseReports.index');
+    }
+
+    public function viewLeaseReport($id)
+    {
+        $report = LeaseReport::with('renter.renterinfo')->findOrFail($id);
+        return view('admin.leaseReports.view', compact('report'));
+    }
+
+    public function approveLeaseReport(Request $request)
+    {
+        $report = LeaseReport::findOrFail($request->id);
+        $renterId = $report->renter_id;
+
+        DB::beginTransaction();
+        try {
+            // Update Report
+            $report->update(['status' => 1]);
+
+            // Update Renter Status
+            Login::where('Id', $renterId)->update(['Status' => 2]);
+
+            // Update Renter Info with Lease details
+            RenterInfo::where('Login_ID', $renterId)->update([
+                'new_rental_adddress' => $report->address,
+                'unit' => $report->apt,
+                'rent_amount' => $report->rent_amount,
+                'landloard' => $report->namecommunityorlandlords,
+                'Emove_date' => $report->movedate,
+            ]);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Lease report approved and renter status updated to Leased.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Approve Lease Report Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to approve report.']);
+        }
+    }
+
+    public function rejectLeaseReport(Request $request)
+    {
+        $report = LeaseReport::findOrFail($request->id);
+        $report->update(['status' => 2]);
+        return response()->json(['success' => true, 'message' => 'Lease report rejected.']);
     }
 }

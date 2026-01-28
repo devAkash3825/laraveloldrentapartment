@@ -283,14 +283,21 @@ $(document).ready(function() {
                 if(response.success) {
                     $('#note-message').val('');
                     loadNotes(pid); // Reload to show new note
+                } else {
+                    Swal.fire('Error', response.message || 'Could not save note.', 'error');
                 }
             },
             error: function() {
-                Swal.fire('Error', 'Could not save note.', 'error');
+                Swal.fire('Error', 'Could not connect to server.', 'error');
             }
         });
     });
 });
+
+
+    window.requestQuote = function(id) {
+        window.location.href = "{{ url('/property-display') }}/" + id + "#request-quote";
+    }
 
 </script>
 <style>

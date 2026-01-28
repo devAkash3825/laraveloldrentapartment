@@ -363,15 +363,20 @@ class HomeController extends Controller
 
     public function requestQuote(Request $request)
     {
-        $authuserId = Auth::guard('renter')->user()->Id;
         $validated = $request->validate([
             'propertyId' => 'required',
-            'firstname' => 'required|email',
+            'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
         ]);
-        $username = $request->firstname . $request->lastname;
-        if ($validated) {
+
+        try {
+            $isReneter = Auth::guard('renter')->check();
+            $authuserId = $isReneter ? Auth::guard('renter')->user()->Id : 0;
+            $userType = $isReneter ? 'R' : 'G'; // R = Renter, G = Guest
+
+            $username = $request->input('firstname') . ' ' . $request->input('lastname');
+            
             PropertyInquiry::create([
                 'PropertyId' => $request->propertyId,
                 'UserId' => $authuserId,
@@ -379,19 +384,24 @@ class HomeController extends Controller
                 'Email' => $request->email,
                 'MoveDate' => $request->movedate,
                 'Message' => $request->comments,
+                'Phone' => $request->phone, // Added Phone
+                'CreatedOn' => now(),
             ]);
 
             // Notify Manager and Admin
             $property = PropertyInfo::where('Id', $request->propertyId)->first();
-            $notifMsg = "New Property Inquiry from <strong>{$request->firstname} {$request->lastname}</strong> for <strong>" . ($property->PropertyName ?? 'Property') . "</strong>";
+            $propertyName = $property->PropertyName ?? 'Property #' . $request->propertyId;
+            $renterName = $isReneter ? Auth::guard('renter')->user()->UserName : $username;
+            
+            $notifMsg = "New Property Inquiry from <strong>{$username}</strong> for <strong>{$propertyName}</strong>";
             
             // Notify Manager
-            if ($property && $property->UserId) {
+            if ($property && $property->UserId && $property->UserId != $authuserId) {
                 Notification::create([
                     'from_id' => $authuserId,
-                    'form_user_type' => 'R',
+                    'form_user_type' => $userType,
                     'to_id' => $property->UserId,
-                    'to_user_type' => 'M',
+                    'to_user_type' => 'M', // Manager
                     'property_id' => $request->propertyId,
                     'message' => $notifMsg,
                     'seen' => 0,
@@ -402,7 +412,7 @@ class HomeController extends Controller
             // Notify Admin
             Notification::create([
                 'from_id' => $authuserId,
-                'form_user_type' => 'R',
+                'form_user_type' => $userType,
                 'to_id' => 1, // Super Admin
                 'to_user_type' => 'A',
                 'property_id' => $request->propertyId,
@@ -411,9 +421,10 @@ class HomeController extends Controller
                 'CreatedOn' => now(),
             ]);
 
-            return response()->json(['message' => 'Form Submitted Successfully']);
-        } else {
-            return response()->json(['error' => 'There is Some error Please Try Again']);
+            return response()->json(['message' => 'Quote request sent successfully!']);
+        } catch (\Exception $e) {
+            Log::error('Request Quote Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
         }
     }
 
@@ -426,6 +437,7 @@ class HomeController extends Controller
 
     public function submitReportLease(Request $request)
     {
+        Log::info('Lease Report Submission hit');
         $validated = $request->validate([
             'username' => 'required', // Name on lease
             'email' => 'required|email',
@@ -442,37 +454,47 @@ class HomeController extends Controller
             $user = Auth::guard('renter')->user();
             $renterId = $user->Id;
             
-            // In accordance with the system flow:
-            // 1. The data is NOT immediately stored in the database.
-            // 2. The "Request" effectively lives in the Admin's Email Inbox.
+            // 1. Store data in the database
+            $leaseReport = \App\Models\LeaseReport::create(array_merge($request->all(), [
+                'renter_id' => $renterId,
+                'status' => 0, // Pending review
+            ]));
 
-            // Create In-App Notification for Admin (to track that a request was sent)
+            // 2. Create In-App Notification for Admin
             Notification::create([
                 'from_id' => $renterId,
                 'form_user_type' => 'R',
                 'to_id' => 1, // Super Admin
                 'to_user_type' => 'A',
                 'property_id' => null,
-                'message' => "Renter <strong>{$user->UserName}</strong> has submitted a Lease Report request.",
+                'message' => "Renter <strong>{$user->UserName}</strong> has submitted a Lease Report for <strong>{$request->address}</strong>.",
                 'seen' => 0,
                 'CreatedOn' => now(),
             ]);
 
-            // Send Email to Admin (The primary "Request" storage)
+            // 3. Send Email to Admin and CC the specified auditor email
             try {
                 $settings = \App\Models\Setting::pluck('value', 'key');
                 $adminEmail = $settings['site_email'] ?? 'admin@crmrent.com';
-                \Illuminate\Support\Facades\Mail::to($adminEmail)->send(new \App\Mail\LeaseReportMail($request->all(), $user));
+                $auditorEmail = 'abcuser@gmail.com';
+
+                Log::info('Attempting to send Lease Report email to: ' . $adminEmail . ' with CC: ' . $auditorEmail);
+
+                \Illuminate\Support\Facades\Mail::to($adminEmail)
+                    ->cc($auditorEmail)
+                    ->send(new \App\Mail\LeaseReportMail($request->all(), $user));
+                
+                Log::info('Lease Report email sent successfully.');
             } catch (\Exception $e) {
                 Log::error('Lease Report Email Error: ' . $e->getMessage());
-                return response()->json(['success' => false, 'message' => 'Failed to send email report. Please try again.']);
+                Log::error($e->getTraceAsString());
             }
             
             return response()->json(['success' => true, 'message' => 'Lease report submitted successfully! Our team will review it and update your records.']);
 
         } catch (\Exception $e) {
             Log::error('Lease Report Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'An error occurred.']);
+            return response()->json(['success' => false, 'message' => 'An error occurred while saving the report.']);
         }
     }
 

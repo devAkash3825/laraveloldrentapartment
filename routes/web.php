@@ -53,8 +53,6 @@ Route::post('/request-quote', [HomeController::class, 'requestQuote'])->name('re
 Route::get('/privacy-promise', [HomeController::class, 'privacyPromise'])->name('privacy-promise');
 Route::get('/manager-terms', [HomeController::class, 'managerTerms'])->name('manager-terms');
 Route::get('/equal-opportunity', [HomeController::class, 'equalOpportunity'])->name('equal-opportunity');
-Route::get('/report-lease', [HomeController::class, 'reportLease'])->name('report-lease');
-Route::post('/report-lease', [HomeController::class, 'submitReportLease'])->name('submit-report-lease');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('advance-search', [HomeController::class, 'advanceSearchPage'])->name('advance-search');
 
@@ -72,6 +70,8 @@ Route::middleware(['authenticated'])->group(function () {
     Route::post('/reset-password', [UserLoginController::class, 'resetPassword'])->name('reset-password');
 
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('user-profile');
+    Route::get('/report-lease', [HomeController::class, 'reportLease'])->name('report-lease');
+    Route::post('/report-lease', [HomeController::class, 'submitReportLease'])->name('submit-report-lease');
     Route::get('/customer-feedback', [HomeController::class, 'customerFeedback'])->name('customer-feedback');
     Route::get('/recently-visited', [HomeController::class, 'recentlyVisited'])->name('recently-visited');
     Route::get('/referred-renter', [HomeController::class, 'referredRenter'])->name('referred-renter');
@@ -112,7 +112,7 @@ Route::middleware(['authenticated'])->group(function () {
     Route::post('/is-favorite', [UserFavoriteController::class, 'checkIsFavorite'])->name('check-is-favorite');
     Route::post('/bulk-remove-favorites', [UserFavoriteController::class, 'bulkRemoveFavorites'])->name('bulk-remove-favorites');
 
-    Route::post('request-quote', [UserPropertyController::class, 'requestQuote'])->name('request-quote');
+
     Route::post('add-new-property', [UserPropertyController::class, 'addNewProperty'])->name('add-new-property');
 
 
@@ -236,6 +236,12 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/client/renter-reports', [ClientController::class, 'renterReports'])->name('admin-renter-reports');
             Route::get('/client/listing-fav', [ClientController::class, 'listingFavorite'])->name('admin-listing-fav');
             Route::get('/client/listing-fav-reports', [ClientController::class, 'listingFavoriteReports'])->name('admin-listing-fav-reports');
+
+            // Lease Reports
+            Route::get('/lease-reports', [AdminDashboardController::class, 'leaseReports'])->name('admin-lease-reports');
+            Route::get('/lease-reports/{id}', [AdminDashboardController::class, 'viewLeaseReport'])->name('admin-view-lease-report');
+            Route::post('/lease-reports/approve', [AdminDashboardController::class, 'approveLeaseReport'])->name('admin-approve-lease-report');
+            Route::post('/lease-reports/reject', [AdminDashboardController::class, 'rejectLeaseReport'])->name('admin-reject-lease-report');
         });
 
         
